@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from 'react'; 
+import React from 'react'; 
 import { AppRegistry, Platform } from 'react-native';
 import App from './App';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { Ionicons } from "@expo/vector-icons";
+
 import LoadingScreen from './screens/LoadingScreen';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import LeaderboardScreen from './screens/LeaderboardScreen'
+import ProfileScreen from './screens/ProfileScreen';
+import RecordScreen from './screens/RecordScreen';
 
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
@@ -34,17 +41,59 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-const AppStack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
 const RootStack = createStackNavigator();
+const TopTab = createMaterialTopTabNavigator();
 
-function AppNavigator() {
+
+function TopTabNavigator() {
   return (
-    <AppStack.Navigator>
-      <AppStack.Screen name="Home" component={HomeScreen} />
-    </AppStack.Navigator>
+    <TopTab.Navigator>
+      <TopTab.Screen 
+        name="Profile" 
+        component={ProfileScreen} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-circle-outline" size={size} color={color} />
+          ),
+        }}
+      />
+    </TopTab.Navigator>
   );
 }
+
+function AppTabNavigator() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size }) => {
+          let iconName;
+
+          if (route.name === 'Home') {
+            iconName = 'home-outline';
+          } else if (route.name === 'Leaderboard') {
+            iconName = 'cellular-outline';
+          } else if (route.name === 'Record') {
+            iconName = 'add-circle-outline';
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+      tabBarOptions={{
+        activeTintColor: 'black',
+        inactiveTintColor: 'gray',
+      }}
+      
+    >
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Record" component={RecordScreen} />
+      <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
+    </Tab.Navigator>
+  );
+}
+
 
 function AuthNavigator() {
   return (
@@ -73,7 +122,7 @@ function RootNavigator() {
   return (
     <RootStack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
-        <RootStack.Screen name="App" component={AppNavigator} />
+        <RootStack.Screen name="App" component={AppTabNavigator} />
       ) : (
         <RootStack.Screen name="Auth" component={AuthNavigator} />
       )}
