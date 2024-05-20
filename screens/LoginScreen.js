@@ -1,30 +1,61 @@
 import React from "react";
 import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+ 
 
 export default class LoginScreen extends React.Component {
+    state = {
+        email: "",
+        password: "",
+        errorMessage: null
+    };
+
+    handleLogin = () => {
+        const {email, password} = this.state;
+        const auth = getAuth();
+        signInWithEmailAndPassword(auth, email, password).catch(error => this.setState({errorMessage: error.message}));
+        
+    };
+
     render() {
         return (
             <View style={styles.container}>
                 <Text style={styles.greeting}>LiftX Login</Text>
 
                 <View style={styles.errorMessage}>
-                    <Text>Error</Text>
+                    {this.state.errorMessage && <Text style={styles.errorMessage}>{this.state.errorMessage}</Text>}
                 </View>
 
                 <View style={styles.form}>
                     <View>
                         <Text style={styles.inputTitle}>Email Address</Text>
-                        <TextInput style={styles.input} autoCapitalize="none"></TextInput>
+                        <TextInput 
+                            style={styles.input} 
+                            autoCapitalize="none"
+                            onChangeText={email => this.setState({ email })}
+                            value={this.state.email}
+                        ></TextInput>
                     </View>
 
                     <View style={{marginTop: 32}}>
                         <Text style={styles.inputTitle}>Password</Text>
-                        <TextInput style={styles.input} autoCapitalize="none"></TextInput>
+                        <TextInput 
+                                style={styles.input} secureTextEntry autoCapitalize="none"
+                                onChangeText={password => this.setState({ password })}
+                                value={this.state.password}
+                        ></TextInput>
                     </View>
                 </View>
 
-                <TouchableOpacity style={styles.loginButton}>
-                    <Text style={{color: "white"}}>Sign In</Text>
+                <TouchableOpacity style={styles.loginButton} onPress={this.handleLogin}>
+                    <Text style={{ color: "white" }}>Sign In</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={{ alignSelf: "center", marginTop: 32}}>
+                    <Text style={{ color : "#414959", fontSize: 13}}>
+                        New to LiftX? 
+                        <Text style={{ fontWeight: "500", color: "black" }} onPress={() => this.props.navigation.navigate("Register")}> Sign Up</Text>
+                    </Text>
                 </TouchableOpacity>
             </View>   
         );
@@ -45,7 +76,14 @@ const styles = StyleSheet.create({
         height: 70,
         alignItems: "center",
         justifyContent: "center",
-        marginHorizontal: 30
+        marginHorizontal: 30,
+        color: "red"
+    },
+    error: {
+        color: "#E9446A",
+        fontSize: 13,
+        fontWeight: "600",
+        textAlign: "center"
     },
     form: {
         marginBottom: 48,
