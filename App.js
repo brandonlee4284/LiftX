@@ -1,61 +1,3 @@
-/*
-import { AppRegistry, Platform } from 'react-native';
-import App from './App';
-
-import {createAppContainer, CreateSwitchNavigator} from 'react-navigation'
-import { createStackNavigator } from 'react-navigation-stack'
-import LoadingScreen from './screens/LoadingScreen'
-import HomeScreen from './screens/HomeScreen'
-import LoginScreen from './screens/LoginScreen'
-import RegisterScreen from './screens/RegisterScreen'
-
-import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
-import { getAuth } from "firebase/auth";
-
-AppRegistry.registerComponent('main', () => App);
-
-if (Platform.OS === 'web') {
-    const rootTag = document.getElementById('root') || document.getElementById('main');
-    AppRegistry.runApplication('main', { rootTag });
-}
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBneArfHLJ5aAdKa8fKtBzo_uOqsakm4J4",
-  authDomain: "liftx-4eda1.firebaseapp.com",
-  projectId: "liftx-4eda1",
-  storageBucket: "liftx-4eda1.appspot.com",
-  messagingSenderId: "23507113759",
-  appId: "1:23507113759:web:504c9db8ac6b243d75022a",
-  measurementId: "G-9TWPW81ZWB"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-const AppStack = createStackNavigator({
-  Home: HomeScreen
-});
-
-const AuthStack = createStackNavigator({
-  Login: LoginScreen,
-  Resiter: RegisterScreen
-});
-
-export default createAppContainer(
-  CreateSwitchNavigator(
-    {
-      Loading: LoadingScreen,
-      App: AppStack,
-      Auth: AuthStack
-    },
-    {
-      initialRouteName: "Loading"
-    }
-  )
-);
-*/
 import React, { useEffect, useState } from 'react'; 
 import { AppRegistry, Platform } from 'react-native';
 import App from './App';
@@ -124,7 +66,6 @@ function RootNavigator() {
       setIsLoading(false);
     });
   }, []);
-
   if (isLoading) {
     return <LoadingScreen />;
   }
