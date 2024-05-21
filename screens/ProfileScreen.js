@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Modal, TouchableWithoutFeedback } from 'react-native';
 import { getAuth } from "firebase/auth";
 
 export default class ProfileScreen extends React.Component {
@@ -13,7 +13,46 @@ export default class ProfileScreen extends React.Component {
             { exercise: "Squat", stats: "315x1" },
             { exercise: "Bench", stats: "225x1" },
             { exercise: "DeadLift", stats: "405x1" }
-        ] // Placeholder gym stats
+        ], // Placeholder gym stats
+        selectedDay: null,
+        workoutSplit: {
+            M: [
+                { exercise: "Bench", stats: "4x6" },
+                { exercise: "Incline DB Press", stats: "4x10" },
+                { exercise: "Cable Tricep Ext", stats: "4x10" }
+            ],
+            Tu: [
+                { exercise: "DeadLift", stats: "4x5" },
+                { exercise: "Barbell Row", stats: "4x10" },
+                { exercise: "Pull Up", stats: "4x8" },
+                { exercise: "Bicep Curl", stats: "4x8" }
+            ],
+            W: [
+                { exercise: "Squat", stats: "4x5" },
+                { exercise: "Leg Press", stats: "4x10" },
+                { exercise: "Leg Curl", stats: "4x10" }
+            ],
+            Th: [
+                { exercise: "Bench", stats: "4x6" },
+                { exercise: "Incline DB Press", stats: "4x10" },
+                { exercise: "Cable Tricep Ext", stats: "4x10" }
+            ],
+            F: [
+                { exercise: "DeadLift", stats: "4x5" },
+                { exercise: "Barbell Row", stats: "4x10" },
+                { exercise: "Pull Up", stats: "4x8" }
+            ],
+            S: [
+                { exercise: "Squat", stats: "4x5" },
+                { exercise: "Leg Press", stats: "4x10" },
+                { exercise: "Leg Curl", stats: "4x10" }
+            ],
+            S: [
+                { exercise: "Bench", stats: "4x6" },
+                { exercise: "Incline DB Press", stats: "4x10" },
+                { exercise: "Cable Tricep Ext", stats: "4x10" }
+            ]
+        } // placeholder
     };
 
     componentDidMount() {
@@ -32,8 +71,47 @@ export default class ProfileScreen extends React.Component {
         auth.signOut();
     };
 
+    renderExerciseCard = () => {
+        const { selectedDay, workoutSplit } = this.state;
+        if (!selectedDay) return null;
+
+        const exercises = workoutSplit[selectedDay];
+        const dayNames = {
+            M: "Monday",
+            Tu: "Tuesday",
+            W: "Wednesday",
+            Th: "Thursday",
+            F: "Friday",
+            S: "Saturday",
+            S: "Sunday"
+        };
+
+        return (
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={true}
+                onRequestClose={() => this.setState({ selectedDay: null })}
+            >
+                <TouchableWithoutFeedback onPress={() => this.setState({ selectedDay: null })}>
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.modalTitle}>{dayNames[selectedDay]}</Text>
+                            {exercises.map((exercise, index) => (
+                                <View key={index} style={styles.exerciseRow}>
+                                    <Text style={styles.exerciseName}>{exercise.exercise}</Text>
+                                    <Text style={styles.exerciseStats}>{exercise.stats}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+        );
+    };
+
     render() {
-        const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+        const days = ['M', 'Tu', 'W', 'Th', 'F', 'S', 'S'];
 
         return (
             <View style={styles.container}>
@@ -52,7 +130,11 @@ export default class ProfileScreen extends React.Component {
 
                 <View style={styles.daysContainer}>
                     {days.map((day, index) => (
-                        <TouchableOpacity key={index} style={styles.dayButton}>
+                        <TouchableOpacity 
+                            key={index} 
+                            style={styles.dayButton} 
+                            onPress={() => this.setState({ selectedDay: day })}
+                        >
                             <Text style={styles.dayButtonText}>{day}</Text>
                         </TouchableOpacity>
                     ))}
@@ -79,6 +161,8 @@ export default class ProfileScreen extends React.Component {
                 <TouchableOpacity style={{ marginTop: 32 }} onPress={this.signOutUser}>
                     <Text style={{ color: "red" }}>Logout</Text>
                 </TouchableOpacity>
+
+                {this.renderExerciseCard()}
             </View>
         );
     }
@@ -187,5 +271,36 @@ const styles = StyleSheet.create({
     editButtonText: {
         color: "white",
         fontSize: 16
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    modalContent: {
+        width: 300,
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        alignItems: 'center'
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10
+    },
+    exerciseRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: '100%',
+        marginVertical: 5
+    },
+    exerciseName: {
+        fontSize: 16
+    },
+    exerciseStats: {
+        fontSize: 16,
+        fontWeight: "bold"
     }
 });
