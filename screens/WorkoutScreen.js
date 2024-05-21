@@ -2,7 +2,7 @@ import React from "react";
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import { getAuth } from "firebase/auth";
 
-export default class RecordScreen extends React.Component {
+export default class WorkoutScreen extends React.Component {
     
     render() {
         return (

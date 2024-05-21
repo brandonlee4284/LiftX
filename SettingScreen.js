@@ -2,7 +2,13 @@ import React from "react";
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import { getAuth } from "firebase/auth";
 
-export default class RecordScreen extends React.Component {
+export default class SettingScreen extends React.Component {
+    /*
+    signOutUser = () => {
+        const auth = getAuth(); 
+        auth.signOut();
+    };
+    */
     
     render() {
         return (
