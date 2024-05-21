@@ -1,6 +1,6 @@
 import React from "react";
 import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
  
 
 export default class RegisterScreen extends React.Component {

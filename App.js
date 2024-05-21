@@ -26,7 +26,7 @@ if (Platform.OS === 'web') {
     const rootTag = document.getElementById('root') || document.getElementById('main');
     AppRegistry.runApplication('main', { rootTag });
 }
-
+// MAKE INTO ENV VARS
 const firebaseConfig = {
   apiKey: "AIzaSyBneArfHLJ5aAdKa8fKtBzo_uOqsakm4J4",
   authDomain: "liftx-4eda1.firebaseapp.com",
