@@ -18,7 +18,25 @@ export default class RegisterScreen extends React.Component {
         createUserWithEmailAndPassword(auth, this.state.email, this.state.password)
         .then(userCredentials => {
             try {
-                setDoc(doc(FIRESTORE_DB, "users", userCredentials.user.uid), {name: this.state.name, email: this.state.email})
+                setDoc(doc(FIRESTORE_DB, "users", userCredentials.user.uid), {
+                    name: this.state.name,
+                    email: this.state.email,
+                    bio: "This is a sample bio.", // Placeholder bio
+                    profilePicture: "https://via.placeholder.com/150", // Placeholder image
+                    friends: {},
+                    displayStats: {},
+                    activeSplit: [],
+                })
+
+                setDoc(doc(FIRESTORE_DB, "users", userCredentials.user.uid), {
+                    name: this.state.name,
+                    email: this.state.email,
+                    bio: "This is a sample bio.", // Placeholder bio
+                    profilePicture: "https://via.placeholder.com/150", // Placeholder image
+                    friends: {},
+                    displayStats: {},
+                    activeSplit: [],
+                })
                 
                 console.log('User data saved successfully');
               } catch (error) {
