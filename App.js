@@ -1,6 +1,5 @@
 import React from 'react'; 
 import { AppRegistry, Platform } from 'react-native';
-import App from './App';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -16,9 +15,8 @@ import ProfileScreen from './screens/ProfileScreen';
 import RecordScreen from './screens/RecordScreen';
 import WorkoutScreen from './screens/WorkoutScreen';
 
-import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
-import { getAuth } from "firebase/auth";
+import { onAuthStateChanged } from 'firebase/auth';
+import { FIREBASE_AUTH } from './FirebaseConfig';
 
 AppRegistry.registerComponent('main', () => MainApp);
 
@@ -26,28 +24,12 @@ if (Platform.OS === 'web') {
     const rootTag = document.getElementById('root') || document.getElementById('main');
     AppRegistry.runApplication('main', { rootTag });
 }
-// MAKE INTO ENV VARS
-const firebaseConfig = {
-  apiKey: "AIzaSyBneArfHLJ5aAdKa8fKtBzo_uOqsakm4J4",
-  authDomain: "liftx-4eda1.firebaseapp.com",
-  projectId: "liftx-4eda1",
-  storageBucket: "liftx-4eda1.appspot.com",
-  messagingSenderId: "23507113759",
-  appId: "1:23507113759:web:504c9db8ac6b243d75022a",
-  measurementId: "G-9TWPW81ZWB"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
 const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
 const RootStack = createStackNavigator();
 
 const Stack = createStackNavigator();
-
-
 
 function AppTabNavigator() {
   return (
@@ -112,12 +94,12 @@ function RootNavigator() {
   const [user, setUser] = React.useState(null);
 
   React.useEffect(() => {
-    const auth = getAuth();
-    auth.onAuthStateChanged((user) => {
+    onAuthStateChanged(FIREBASE_AUTH, (user) => {
       setUser(user);
       setIsLoading(false);
     });
   }, []);
+
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -126,9 +108,9 @@ function RootNavigator() {
     <RootStack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
         <>
-          <RootStack.Screen name="App" component={AppTabNavigator} />
-          <RootStack.Screen name="Profile" component={ProfileStack} />
-          <RootStack.Screen name="Workout" component={WorkoutStack} />
+          <RootStack.Screen name="App" component={AppTabNavigator} user={user}/>
+          <RootStack.Screen name="Profile" component={ProfileStack} user={user}/>
+          <RootStack.Screen name="Workout" component={WorkoutStack} user={user}/>
         </>  
       ) : (
         <RootStack.Screen name="Auth" component={AuthNavigator} />
@@ -137,8 +119,6 @@ function RootNavigator() {
     </RootStack.Navigator>
   );
 }
-
-
 
 function MainApp() {
   return (

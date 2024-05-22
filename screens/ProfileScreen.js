@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Modal, TouchableWithoutFeedback } from 'react-native';
 import { getAuth } from "firebase/auth";
+import { FIREBASE_AUTH } from "../FirebaseConfig";
 
 export default class ProfileScreen extends React.Component {
     state = {
@@ -15,7 +16,9 @@ export default class ProfileScreen extends React.Component {
             { exercise: "DeadLift", stats: "405x1" }
         ], // Placeholder gym stats
         selectedDay: null,
-        workoutSplit: {
+        workoutSplit: 
+
+        {
             M: [
                 { exercise: "Bench", stats: "4x6" },
                 { exercise: "Incline DB Press", stats: "4x10" },
@@ -67,8 +70,7 @@ export default class ProfileScreen extends React.Component {
     };
 
     signOutUser = () => {
-        const auth = getAuth();
-        auth.signOut();
+        FIREBASE_AUTH.signOut();
     };
 
     renderExerciseCard = () => {

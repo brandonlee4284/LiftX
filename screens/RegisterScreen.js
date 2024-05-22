@@ -1,8 +1,10 @@
 import React from "react";
 import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../FirebaseConfig";
+import { doc, setDoc } from "firebase/firestore"; 
+import { addDoc } from "firebase/firestore";
  
-
 export default class RegisterScreen extends React.Component {
     state = {
         name: "",
@@ -12,12 +14,16 @@ export default class RegisterScreen extends React.Component {
     };
 
     handleSignUp = () => {
-        const auth = getAuth();
+        const auth = FIREBASE_AUTH;
         createUserWithEmailAndPassword(auth, this.state.email, this.state.password)
         .then(userCredentials => {
-            return userCredentials.user.updateProfile({
-                displayName: this.state.name
-            });
+            try {
+                setDoc(doc(FIRESTORE_DB, "users", userCredentials.user.uid), {name: this.state.name, email: this.state.email})
+                
+                console.log('User data saved successfully');
+              } catch (error) {
+                console.error('Error saving user data: ', error);
+              }
         })
         .catch(error => this.setState({ errorMessage: error.message }))
     };

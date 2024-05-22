@@ -1,6 +1,7 @@
 import React from "react";
 import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { FIREBASE_AUTH } from "../FirebaseConfig";
  
 
 export default class LoginScreen extends React.Component {
@@ -12,7 +13,7 @@ export default class LoginScreen extends React.Component {
 
     handleLogin = () => {
         const {email, password} = this.state;
-        const auth = getAuth();
+        const auth = FIREBASE_AUTH;
         signInWithEmailAndPassword(auth, email, password).catch(error => this.setState({errorMessage: error.message}));
         
     };

@@ -1,15 +1,7 @@
 import React from "react";
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
-import { getAuth } from "firebase/auth";
 
-export default class SettingScreen extends React.Component {
-    /*
-    signOutUser = () => {
-        const auth = getAuth(); 
-        auth.signOut();
-    };
-    */
-    
+export default class SettingScreen extends React.Component {    
     render() {
         return (
             <View style={styles.container}>

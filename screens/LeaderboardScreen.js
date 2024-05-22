@@ -1,18 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { getAuth } from "firebase/auth";
 
-export default class LeaderboardScreen extends React.Component {
-    /*
-    componentDidMount() {
-        const auth = getAuth()
-        auth.onAuthStateChanged(user => {
-            this.props.navigation.navigate(user ? "App" : "Auth");
-        });
-    }
-    */
-    
+export default class LeaderboardScreen extends React.Component {  
     render() {
         return (
             <View style={styles.container}>
