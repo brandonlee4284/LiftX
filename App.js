@@ -14,6 +14,8 @@ import LeaderboardScreen from './screens/LeaderboardScreen'
 import ProfileScreen from './screens/ProfileScreen';
 import RecordScreen from './screens/RecordScreen';
 import WorkoutScreen from './screens/WorkoutScreen';
+import ProfileEditScreen from './screens/ProfileEditScreen';
+import SettingScreen from './screens/SettingScreen';
 
 import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
@@ -44,6 +46,8 @@ function AppTabNavigator() {
             iconName = 'podium-outline';
           } else if (route.name === 'Record') {
             iconName = 'add-circle-outline';
+          } else if (route.name === 'Profile') {
+            iconName = 'person-circle-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -59,14 +63,15 @@ function AppTabNavigator() {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Record" component={RecordScreen} />
       <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
 
-function ProfileStack() {
+function ProfileEditStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="Edit Profile" component={ProfileEditScreen} />
     </Stack.Navigator>
   );
 }
@@ -74,11 +79,18 @@ function ProfileStack() {
 function WorkoutStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Workout" component={WorkoutScreen} />
+      <Stack.Screen name="Workout Activity" component={WorkoutScreen} />
     </Stack.Navigator>
   );
 }
 
+function SettingStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Settings" component={SettingScreen} />
+    </Stack.Navigator>
+  );
+}
 
 function AuthNavigator() {
   return (
@@ -109,8 +121,9 @@ function RootNavigator() {
       {user ? (
         <>
           <RootStack.Screen name="App" component={AppTabNavigator} user={user}/>
-          <RootStack.Screen name="Profile" component={ProfileStack} user={user}/>
+          <RootStack.Screen name="ProfileEdit" component={ProfileEditStack} user={user}/>
           <RootStack.Screen name="Workout" component={WorkoutStack} user={user}/>
+          <RootStack.Screen name="Setting" component={SettingStack} user={user}/>
         </>  
       ) : (
         <RootStack.Screen name="Auth" component={AuthNavigator} />

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ActivityIndicator, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 export default class LeaderboardScreen extends React.Component {  
@@ -15,16 +15,17 @@ export default class LeaderboardScreen extends React.Component {
                         <TouchableOpacity onPress={() => console.log('Messages pressed')}>
                             <Ionicons name="chatbubble-ellipses-outline" size={28} color="black" style={styles.profileIcon} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Profile')}>
-                            <Ionicons name="person-circle-outline" size={28} color="black" style={styles.profileIcon} />
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Setting')}>
+                            <Ionicons name="settings-outline" size={28} color="black" style={styles.profileIcon} />
                         </TouchableOpacity>
                     </View>
                 </View>
-
-                <View style={styles.body}>
-                    <Text>Loading...</Text>
-                    <ActivityIndicator></ActivityIndicator>
-                </View>
+                <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                    <View style={styles.body}>
+                        <Text>Loading...</Text>
+                        <ActivityIndicator></ActivityIndicator>
+                    </View>
+                </ScrollView>
             </View>
         );
     }
@@ -35,6 +36,9 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         paddingTop: 50
+    },
+    scrollContent: {
+        minWidth: '100%', 
     },
     topBar: {
         flexDirection: 'row',
