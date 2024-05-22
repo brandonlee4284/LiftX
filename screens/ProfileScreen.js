@@ -11,16 +11,6 @@ export default class ProfileScreen extends React.Component {
         profilePicture: "https://via.placeholder.com/150", // Placeholder image
         friendsCount: 9, // Placeholder number of friends
 
-        Stats: {
-            Squat: 315,
-            Bench: 225,
-            DeadLift: 405
-        }
-
-        splits = {
-            PPL: [{}]
-        }
-
 
         gymStats: [
             { exercise: "Squat", stats: "315x1" },
