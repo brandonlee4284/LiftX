@@ -1,23 +1,19 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, Alert, ScrollView } from 'react-native';
-import { getAuth } from "firebase/auth";
-import { FIREBASE_AUTH } from "../FirebaseConfig";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-export default class ProfileEditScreen extends React.Component {
-    state = {
-        bio: "",
-        profilePicture: null,
-    };
+const ProfileEditScreen = ({ navigation }) => {
+    const [bio, setBio] = useState("");
+    const [profilePicture, setProfilePicture] = useState(null);
 
     // Function to handle saving the profile
-    saveProfile = () => {
+    const saveProfile = () => {
         // Save profile logic here
-        this.props.navigation.navigate("Profile");
+        navigation.navigate("Profile");
     };
 
     // Function to handle picking an image from photo album
-    pickImage = async () => {
+    const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
@@ -26,43 +22,39 @@ export default class ProfileEditScreen extends React.Component {
         });
 
         if (!result.canceled) {
-            this.setState({ profilePicture: result.uri });
+            setProfilePicture(result.uri);
         }
     };
 
-    render() {
-        const { bio, profilePicture } = this.state;
+    return (
+        <View style={styles.container}>
+            <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                <View style={styles.body}>
+                    <TouchableOpacity onPress={pickImage}>
+                        {profilePicture ? (
+                            <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+                        ) : (
+                            <Text style={styles.addPictureText}>Upload Profile Picture</Text>
+                        )}
+                    </TouchableOpacity>
 
-        return (
-            <View style={styles.container}>
-                <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                    <View style={styles.body}>
-                        <TouchableOpacity onPress={this.pickImage}>
-                            {profilePicture ? (
-                                <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
-                            ) : (
-                                <Text style={styles.addPictureText}>Upload Profile Picture</Text>
-                            )}
-                        </TouchableOpacity>
+                    <Text style={styles.bioTitle}>Bio:</Text>
+                    <TextInput
+                        style={styles.bioInput}
+                        placeholder="Enter your bio"
+                        onChangeText={setBio}
+                        value={bio}
+                        multiline
+                    />
 
-                        <Text style={styles.bioTitle}>Bio:</Text>
-                        <TextInput
-                            style={styles.bioInput}
-                            placeholder="Enter your bio"
-                            onChangeText={(text) => this.setState({ bio: text })}
-                            value={bio}
-                            multiline
-                        />
-
-                        <TouchableOpacity style={styles.saveButton} onPress={this.saveProfile}>
-                            <Text style={styles.saveButtonText}>Save</Text>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
-            </View>
-        );
-    }
-}
+                    <TouchableOpacity style={styles.saveButton} onPress={saveProfile}>
+                        <Text style={styles.saveButtonText}>Save</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -76,7 +68,7 @@ const styles = StyleSheet.create({
         marginTop: 50
     },
     scrollContent: {
-        minWidth: '100%', 
+        minWidth: '100%',
     },
     profilePicture: {
         width: 150,
@@ -88,9 +80,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "black"
     },
-    bioTitle :{
-        justifyContent: "left",
-        fontWeight: 'bold'
+    bioTitle: {
+        alignSelf: "flex-start",
+        fontWeight: 'bold',
+        marginBottom: 10
     },
     bioInput: {
         width: '100%',
@@ -112,3 +105,5 @@ const styles = StyleSheet.create({
         fontSize: 16
     }
 });
+
+export default ProfileEditScreen;

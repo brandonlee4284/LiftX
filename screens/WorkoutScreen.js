@@ -1,21 +1,18 @@
 import React from "react";
-import {View, Text, StyleSheet, ActivityIndicator, ScrollView} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 
-export default class WorkoutScreen extends React.Component {
-    
-    render() {
-        return (
-            <View style={styles.container}>
-                <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                    <View style={styles.body}>
-                        <Text>Loading...</Text>
-                        <ActivityIndicator></ActivityIndicator>
-                    </View>
-                </ScrollView>
-            </View>
-        );
-    }
-}
+const WorkoutScreen = () => {
+    return (
+        <View style={styles.container}>
+            <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                <View style={styles.body}>
+                    <Text>Loading...</Text>
+                    <ActivityIndicator />
+                </View>
+            </ScrollView>
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -24,10 +21,12 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     scrollContent: {
-        minWidth: '100%', // Ensure content extends horizontally
+        minWidth: '100%',
     },
     body: {
         alignItems: "center",
         marginTop: 50
     },
 });
+
+export default WorkoutScreen;

@@ -1,61 +1,54 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ScrollView } from 'react-native';
 import { getAuth } from "firebase/auth";
 import { Ionicons } from '@expo/vector-icons';
 
-export default class HomeScreen extends React.Component {
-    state = {
-        email: "",
-        displayName: ""
-    };
+const HomeScreen = ({ navigation }) => {
+    const [email, setEmail] = useState("");
+    const [displayName, setDisplayName] = useState("");
 
-    componentDidMount() {
+    useEffect(() => {
         const auth = getAuth();
         const { email, displayName } = auth.currentUser;
-        this.setState({ email, displayName });
-    }
+        setEmail(email);
+        setDisplayName(displayName);
+    }, []);
 
-   
+    useEffect(() => {
+        LayoutAnimation.easeInEaseOut();
+    }, []);
 
-    handleWorkoutButtonPress = () => {
-        this.props.navigation.navigate('Workout');
+    const handleWorkoutButtonPress = () => {
+        navigation.navigate('Workout');
     };
 
-    render() {
-        LayoutAnimation.easeInEaseOut();
-        return (
-            <View style={styles.container}>
-                <View style={styles.topBar}>
-                    <Text style={styles.title}>LiftX</Text>
-                    <View style={styles.iconContainer}>
-                        <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                            <Ionicons name="person-add-outline" size={28} color="black" style={styles.profileIcon} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                            <Ionicons name="chatbubble-ellipses-outline" size={28} color="black" style={styles.profileIcon} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Setting')}>
-                            <Ionicons name="settings-outline" size={28} color="black" style={styles.profileIcon} />
-                        </TouchableOpacity>
-                    
-                    </View>
+    return (
+        <View style={styles.container}>
+            <View style={styles.topBar}>
+                <Text style={styles.title}>LiftX</Text>
+                <View style={styles.iconContainer}>
+                    <TouchableOpacity onPress={() => console.log('Messages pressed')}>
+                        <Ionicons name="person-add-outline" size={28} color="black" style={styles.profileIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => console.log('Messages pressed')}>
+                        <Ionicons name="chatbubble-ellipses-outline" size={28} color="black" style={styles.profileIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
+                        <Ionicons name="settings-outline" size={28} color="black" style={styles.profileIcon} />
+                    </TouchableOpacity>
                 </View>
-                <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                    <View style={styles.body}>
-                        <Text style={styles.welcomeMessage}>Welcome Back {this.state.email}!</Text>
-
-                        <TouchableOpacity style={styles.button} onPress={this.handleWorkoutButtonPress}>
-                            <Text style={{ color: "white" }}>Start Today's Workout</Text>
-                        </TouchableOpacity>
-                    
-                        
-                    </View>
-                </ScrollView>
-
             </View>
-        );
-    }
-}
+            <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                <View style={styles.body}>
+                    <Text style={styles.welcomeMessage}>Welcome Back {email}!</Text>
+                    <TouchableOpacity style={styles.button} onPress={handleWorkoutButtonPress}>
+                        <Text style={{ color: "white" }}>Start Today's Workout</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -102,3 +95,5 @@ const styles = StyleSheet.create({
         width: 300
     }
 });
+
+export default HomeScreen;

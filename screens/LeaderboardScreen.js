@@ -2,34 +2,36 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ActivityIndicator, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export default class LeaderboardScreen extends React.Component {  
-    render() {
-        return (
-            <View style={styles.container}>
-                <View style={styles.topBar}>
-                    <Text style={styles.title}>LiftX</Text>
-                    <View style={styles.iconContainer}>
-                        <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                            <Ionicons name="person-add-outline" size={28} color="black" style={styles.profileIcon} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                            <Ionicons name="chatbubble-ellipses-outline" size={28} color="black" style={styles.profileIcon} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Setting')}>
-                            <Ionicons name="settings-outline" size={28} color="black" style={styles.profileIcon} />
-                        </TouchableOpacity>
-                    </View>
+const LeaderboardScreen = ({ navigation }) => {
+    React.useEffect(() => {
+        LayoutAnimation.easeInEaseOut();
+    }, []);
+
+    return (
+        <View style={styles.container}>
+            <View style={styles.topBar}>
+                <Text style={styles.title}>LiftX</Text>
+                <View style={styles.iconContainer}>
+                    <TouchableOpacity onPress={() => console.log('Messages pressed')}>
+                        <Ionicons name="person-add-outline" size={28} color="black" style={styles.profileIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => console.log('Messages pressed')}>
+                        <Ionicons name="chatbubble-ellipses-outline" size={28} color="black" style={styles.profileIcon} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
+                        <Ionicons name="settings-outline" size={28} color="black" style={styles.profileIcon} />
+                    </TouchableOpacity>
                 </View>
-                <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                    <View style={styles.body}>
-                        <Text>Loading...</Text>
-                        <ActivityIndicator></ActivityIndicator>
-                    </View>
-                </ScrollView>
             </View>
-        );
-    }
-}
+            <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                <View style={styles.body}>
+                    <Text>Loading...</Text>
+                    <ActivityIndicator />
+                </View>
+            </ScrollView>
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
         paddingTop: 50
     },
     scrollContent: {
-        minWidth: '100%', 
+        minWidth: '100%',
     },
     topBar: {
         flexDirection: 'row',
@@ -64,3 +66,5 @@ const styles = StyleSheet.create({
         marginLeft: 15
     },
 });
+
+export default LeaderboardScreen;

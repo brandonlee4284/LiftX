@@ -1,105 +1,104 @@
-import React from "react";
-import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../FirebaseConfig";
-import { doc, setDoc } from "firebase/firestore"; 
-import { addDoc } from "firebase/firestore";
- 
-export default class RegisterScreen extends React.Component {
-    state = {
-        name: "",
-        email: "",
-        password: "",
-        errorMessage: null
-    };
+import { doc, setDoc } from "firebase/firestore";
 
-    handleSignUp = () => {
+const RegisterScreen = ({ navigation }) => {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState(null);
+
+    const handleSignUp = () => {
         const auth = FIREBASE_AUTH;
-        createUserWithEmailAndPassword(auth, this.state.email, this.state.password)
-        .then(userCredentials => {
-            try {
-                setDoc(doc(FIRESTORE_DB, "users", userCredentials.user.uid), {
-                    name: this.state.name,
-                    email: this.state.email,
-                    bio: "This is a sample bio.", // Placeholder bio
-                    profilePicture: "https://via.placeholder.com/150", // Placeholder image
-                    friends: {},
-                    displayStats: {},
-                    activeSplit: [],
-                })
+        createUserWithEmailAndPassword(auth, email, password)
+            .then(userCredentials => {
+                const user = userCredentials.user;
+                try {
+                    const userDocRef = doc(FIRESTORE_DB, "users", user.uid);
+                    setDoc(userDocRef, {
+                        name,
+                        email,
+                        bio: "This is a sample bio.", // Placeholder bio
+                        profilePicture: "https://via.placeholder.com/150", // Placeholder image
+                        numFriends: 0,
+                        friends: {},
+                        displayStats: { bench: "135" },
+                        activeSplit: { PPL: [{ name: "bench", volume: "4x12", weight: "135" }] },
+                        privateMode: false,
+                    });
 
-                setDoc(doc(FIRESTORE_DB, "users", userCredentials.user.uid), {
-                    name: this.state.name,
-                    email: this.state.email,
-                    bio: "This is a sample bio.", // Placeholder bio
-                    profilePicture: "https://via.placeholder.com/150", // Placeholder image
-                    friends: {},
-                    displayStats: {},
-                    activeSplit: [],
-                })
-                
-                console.log('User data saved successfully');
-              } catch (error) {
-                console.error('Error saving user data: ', error);
-              }
-        })
-        .catch(error => this.setState({ errorMessage: error.message }))
+                    const privateDataDocRef = doc(userDocRef, "userData", "data");
+                    setDoc(privateDataDocRef, {
+                        splits: { PPL: [{ name: "bench", volume: "4x12", weight: "135" }] },
+                        activeSplitName: "PPL",
+                        hiddenStats: { bench: { "2021-01-01": 135 } },
+                    });
+
+                    console.log('User data saved successfully');
+                    navigation.navigate('Home');
+                } catch (error) {
+                    console.error('Error saving user data: ', error);
+                }
+            })
+            .catch(error => setErrorMessage(error.message));
     };
 
-    render() {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.greeting}>Welcome to LiftX!</Text>
+    return (
+        <View style={styles.container}>
+            <Text style={styles.greeting}>Welcome to LiftX!</Text>
 
-                <View style={styles.errorMessage}>
-                    {this.state.errorMessage && <Text style={styles.errorMessage}>{this.state.errorMessage}</Text>}
+            <View style={styles.errorMessage}>
+                {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+            </View>
+
+            <View style={styles.form}>
+                <View>
+                    <Text style={styles.inputTitle}>Full Name</Text>
+                    <TextInput
+                        style={styles.input}
+                        autoCapitalize="none"
+                        onChangeText={setName}
+                        value={name}
+                    />
                 </View>
 
-                <View style={styles.form}>  
-                    <View>
-                        <Text style={styles.inputTitle}>Full Name</Text>
-                        <TextInput 
-                            style={styles.input} 
-                            autoCapitalize="none"
-                            onChangeText={name => this.setState({ name })}
-                            value={this.state.name}
-                        ></TextInput>
-                    </View>
-
-                    <View style={{marginTop: 32}}>
-                        <Text style={styles.inputTitle}>Email Address</Text>
-                        <TextInput 
-                            style={styles.input} 
-                            autoCapitalize="none"
-                            onChangeText={email => this.setState({ email })}
-                            value={this.state.email}
-                        ></TextInput>
-                    </View>
-
-                    <View style={{marginTop: 32}}>
-                        <Text style={styles.inputTitle}>Password</Text>
-                        <TextInput 
-                                style={styles.input} secureTextEntry autoCapitalize="none"
-                                onChangeText={password => this.setState({ password })}
-                                value={this.state.password}
-                        ></TextInput>
-                    </View>
+                <View style={{ marginTop: 32 }}>
+                    <Text style={styles.inputTitle}>Email Address</Text>
+                    <TextInput
+                        style={styles.input}
+                        autoCapitalize="none"
+                        onChangeText={setEmail}
+                        value={email}
+                    />
                 </View>
 
-                <TouchableOpacity style={styles.loginButton} onPress={this.handleSignUp}>
-                    <Text style={{ color: "white" }}>Sign Up</Text>
-                </TouchableOpacity>
+                <View style={{ marginTop: 32 }}>
+                    <Text style={styles.inputTitle}>Password</Text>
+                    <TextInput
+                        style={styles.input}
+                        secureTextEntry
+                        autoCapitalize="none"
+                        onChangeText={setPassword}
+                        value={password}
+                    />
+                </View>
+            </View>
 
-                <TouchableOpacity style={{ alignSelf: "center", marginTop: 32}}>
-                    <Text style={{ color : "#414959", fontSize: 13}}>
-                        Already a member of LiftX? 
-                        <Text style={{ fontWeight: "500", color: "black" }} onPress={() => this.props.navigation.navigate("Login")}> Login</Text>
-                    </Text>
-                </TouchableOpacity>
-            </View>   
-        );
-    }
-}
+            <TouchableOpacity style={styles.loginButton} onPress={handleSignUp}>
+                <Text style={{ color: "white" }}>Sign Up</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }}>
+                <Text style={{ color: "#414959", fontSize: 13 }}>
+                    Already a member of LiftX?
+                    <Text style={{ fontWeight: "500", color: "black" }} onPress={() => navigation.navigate("Login")}> Login</Text>
+                </Text>
+            </TouchableOpacity>
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -107,7 +106,7 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     greeting: {
-        marginTop:32,
+        marginTop: 32,
         fontSize: 18,
         fontWeight: "400",
         textAlign: "center"
@@ -150,3 +149,5 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     }
 });
+
+export default RegisterScreen;

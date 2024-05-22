@@ -1,67 +1,63 @@
-import React from "react";
-import {View, Text, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
- 
 
-export default class LoginScreen extends React.Component {
-    state = {
-        email: "",
-        password: "",
-        errorMessage: null
-    };
+const LoginScreen = ({ navigation }) => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState(null);
 
-    handleLogin = () => {
-        const {email, password} = this.state;
+    const handleLogin = () => {
         const auth = FIREBASE_AUTH;
-        signInWithEmailAndPassword(auth, email, password).catch(error => this.setState({errorMessage: error.message}));
-        
+        signInWithEmailAndPassword(auth, email, password)
+            .catch(error => setErrorMessage(error.message));
     };
 
-    render() {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.greeting}>LiftX Login</Text>
+    return (
+        <View style={styles.container}>
+            <Text style={styles.greeting}>LiftX Login</Text>
 
-                <View style={styles.errorMessage}>
-                    {this.state.errorMessage && <Text style={styles.errorMessage}>{this.state.errorMessage}</Text>}
+            <View style={styles.errorMessage}>
+                {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+            </View>
+
+            <View style={styles.form}>
+                <View>
+                    <Text style={styles.inputTitle}>Email Address</Text>
+                    <TextInput
+                        style={styles.input}
+                        autoCapitalize="none"
+                        onChangeText={setEmail}
+                        value={email}
+                    />
                 </View>
 
-                <View style={styles.form}>
-                    <View>
-                        <Text style={styles.inputTitle}>Email Address</Text>
-                        <TextInput 
-                            style={styles.input} 
-                            autoCapitalize="none"
-                            onChangeText={email => this.setState({ email })}
-                            value={this.state.email}
-                        ></TextInput>
-                    </View>
-
-                    <View style={{marginTop: 32}}>
-                        <Text style={styles.inputTitle}>Password</Text>
-                        <TextInput 
-                                style={styles.input} secureTextEntry autoCapitalize="none"
-                                onChangeText={password => this.setState({ password })}
-                                value={this.state.password}
-                        ></TextInput>
-                    </View>
+                <View style={{ marginTop: 32 }}>
+                    <Text style={styles.inputTitle}>Password</Text>
+                    <TextInput
+                        style={styles.input}
+                        secureTextEntry
+                        autoCapitalize="none"
+                        onChangeText={setPassword}
+                        value={password}
+                    />
                 </View>
+            </View>
 
-                <TouchableOpacity style={styles.loginButton} onPress={this.handleLogin}>
-                    <Text style={{ color: "white" }}>Sign In</Text>
-                </TouchableOpacity>
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <Text style={{ color: "white" }}>Sign In</Text>
+            </TouchableOpacity>
 
-                <TouchableOpacity style={{ alignSelf: "center", marginTop: 32}}>
-                    <Text style={{ color : "#414959", fontSize: 13}}>
-                        New to LiftX? 
-                        <Text style={{ fontWeight: "500", color: "black" }} onPress={() => this.props.navigation.navigate("Register")}> Sign Up</Text>
-                    </Text>
-                </TouchableOpacity>
-            </View>   
-        );
-    }
-}
+            <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }}>
+                <Text style={{ color: "#414959", fontSize: 13 }}>
+                    New to LiftX?
+                    <Text style={{ fontWeight: "500", color: "black" }} onPress={() => navigation.navigate("Register")}> Sign Up</Text>
+                </Text>
+            </TouchableOpacity>
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -69,7 +65,7 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     },
     greeting: {
-        marginTop:32,
+        marginTop: 32,
         fontSize: 26,
         fontWeight: "bold",
         textAlign: "center",
@@ -112,3 +108,5 @@ const styles = StyleSheet.create({
         justifyContent: "center"
     }
 });
+
+export default LoginScreen;

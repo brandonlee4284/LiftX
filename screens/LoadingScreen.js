@@ -1,16 +1,14 @@
 import React from "react";
-import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 
-export default class LoadingScreen extends React.Component {    
-    render() {
-        return (
-            <View style={styles.container}>
-                <Text>Loading...</Text>
-                <ActivityIndicator></ActivityIndicator>
-            </View>
-        );
-    }
-}
+const LoadingScreen = () => {
+    return (
+        <View style={styles.container}>
+            <Text>Loading...</Text>
+            <ActivityIndicator />
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -19,3 +17,5 @@ const styles = StyleSheet.create({
         alignItems: "center"
     }
 });
+
+export default LoadingScreen;
