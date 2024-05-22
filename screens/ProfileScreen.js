@@ -48,10 +48,6 @@ const ProfileScreen = ({ navigation }) => {
     fetchPrivateUserData();
   }, []);
 
-  const editProfile = () => {
-    Alert.alert("Edit Profile", "This will allow the user to edit their profile picture and bio.");
-  };
-
   const renderExerciseCard = (day, exercises) => {
     const dayNames = {
       M: "Monday",
@@ -76,10 +72,21 @@ const ProfileScreen = ({ navigation }) => {
     );
   };
 
-  const { workoutSplit, gymStats, bio, profilePicture, displayName, email, friendsCount } = publicUserData;
+  let { workoutSplit, gymStats, bio, profilePicture, displayName, email, friendsCount } = publicUserData;
+  console.log('Public User Data:', publicUserData.displayStats);
+  //workoutSplit = publicUserData.activeSplit
+  //gymStats = publicUserData.displayStats
+  bio = publicUserData.bio
+  profilePicture = publicUserData.profilePicture
+  displayName = publicUserData.name
+  email = publicUserData.email
+  friendsCount = publicUserData.numFriends
+  
+
 
   return (
     <View style={styles.container}>
+
       <View style={styles.topBar}>
         <Text style={styles.title}>LiftX</Text>
         <View style={styles.iconContainer}>
@@ -94,9 +101,14 @@ const ProfileScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
+
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.body}>
-          <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+            {profilePicture ? (
+                <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+            ) : (
+                <Ionicons name="person-circle" size={150} color="gray" style={styles.profileIcon} />
+            )}
           <Text style={styles.displayName}>{displayName}</Text>
           <Text style={styles.email}>{email}</Text>
           <Text style={styles.friendsCount}>
@@ -117,10 +129,10 @@ const ProfileScreen = ({ navigation }) => {
 
           <View style={styles.statsContainer}>
             <Text style={styles.statsHeader}>Gym Stats</Text>
-            {gymStats && gymStats.map((item, index) => (
+            {publicUserData.displayStats && Object.entries(publicUserData.displayStats).map(([exercise, stats], index) => (
               <View key={index} style={styles.statItem}>
-                <Text style={styles.statExercise}>{item.exercise}</Text>
-                <Text style={styles.statValue}>{item.stats}</Text>
+                <Text style={styles.statExercise}>{exercise}</Text>
+                <Text style={styles.statValue}>{stats}</Text>
               </View>
             ))}
           </View>
