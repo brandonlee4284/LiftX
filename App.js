@@ -47,8 +47,6 @@ const RootStack = createStackNavigator();
 
 const Stack = createStackNavigator();
 
-
-
 function AppTabNavigator() {
   return (
     <Tab.Navigator

@@ -69,9 +69,9 @@ const styles = StyleSheet.create({
     },
     greeting: {
         marginTop:32,
-        fontSize: 18,
-        fontWeight: "400",
-        textAlign: "center"
+        fontSize: 26,
+        fontWeight: "bold",
+        textAlign: "center",
     },
     errorMessage: {
         height: 70,
