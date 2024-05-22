@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ScrollView } from 'react-native';
 import { getAuth } from "firebase/auth";
 import { Ionicons } from '@expo/vector-icons';
 
@@ -34,21 +34,24 @@ export default class HomeScreen extends React.Component {
                         <TouchableOpacity onPress={() => console.log('Messages pressed')}>
                             <Ionicons name="chatbubble-ellipses-outline" size={28} color="black" style={styles.profileIcon} />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Profile')}>
-                            <Ionicons name="person-circle-outline" size={28} color="black" style={styles.profileIcon} />
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('Setting')}>
+                            <Ionicons name="settings-outline" size={28} color="black" style={styles.profileIcon} />
                         </TouchableOpacity>
+                    
                     </View>
                 </View>
+                <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                    <View style={styles.body}>
+                        <Text style={styles.welcomeMessage}>Welcome Back {this.state.email}!</Text>
 
-                <View style={styles.body}>
-                    <Text style={styles.welcomeMessage}>Welcome Back {this.state.email}!</Text>
-
-                    <TouchableOpacity style={styles.button} onPress={this.handleWorkoutButtonPress}>
-                        <Text style={{ color: "white" }}>Start Today's Workout</Text>
-                    </TouchableOpacity>
-
+                        <TouchableOpacity style={styles.button} onPress={this.handleWorkoutButtonPress}>
+                            <Text style={{ color: "white" }}>Start Today's Workout</Text>
+                        </TouchableOpacity>
                     
-                </View>
+                        
+                    </View>
+                </ScrollView>
+
             </View>
         );
     }
@@ -59,6 +62,9 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         paddingTop: 50
+    },
+    scrollContent: {
+        minWidth: '100%',
     },
     topBar: {
         flexDirection: 'row',

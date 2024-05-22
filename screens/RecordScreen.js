@@ -1,11 +1,12 @@
+
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, SafeAreaView, Button, Image, ActivityIndicator, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Button, Image, TouchableOpacity } from 'react-native';
 import { Camera, CameraView } from 'expo-camera';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
-import { Ionicons } from "@expo/vector-icons";
-
+import { Ionicons } from '@expo/vector-icons';
+import { Video } from 'expo-av';
 
 export default class RecordScreen extends React.Component {
   constructor(props) {
@@ -14,7 +15,10 @@ export default class RecordScreen extends React.Component {
     this.state = {
       hasCameraPermission: null,
       hasMediaLibraryPermission: null,
-      photo: null
+      photo: null,
+      video: null,
+      isRecording: false,
+      mode: 'photo'
     };
   }
 
@@ -39,19 +43,38 @@ export default class RecordScreen extends React.Component {
     };
 
     const newPhoto = await this.cameraRef.current.takePictureAsync(options);
-    this.setState({ photo: newPhoto });
+    this.setState({ photo: newPhoto, video: null });
   };
 
-  sharePic = () => {
-    shareAsync(this.state.photo.uri).then(() => {
-      this.setState({ photo: null });
+  startRecording = async () => {
+    if (this.cameraRef.current) {
+      this.setState({ isRecording: true });
+      const video = await this.cameraRef.current.recordAsync();
+      this.setState({ video, isRecording: false });
+    }
+  };
+
+  stopRecording = () => {
+    if (this.cameraRef.current && this.state.isRecording) {
+      this.cameraRef.current.stopRecording();
+      this.setState({ isRecording: false });
+    }
+  };
+
+  shareMedia = (uri) => {
+    shareAsync(uri).then(() => {
+      this.setState({ photo: null, video: null });
     });
   };
 
-  savePhoto = () => {
-    MediaLibrary.saveToLibraryAsync(this.state.photo.uri).then(() => {
-      this.setState({ photo: null });
+  saveMedia = (uri) => {
+    MediaLibrary.saveToLibraryAsync(uri).then(() => {
+      this.setState({ photo: null, video: null });
     });
+  };
+
+  discardMedia = () => {
+    this.setState({ photo: null, video: null });
   };
 
   openGallery = async () => {
@@ -63,8 +86,25 @@ export default class RecordScreen extends React.Component {
     }
   };
 
+  toggleMode = (mode) => {
+    this.setState({ mode });
+  };
+
+  handleCaptureButtonPress = () => {
+    const { mode, isRecording } = this.state;
+    if (mode === 'photo') {
+      this.takePic();
+    } else if (mode === 'video') {
+      if (isRecording) {
+        this.stopRecording();
+      } else {
+        this.startRecording();
+      }
+    }
+  };
+
   render() {
-    const { hasCameraPermission, hasMediaLibraryPermission, photo } = this.state;
+    const { hasCameraPermission, hasMediaLibraryPermission, photo, video, isRecording, mode } = this.state;
 
     if (hasCameraPermission === null) {
       return <Text>Requesting permissions...</Text>;
@@ -72,27 +112,62 @@ export default class RecordScreen extends React.Component {
       return <Text>Permission for camera not granted. Please change this in settings.</Text>;
     }
 
-    if (photo) {
+    const mediaUri = photo ? photo.uri : video ? video.uri : null;
+
+    if (photo || video) {
       return (
         <SafeAreaView style={styles.container}>
-          <Image style={styles.preview} source={{ uri: "data:image/jpg;base64," + photo.base64 }} />
-          <Button title="Share" onPress={this.sharePic} />
-          {hasMediaLibraryPermission ? <Button title="Save" onPress={this.savePhoto} /> : null}
-          <Button title="Discard" onPress={() => this.setState({ photo: null })} />
+          {photo ? (
+            <Image style={styles.preview} source={{ uri: mediaUri }} />
+          ) : (
+            <Video
+              source={{ uri: mediaUri }}
+              rate={1.0}
+              volume={1.0}
+              isMuted={false}
+              resizeMode="cover"
+              shouldPlay
+              isLooping
+              style={styles.preview}
+            />
+          )}
+          <Button title="Share" onPress={() => this.shareMedia(mediaUri)} />
+          {hasMediaLibraryPermission ? <Button title="Save" onPress={() => this.saveMedia(mediaUri)} /> : null}
+          <Button title="Discard" onPress={this.discardMedia} />
           <Button title="Open Gallery" onPress={this.openGallery} />
-         
         </SafeAreaView>
       );
     }
 
     return (
-        <CameraView style={styles.container} ref={this.cameraRef}>
-            <View>
-            <TouchableOpacity style={styles.takePicButton} onPress={this.takePic}>
-                <Ionicons name="radio-button-on-outline" size={70} color="white" />
-            </TouchableOpacity>
+      <View style={styles.container}>
+        <CameraView style={styles.camera} ref={this.cameraRef}>
+          <View style={styles.controlContainer}>
+            <View style={styles.modeButtonContainer}>
+              <TouchableOpacity onPress={() => this.toggleMode('photo')} style={styles.modeButton}>
+                <Text style={mode === 'photo' ? styles.activeModeText : styles.inactiveModeText}>Photo</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => this.toggleMode('video')} style={styles.modeButton}>
+                <Text style={mode === 'video' ? styles.activeModeText : styles.inactiveModeText}>Video</Text>
+              </TouchableOpacity>
             </View>
+            <View style={styles.controlContainer}>
+              {mode === 'photo' ? (
+                <TouchableOpacity style={styles.takePicButton} onPress={this.takePic}>
+                  <Ionicons name="radio-button-on" size={70} color="white" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={styles.takePicButton}
+                  onPress={this.handleCaptureButtonPress}
+                >
+                  <Ionicons name={isRecording ? "stop-circle" : "radio-button-on"} size={70} color="red" />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
         </CameraView>
+      </View>
     );
   }
 }
@@ -100,21 +175,37 @@ export default class RecordScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  camera: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  controlContainer: {
     alignItems: 'center',
+    marginBottom: 30,
+  },
+  modeButtonContainer: {
+    flexDirection: 'row',
     justifyContent: 'center',
+    marginBottom: 20,
+  },
+  modeButton: {
+    marginHorizontal: 20,
+  },
+  activeModeText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  inactiveModeText: {
+    fontSize: 18,
+    color: 'gray',
   },
   takePicButton: {
-    position: 'absolute',
-    bottom: -400,
-    width: 70,
-    height: 70,
-    //borderRadius: 35,
-    //backgroundColor: 'white',
     alignSelf: 'center',
-    zIndex: 1,
   },
   preview: {
     alignSelf: 'stretch',
-    flex: 1
-  }
+    flex: 1,
+  },
 });
