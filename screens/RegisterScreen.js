@@ -21,7 +21,7 @@ const RegisterScreen = ({ navigation }) => {
                         name,
                         email,
                         bio: "This is a sample bio.", // Placeholder bio
-                        profilePicture: "https://via.placeholder.com/150", // Placeholder image
+                        profilePicture: null, // Placeholder image
                         numFriends: 0,
                         friends: {},
                         displayStats: { bench: "135" },

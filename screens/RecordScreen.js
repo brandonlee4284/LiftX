@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView, Button, Image, TouchableOpacity } from 'react-native';
-import { Camera } from 'expo-camera';
+import { Camera, CameraView } from 'expo-camera';
 import { shareAsync } from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import { Ionicons } from '@expo/vector-icons';
@@ -128,7 +128,7 @@ const RecordScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Camera style={styles.camera} ref={cameraRef}>
+            <CameraView style={styles.camera} ref={cameraRef}>
                 <View style={styles.controlContainer}>
                     <View style={styles.modeButtonContainer}>
                         <TouchableOpacity onPress={() => setMode('photo')} style={styles.modeButton}>
@@ -150,7 +150,7 @@ const RecordScreen = ({ navigation }) => {
                         )}
                     </View>
                 </View>
-            </Camera>
+            </CameraView>
         </View>
     );
 };
