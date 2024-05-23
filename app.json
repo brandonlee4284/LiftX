@@ -12,13 +12,19 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.brandonlee4284.LiftX"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.brandonlee4284.LiftX"
     },
     "web": {
       "favicon": ""
@@ -33,6 +39,11 @@
         }
       ],
       "expo-video"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "79b62235-bc81-438a-b429-4d313e657217"
+      }
+    }
   }
 }
