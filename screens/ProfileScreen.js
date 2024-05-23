@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, ScrollView } from 'react-native';
-import { getAuth } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../FirebaseConfig";
 import { Ionicons } from "@expo/vector-icons";
