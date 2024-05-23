@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../FirebaseConfig";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
 
 const ProfileEditScreen = ({ navigation }) => {
@@ -36,19 +36,20 @@ const ProfileEditScreen = ({ navigation }) => {
         fetchPublicUserData();
     }, []);
 
-    const saveProfile = () => {
+    const saveProfile = async () => {
         // Save profile logic here
         const user = FIREBASE_AUTH.currentUser;
         const userDocRef = doc(FIRESTORE_DB, "users", user.uid);
-        updateDoc(userDocRef, {
-            username: username,
-            bio: bio, 
-            profilePicture: profilePicture,
-            name: displayName,
-            email: email,
-            activeSplit: activeSplit
-        });
-        navigation.navigate("Profile", { reload: true });
+        try {
+            await updateDoc(userDocRef, {
+                username: username,
+                bio: bio,
+                profilePicture: profilePicture
+            });
+            navigation.navigate("Profile", { reload: true });
+        } catch (error) {
+            console.error("Error updating document: ", error);
+        }
     };
 
     const pickImage = async () => {

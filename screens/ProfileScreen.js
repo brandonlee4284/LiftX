@@ -44,11 +44,19 @@ const ProfileScreen = ({ navigation, route }) => {
         }
     };
 
+    
     useEffect(() => {
-        fetchPublicUserData();
-        fetchPrivateUserData();
-    }, []);
+      fetchPublicUserData();
+      fetchPrivateUserData();
 
+      const unsubscribe = navigation.addListener('focus', () => {
+          fetchPublicUserData();
+          fetchPrivateUserData();
+      });
+
+      return unsubscribe;
+    }, [navigation]);
+    
     const renderExerciseCard = (day, exercises) => {
         const dayNames = {
             M: "Monday",
