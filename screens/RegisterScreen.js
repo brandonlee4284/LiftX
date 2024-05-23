@@ -143,7 +143,7 @@ const RegisterScreen = ({ navigation }) => {
                     />
                 </View>
 
-                <View>
+                <View style={{ marginTop: 32 }}>
                     <Text style={styles.inputTitle}>Username</Text>
                     <TextInput
                         style={styles.input}
