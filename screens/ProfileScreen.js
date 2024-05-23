@@ -71,7 +71,7 @@ const ProfileScreen = ({ navigation }) => {
     );
   };
 
-  let { workoutSplit, gymStats, bio, profilePicture, displayName, email, friendsCount } = publicUserData;
+  let { workoutSplit, gymStats, bio, profilePicture, displayName, username, email, friendsCount } = publicUserData;
   console.log('Public User Data:', publicUserData.displayStats);
   //workoutSplit = publicUserData.activeSplit
   //gymStats = publicUserData.displayStats
@@ -80,6 +80,7 @@ const ProfileScreen = ({ navigation }) => {
   displayName = publicUserData.name
   email = publicUserData.email
   friendsCount = publicUserData.numFriends
+  username = publicUserData.username
   
 
 
@@ -109,7 +110,7 @@ const ProfileScreen = ({ navigation }) => {
                 <Ionicons name="person-circle" size={150} color="gray" style={styles.profileIcon} />
             )}
           <Text style={styles.displayName}>{displayName}</Text>
-          <Text style={styles.email}>{email}</Text>
+          <Text style={styles.username}>@{username}</Text>
           <Text style={styles.friendsCount}>
             <Text style={styles.boldText}>{friendsCount}</Text> friends
           </Text>
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10
   },
-  email: {
+  username: {
     fontSize: 18,
     color: "gray",
     marginBottom: 5 

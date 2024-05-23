@@ -6,6 +6,7 @@ import { doc, setDoc } from "firebase/firestore";
 
 const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState("");
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState(null);
@@ -19,6 +20,7 @@ const RegisterScreen = ({ navigation }) => {
                     const userDocRef = doc(FIRESTORE_DB, "users", user.uid);
                     setDoc(userDocRef, {
                         name,
+                        username,
                         email,
                         bio: "This is a sample bio.", // Placeholder bio
                         profilePicture: null, // Placeholder image
@@ -61,6 +63,16 @@ const RegisterScreen = ({ navigation }) => {
                         autoCapitalize="none"
                         onChangeText={setName}
                         value={name}
+                    />
+                </View>
+
+                <View>
+                    <Text style={styles.inputTitle}>Username</Text>
+                    <TextInput
+                        style={styles.input}
+                        autoCapitalize="none"
+                        onChangeText={setUsername}
+                        value={username}
                     />
                 </View>
 
