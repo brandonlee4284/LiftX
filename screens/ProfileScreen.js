@@ -305,11 +305,13 @@ const styles = StyleSheet.create({
 
 export default ProfileScreen;
 */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { doc, getDoc } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../FirebaseConfig";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const ProfileScreen = ({ navigation, route }) => {
     const [publicUserData, setPublicUserData] = useState({});
@@ -349,18 +351,21 @@ const ProfileScreen = ({ navigation, route }) => {
         }
     };
 
-    useEffect(() => {
-        fetchPublicUserData();
-        fetchPrivateUserData();
-    }, []);
+    useFocusEffect(
+      useCallback(() => {
+          fetchPublicUserData();
+          fetchPrivateUserData();
+      }, [])
+    );
 
+    /*
     useEffect(() => {
         if (route.params?.reload) {
             fetchPublicUserData();
             fetchPrivateUserData();
         }
     }, [route.params?.reload]);
-
+*/
     const renderExerciseCard = (day, exercises) => {
         const dayNames = {
             M: "Monday",
