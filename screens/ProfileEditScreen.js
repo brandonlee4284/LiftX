@@ -1,162 +1,3 @@
-/*
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { FIREBASE_AUTH, FIRESTORE_DB } from "../FirebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
-
-const ProfileEditScreen = ({ navigation }) => {
-    const [bio, setBio] = useState("");
-    const [profilePicture, setProfilePicture] = useState(null);
-    const [publicUserData, setPublicUserData] = useState({});
-    const [privateUserData, setPrivateUserData] = useState({});
-
-  
-    useEffect(() => {
-        const fetchPublicUserData = async () => {
-            const user = FIREBASE_AUTH.currentUser;
-            if (user) {
-              const userDocRef = doc(FIRESTORE_DB, 'users', user.uid);
-              try {
-                const docData = await getDoc(userDocRef);
-                if (docData.exists()) {
-                  setPublicUserData(docData.data());
-                } else {
-                  console.log('No such document!');
-                }
-              } catch (error) {
-                console.error('Error fetching public data: ', error);
-              }
-            }
-          };
-      
-          const fetchPrivateUserData = async () => {
-            const user = FIREBASE_AUTH.currentUser;
-            if (user) {
-              const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'data');
-              try {
-                const docData = await getDoc(privateDataDocRef);
-                if (docData.exists()) {
-                  setPrivateUserData(docData.data());
-                } else {
-                  console.log('No such document!');
-                }
-              } catch (error) {
-                console.error('Error fetching private data: ', error);
-              }
-            }
-          };
-      
-          fetchPublicUserData();
-          fetchPrivateUserData();
-    }, []);
-
-    // Function to handle saving the profile
-    const saveProfile = () => {
-        // Save profile logic here
-        navigation.navigate("Profile");
-    };
-
-    // Function to handle picking an image from photo album
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setProfilePicture(result.uri);
-        }
-    };
-
-    let old_bio = publicUserData.bio;
-    let old_profilePicture = publicUserData.profilePicture
-    let old_username = publicUserData.username
-
-    return (
-        <View style={styles.container}>
-            <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                <View style={styles.body}>
-                    <TouchableOpacity onPress={pickImage}>
-                        {profilePicture ? (
-                            <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
-                        ) : (
-                            <Text style={styles.addPictureText}>Upload Profile Picture</Text>
-                        )}
-                    </TouchableOpacity>
-
-                    <Text style={styles.bioTitle}>Bio:</Text>
-                    <TextInput
-                        style={styles.bioInput}
-                        placeholder="Enter your bio"
-                        onChangeText={setBio}
-                        value={bio}
-                        multiline
-                    />
-
-                    <TouchableOpacity style={styles.saveButton} onPress={saveProfile}>
-                        <Text style={styles.saveButtonText}>Save</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-        </View>
-    );
-};
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 20
-    },
-    body: {
-        alignItems: "center",
-        marginTop: 50
-    },
-    scrollContent: {
-        minWidth: '100%',
-    },
-    profilePicture: {
-        width: 150,
-        height: 150,
-        borderRadius: 75,
-        marginBottom: 20
-    },
-    addPictureText: {
-        fontSize: 16,
-        color: "black"
-    },
-    bioTitle: {
-        alignSelf: "flex-start",
-        fontWeight: 'bold',
-        marginBottom: 10
-    },
-    bioInput: {
-        width: '100%',
-        height: 100,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 20
-    },
-    saveButton: {
-        backgroundColor: "black",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5
-    },
-    saveButtonText: {
-        color: "white",
-        fontSize: 16
-    }
-});
-
-export default ProfileEditScreen;
-*/
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -199,15 +40,12 @@ const ProfileEditScreen = ({ navigation }) => {
         // Save profile logic here
         const user = FIREBASE_AUTH.currentUser;
         const userDocRef = doc(FIRESTORE_DB, "users", user.uid);
-        setDoc(userDocRef, {
+        updateDoc(userDocRef, {
             username: username,
             bio: bio, 
             profilePicture: profilePicture,
             name: displayName,
             email: email,
-            numFriends: friendsCount,
-            friends: friends,
-            displayStats: displayStats,
             activeSplit: activeSplit
         });
         navigation.navigate("Profile", { reload: true });
@@ -228,10 +66,7 @@ const ProfileEditScreen = ({ navigation }) => {
     
     let displayName = publicUserData.name
     let email = publicUserData.email
-    let friendsCount = publicUserData.numFriends
     let activeSplit = publicUserData.activeSplit
-    let friends = publicUserData.friends
-    let displayStats = publicUserData.displayStats
 
     return (
         <View style={styles.container}>
