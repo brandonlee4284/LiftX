@@ -17,6 +17,8 @@ const SPLITS = [
   { id: '1', title: 'Upper Lower', days: ['Upper', 'Lower'] },
   { id: '2', title: 'PPL', days: ['Push', 'Pull', 'Legs'] },
   { id: '3', title: 'PPL Arnold', days: ['Chest', 'Back', 'Shoulders'] },
+  { id: '4', title: 'PPL Arnold1', days: ['Chest', 'Back', 'Shoulders'] },
+  { id: '5', title: 'PPL Arnold2', days: ['Chest', 'Back', 'Shoulders'] },
 ]; // Example splits and days
 
 const CardCarousel = () => {
@@ -126,3 +128,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
