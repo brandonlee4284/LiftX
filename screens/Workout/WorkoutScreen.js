@@ -1,12 +1,48 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
+import { getDoc, doc } from 'firebase/firestore';
+import { FIREBASE_AUTH, FIRESTORE_DB } from '../../FirebaseConfig';
+
 
 const { height, width } = Dimensions.get('window');
 
 const data = ['Split 1', 'Split 2', 'Split 3', 'Split 4', 'Split 5'];
 
 const WorkoutScreen = () => {
+    const [privateUserData, setPrivateUserData] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchPrivateUserData() {
+            const user = FIREBASE_AUTH.currentUser;
+            if (user) {
+                const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'data');
+                try {
+                    const docData = await getDoc(privateDataDocRef);
+                    if (docData.exists()) {
+                        setPrivateUserData(docData.data());
+                        console.log('Private data fetched: ', docData.data());
+
+                        setIsLoading(false)
+                    } else {
+                        console.log('No such document!');
+                    }
+                } catch (error) {
+                    console.error('Error fetching private data: ', error);
+                }
+            }
+        };
+
+        fetchPrivateUserData().then(
+            () => console.log(privateUserData),
+        );  
+    
+    
+    }, []);
+
+    
+    
     return (
         <View style={styles.container}>
             <Carousel
@@ -25,7 +61,7 @@ const WorkoutScreen = () => {
                             horizontal
                             loop={false}
                             width={width}
-                            height={height*.3}
+                            height={height * .3}
                             data={[{}, {}, {}]} // 3 empty cards
                             mode="parallax"
                             renderItem={() => (
@@ -72,7 +108,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: width,
-        height: height*0.3,
+        height: height * 0.3,
         backgroundColor: '#e0e0e0',
         borderColor: '#000',
         borderWidth: 1,

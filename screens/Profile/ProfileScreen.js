@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { doc, getDoc } from "firebase/firestore";
-import { FIREBASE_AUTH, FIRESTORE_DB } from "../FirebaseConfig";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from '@react-navigation/native';
 

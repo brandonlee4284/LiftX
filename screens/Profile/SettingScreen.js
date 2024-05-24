@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { FIREBASE_AUTH } from "../../FirebaseConfig";
 
 const SettingScreen = () => {
     const signOutUser = () => {

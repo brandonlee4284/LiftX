@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { FIREBASE_AUTH, FIRESTORE_DB } from "../FirebaseConfig";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
 import { doc, or, setDoc } from "firebase/firestore";
 
 const RegisterScreen = ({ navigation }) => {
