@@ -101,6 +101,7 @@ export default WorkoutScreen;
 import React from "react";
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
+import NestedCarousel from './NestedCarousel';
 
 const { width, height } = Dimensions.get('window');
 
@@ -122,40 +123,41 @@ const ITEM_HEIGHT = height / 3; // Ensure three items fit within the screen heig
 
 const WorkoutScreen = () => {
     return (
-        <View style={styles.container}>
-            <Carousel
-                vertical
-                width={width*1.2}
-                height={height}
-                loop
-                autoPlay={false}
-                data={splitsData}
-                scrollAnimationDuration={1000}
-                pagingEnabled={true}
-                mode="parallax"
-                parallaxScrollingScale={0.85}
-                parallaxScrollingOffset={70}
+        // <View style={styles.container}>
+        //     <Carousel
+        //         vertical
+        //         width={width*1.2}
+        //         height={height}
+        //         loop
+        //         autoPlay={false}
+        //         data={splitsData}
+        //         scrollAnimationDuration={1000}
+        //         pagingEnabled={true}
+        //         mode="parallax"
+        //         parallaxScrollingScale={0.85}
+        //         parallaxScrollingOffset={70}
             
-                renderItem={({ item, index, currentIndex }) => (
-                    <View style={[
-                        styles.splitContainer,
-                    ]}>
-                        <Text style={styles.sectionTitle}>{item.title}</Text>
-                        <Carousel
-                            loop
-                            width={width * 0.8}
-                            height={150}
-                            autoPlay={false}
-                            data={blankCardsData}
-                            scrollAnimationDuration={1000}
-                            renderItem={({ item }) => (
-                                <View style={styles.carouselItem} />
-                            )}
-                        />
-                    </View>
-                )}
-            />
-        </View>
+        //         renderItem={({ item, index, currentIndex }) => (
+        //             <View style={[
+        //                 styles.splitContainer,
+        //             ]}>
+        //                 <Text style={styles.sectionTitle}>{item.title}</Text>
+        //                 <Carousel
+        //                     loop
+        //                     width={width * 0.8}
+        //                     height={150}
+        //                     autoPlay={false}
+        //                     data={blankCardsData}
+        //                     scrollAnimationDuration={1000}
+        //                     renderItem={({ item }) => (
+        //                         <View style={styles.carouselItem} />
+        //                     )}
+        //                 />
+        //             </View>
+        //         )}
+        //     />
+        // </View>
+        <NestedCarousel />
     );
 };
 
