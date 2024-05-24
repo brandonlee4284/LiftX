@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
         alignSelf: "flex-start",
         fontWeight: 'bold',
         marginBottom: 10,
-        marginLeft: 10
+        marginLeft: 0
     },
     input: {
         width: '100%',
