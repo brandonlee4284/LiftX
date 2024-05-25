@@ -8,14 +8,14 @@ import { Ionicons } from "@expo/vector-icons";
 
 import LoadingScreen from './screens/LoadingScreen';
 import HomeScreen from './screens/HomeScreen';
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
-import LeaderboardScreen from './screens/LeaderboardScreen'
-import ProfileScreen from './screens/ProfileScreen';
-import RecordScreen from './screens/RecordScreen';
-import WorkoutScreen from './screens/WorkoutScreen';
-import ProfileEditScreen from './screens/ProfileEditScreen';
-import SettingScreen from './screens/SettingScreen';
+import LoginScreen from './screens/Auth/LoginScreen';
+import RegisterScreen from './screens/Auth/RegisterScreen';
+import LeaderboardScreen from './screens/Leaderboard/LeaderboardScreen'
+import ProfileScreen from './screens/Profile/ProfileScreen';
+import RecordScreen from './screens/Record/RecordScreen';
+import WorkoutScreen from './screens/Workout/WorkoutScreen';
+import ProfileEditScreen from './screens/Profile/ProfileEditScreen';
+import SettingScreen from './screens/Profile/SettingScreen';
 
 import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
