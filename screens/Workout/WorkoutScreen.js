@@ -9,8 +9,27 @@ const { height, width } = Dimensions.get('window');
 
 const data = ['Split 1', 'Split 2', 'Split 3', 'Split 4', 'Split 5'];
 
+const convertSplitsTo3DArray = (splits) => {
+    return splits.order.map(splitIndex => {
+        const split = splits[splitIndex];
+        return {
+            splitName: split.splitName,
+            days: split.day.order.map(dayIndex => {
+                const day = split.day[dayIndex];
+                return {
+                    dayName: day.dayName,
+                    exercises: day.exercises.order.map(exerciseIndex => {
+                        return day.exercises[exerciseIndex];
+                    })
+                };
+            })
+        };
+    });
+};
+
 const WorkoutScreen = () => {
     const [privateUserData, setPrivateUserData] = useState({});
+    const [workoutData, setWorkoutData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -21,10 +40,7 @@ const WorkoutScreen = () => {
                 try {
                     const docData = await getDoc(privateDataDocRef);
                     if (docData.exists()) {
-                        setPrivateUserData(docData.data());
-                        console.log('Private data fetched: ', docData.data());
-
-                        setIsLoading(false)
+                        return docData.data();
                     } else {
                         console.log('No such document!');
                     }
@@ -32,17 +48,31 @@ const WorkoutScreen = () => {
                     console.error('Error fetching private data: ', error);
                 }
             }
-        };
+            return null;
+        }
 
-        fetchPrivateUserData().then(
-            () => console.log(privateUserData),
-        );  
-    
-    
+        async function fetchData() {
+            const data = await fetchPrivateUserData();
+            if (data) {
+                setPrivateUserData(data);
+            }
+            setIsLoading(false);
+        }
+
+        fetchData();
     }, []);
 
-    
-    
+    useEffect(() => {
+        if (privateUserData.splits) {
+            const splits = privateUserData.splits;
+            const data = convertSplitsTo3DArray(splits);
+            setWorkoutData(data);
+            console.log(data);
+        }
+    }, [privateUserData]);
+
+
+
     return (
         <View style={styles.container}>
             <Carousel
