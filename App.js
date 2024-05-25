@@ -27,6 +27,14 @@ import RecordScreen from './screens/Record/RecordScreen';
 import WorkoutScreen from './screens/Workout/WorkoutScreen';
 import ProfileEditScreen from './screens/Profile/ProfileEditScreen';
 import SettingScreen from './screens/Profile/SettingScreen';
+import LoginScreen from './screens/Auth/LoginScreen';
+import RegisterScreen from './screens/Auth/RegisterScreen';
+import LeaderboardScreen from './screens/Leaderboard/LeaderboardScreen'
+import ProfileScreen from './screens/Profile/ProfileScreen';
+import RecordScreen from './screens/Record/RecordScreen';
+import WorkoutScreen from './screens/Workout/WorkoutScreen';
+import ProfileEditScreen from './screens/Profile/ProfileEditScreen';
+import SettingScreen from './screens/Profile/SettingScreen';
 
 
 import { onAuthStateChanged } from 'firebase/auth';
