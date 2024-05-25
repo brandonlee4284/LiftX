@@ -5,8 +5,7 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from '../../FirebaseConfig';
 
 const { height, width } = Dimensions.get('window');
 
-const data = ['Split 1', 'Split 2', 'Split 3', 'Split 4', 'Split 5'];
-
+// OPTIMIZE THESS FUNCTIONS TO BE MORE EFFICIENT, CURRENTLY RE-WRITES THE ENTIRE DOC EVERY TIME
 const convertSplitsTo3DArray = (splits) => {
     return splits.order.map(splitIndex => {
         const split = splits[splitIndex];
@@ -23,6 +22,39 @@ const convertSplitsTo3DArray = (splits) => {
             })
         };
     });
+};
+
+const convert3DArrayToSplits = (array) => {
+    const splits = {};
+    const splitOrder = [];
+
+    array.forEach((split, splitIndex) => {
+        splitOrder.push(splitIndex);
+        splits[splitIndex] = {
+            splitName: split.splitName,
+            day: {
+                order: []
+            }
+        };
+
+        split.days.forEach((day, dayIndex) => {
+            splits[splitIndex].day.order.push(dayIndex);
+            splits[splitIndex].day[dayIndex] = {
+                dayName: day.dayName,
+                exercises: {
+                    order: []
+                }
+            };
+
+            day.exercises.forEach((exercise, exerciseIndex) => {
+                splits[splitIndex].day[dayIndex].exercises.order.push(exerciseIndex);
+                splits[splitIndex].day[dayIndex].exercises[exerciseIndex] = exercise;
+            });
+        });
+    });
+
+    splits.order = splitOrder;
+    return splits;
 };
 
 const WorkoutScreen = () => {
@@ -70,8 +102,6 @@ const WorkoutScreen = () => {
         }
     }, [privateUserData]);
 
-
-
     const renderExercise = (exercise, index) => (
         <View key={index} style={styles.exerciseCard}>
             <Text style={styles.exerciseText}>{exercise.name} @ {exercise.volume}</Text>
@@ -85,7 +115,7 @@ const WorkoutScreen = () => {
                 setMaxDayCardHeight(height);
             }
         }} style={[styles.dayCard, { minHeight: maxDayCardHeight }]}>
-            <Text style={styles.dayText}>{item.name}</Text>
+            <Text style={styles.dayText}>{item.dayName}</Text>
             <View style={styles.exerciseList}>
                 {item.exercises.map(renderExercise)}
             </View>
@@ -94,12 +124,12 @@ const WorkoutScreen = () => {
 
     const renderSplit = ({ item }) => (
         <View style={styles.splitContainer}>
-            <Text style={styles.splitTitle}>{item.title}</Text>
+            <Text style={styles.splitTitle}>{item.splitName}</Text>
             <FlatList
                 horizontal
                 data={item.days}
                 renderItem={renderDay}
-                keyExtractor={(day, index) => `${day.name}-${index}`}
+                keyExtractor={(day, index) => `${day.dayName}-${index}`}
                 contentContainerStyle={styles.horizontalFlatListContent}
                 showsHorizontalScrollIndicator={false}
             />
@@ -107,12 +137,25 @@ const WorkoutScreen = () => {
         </View>
     );
 
+    const updateWorkoutData = async (data) => {
+        const splits = convert3DArrayToSplits(data);
+        const user = FIREBASE_AUTH.currentUser;
+        if (user) {
+            const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'data');
+            try {
+                await setDoc(privateDataDocRef, { splits }, { merge: true });
+            } catch (error) {
+                console.error('Error updating private data: ', error);
+            }
+        }
+    }
+
     return (
         <View style={styles.container}>
             <FlatList
-                data={SPLITS}
+                data={workoutData}
                 renderItem={renderSplit}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item, index) => `split-${index}`}
                 contentContainerStyle={styles.verticalFlatListContent}
                 showsVerticalScrollIndicator={false}
             />
@@ -123,20 +166,17 @@ const WorkoutScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#fff',
     },
     splitContainer: {
         marginBottom: 20,
-        alignItems: 'left',
-        marginHorizontal: -2
-
+        alignItems: 'flex-start',
+        marginHorizontal: 10,
     },
     splitTitle: {
         fontSize: 24,
         fontWeight: 'bold',
         margin: 15,
-    },
-    horizontalFlatList: {
-        height: height * 0.35,
     },
     horizontalFlatListContent: {
         paddingHorizontal: 10,
@@ -164,7 +204,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     exerciseText: {
-        fontSize: 10,
+        fontSize: 14,
     },
     exerciseList: {
         paddingBottom: 20,

@@ -23,6 +23,7 @@ const LeaderboardScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
+            
             <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.body}>
                     <Text>Loading...</Text>
