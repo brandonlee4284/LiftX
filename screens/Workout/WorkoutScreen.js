@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Button } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Pressable, Button } from 'react-native';
 import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../FirebaseConfig';
 
@@ -127,18 +127,30 @@ const WorkoutScreen = ({ navigation }) => {
         }
     };
 
-    const renderExercise = (exercise, index) => (
-        <View key={index} style={styles.exerciseCard}>
-            <Text style={styles.exerciseText}>{exercise.name} @ {exercise.volume}</Text>
-        </View>
-    );
+    const renderExercise = (exercise, index) => {
+        const minReps = Math.min(...exercise.reps);
+        const maxReps = Math.max(...exercise.reps);
+        const repsDisplay = minReps === maxReps ? minReps : `${minReps}-${maxReps}`;
+        
+        return (
+            <View key={index} style={styles.exerciseCard}>
+                <Text style={styles.exerciseText}>
+                    {exercise.name} {exercise.sets}x{repsDisplay}
+                </Text>
+            </View>
+        );
+    };
 
     const renderExerciseInPopupView = (exercise, index) => (
         <View key={index} style={styles.exerciseCardPopup}>
-            <Text style={styles.exerciseName}>{exercise.name}</Text>
-            <Text style={styles.exerciseVolume}>{exercise.volume}</Text>
+            {exercise.reps.map((reps, setIndex) => (
+                <Text key={setIndex} style={styles.exerciseVolume}>
+                    {exercise.name} {reps} @ {exercise.weight[setIndex]} lb
+                </Text>
+            ))}
         </View>
     );
+    
 
     const renderDay = ({ item }) => (
         <TouchableOpacity
@@ -212,7 +224,7 @@ const WorkoutScreen = ({ navigation }) => {
                                     </TouchableOpacity>
                                     <Button
                                         title="Start Workout"
-                                        onPress={navigateToWorkoutDetail}
+                                        onPress={navigateToStartWorkout}
                                         color="green"
                                     />
                                 </View>

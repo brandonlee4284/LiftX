@@ -37,7 +37,7 @@ const Stack = createStackNavigator();
 function HomeStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Workout" component={WorkoutScreen} />
       <Stack.Screen name="Start Workout" component={StartWorkoutScreen} />
     </Stack.Navigator>
@@ -47,7 +47,7 @@ function HomeStack() {
 function RecordStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Record" component={RecordScreen} />
+      <Stack.Screen name="Record" component={RecordScreen} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );
 }
@@ -55,15 +55,15 @@ function RecordStack() {
 function LeaderboardStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
+      <Stack.Screen name="Leaderboard" component={LeaderboardScreen} options={{ headerShown: false }}/>
     </Stack.Navigator>
   );  
 }
 
 function ProfileStack() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Profile" component={ProfileScreen} />
+    <Stack.Navigator >
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }}/>
       <Stack.Screen name="Edit Profile" component={ProfileEditScreen} />
     </Stack.Navigator>
   );
@@ -71,7 +71,7 @@ function ProfileStack() {
 
 function SettingStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator >
       <Stack.Screen name="Settings" component={SettingScreen} />
     </Stack.Navigator>
   );
@@ -92,13 +92,13 @@ const AppTabNavigator = () => (
       tabBarIcon: ({ color, size }) => {
         let iconName;
 
-        if (route.name === 'Home') {
+        if (route.name === 'HomeNav') {
           iconName = 'home-outline';
-        } else if (route.name === 'Leaderboard') {
+        } else if (route.name === 'LeaderboardNav') {
           iconName = 'podium-outline';
-        } else if (route.name === 'Record') {
+        } else if (route.name === 'RecordNav') {
           iconName = 'add-circle-outline';
-        } else if (route.name === 'Profile') {
+        } else if (route.name === 'ProfileNav') {
           iconName = 'person-circle-outline';
         }
 
