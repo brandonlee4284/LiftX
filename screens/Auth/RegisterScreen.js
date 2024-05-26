@@ -27,94 +27,109 @@ const RegisterScreen = ({ navigation }) => {
                         numFriends: 0,
                         friends: {},
                         displayStats: { bench: "135" },
-                        activeSplit: { splitName: "PPL", day: {
-                            0: { dayName: "push", exercises:
-                                {
-                                    0: { name: "bench", volume: "4x12", weight: "135" },
-                                    1: { name: "overhead press", volume: "4x12", weight: "95" },
-                                    2: { name: "tricep pushdown", volume: "4x12", weight: "50" },
-                                    order: [0, 1, 2],
-                                }
+                        activeSplit: {
+                            splitName: "PPL",
+                            day: {
+                                0: {
+                                    dayName: "push",
+                                    exercises: {
+                                        0: { name: "bench", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
+                                        1: { name: "overhead press", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
+                                        2: { name: "tricep pushdown", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
+                                        order: [0, 1, 2],
+                                    },
+                                },
+                                1: {
+                                    dayName: "pull",
+                                    exercises: {
+                                        0: { name: "deadlift", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
+                                        1: { name: "pullups", sets: 3, reps: [12, 12, 12], weight: [0, 0, 0] },
+                                        2: { name: "rows", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
+                                        order: [0, 1, 2],
+                                    },
+                                },
+                                2: {
+                                    dayName: "legs",
+                                    exercises: {
+                                        0: { name: "squats", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
+                                        1: { name: "leg press", sets: 3, reps: [12, 12, 12], weight: [180, 180, 180] },
+                                        2: { name: "leg curls", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
+                                        order: [0, 1, 2],
+                                    },
+                                },
+                                order: [0, 1, 2],
                             },
-                            1: { dayName: "pull", exercises:
-                                {
-                                    0: { name: "deadlift", volume: "4x12", weight: "135" },
-                                    1: { name: "pullups", volume: "4x12", weight: "0" },
-                                    2: { name: "rows", volume: "4x12", weight: "95" },
-                                    order: [0, 1, 2],
-                                }
-                            },
-                            2: { dayName: "legs", exercises:
-                                {
-                                    0: { name: "squats", volume: "4x12", weight: "135" },
-                                    1: { name: "leg press", volume: "4x12", weight: "180" },
-                                    2: { name: "leg curls", volume: "4x12", weight: "50" },
-                                    order: [0, 1, 2],
-                                }
-                            },
-                            order: [0, 1, 2]
-                        }},
+                        },
                         privateMode: false,
                     });
 
                     const privateDataDocRef = doc(userDocRef, "userData", "data");
                     setDoc(privateDataDocRef, {
-                        splits: { 
-                            0: { splitName: "PPL", day: {
-                                0: { dayName: "push", exercises:
-                                    {
-                                        0: { name: "bench", volume: "4x12", weight: "135" },
-                                        1: { name: "overhead press", volume: "4x12", weight: "95" },
-                                        2: { name: "tricep pushdown", volume: "4x12", weight: "50" },
-                                        order: [0, 1, 2],
-                                    }
+                        splits: {
+                            0: {
+                                splitName: "PPL",
+                                day: {
+                                    0: {
+                                        dayName: "push",
+                                        exercises: {
+                                            0: { name: "bench", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
+                                            1: { name: "overhead press", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
+                                            2: { name: "tricep pushdown", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
+                                            order: [0, 1, 2],
+                                        },
+                                    },
+                                    1: {
+                                        dayName: "pull",
+                                        exercises: {
+                                            0: { name: "deadlift", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
+                                            1: { name: "pullups", sets: 3, reps: [12, 12, 12], weight: [0, 0, 0] },
+                                            2: { name: "rows", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
+                                            order: [0, 1, 2],
+                                        },
+                                    },
+                                    2: {
+                                        dayName: "legs",
+                                        exercises: {
+                                            0: { name: "squats", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
+                                            1: { name: "leg press", sets: 3, reps: [12, 12, 12], weight: [180, 180, 180] },
+                                            2: { name: "leg curls", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
+                                            order: [0, 1, 2],
+                                        },
+                                    },
+                                    order: [0, 1, 2],
                                 },
-                                1: { dayName: "pull", exercises:
-                                    {
-                                        0: { name: "deadlift", volume: "4x12", weight: "135" },
-                                        1: { name: "pullups", volume: "4x12", weight: "0" },
-                                        2: { name: "rows", volume: "4x12", weight: "95" },
-                                        order: [0, 1, 2],
-                                    }
-                                },
-                                2: { dayName: "legs", exercises:
-                                    {
-                                        0: { name: "squats", volume: "4x12", weight: "135" },
-                                        1: { name: "leg press", volume: "4x12", weight: "180" },
-                                        2: { name: "leg curls", volume: "4x12", weight: "50" },
-                                        order: [0, 1, 2],
-                                    }
-                                },
-                                order: [0, 1, 2]
-                            }
                             },
-                            1: { splitName: "Upper/Lower", day: {
-                                0: { dayName: "upper", exercises:
-                                    {
-                                        0: { name: "bench", volume: "4x12", weight: "135" },
-                                        1: { name: "overhead press", volume: "4x12", weight: "95" },
-                                        2: { name: "tricep pushdown", volume: "4x12", weight: "50" },
-                                        order: [0, 1, 2],
-                                    }
+                            1: {
+                                splitName: "Upper/Lower",
+                                day: {
+                                    0: {
+                                        dayName: "upper",
+                                        exercises: {
+                                            0: { name: "bench", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
+                                            1: { name: "overhead press", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
+                                            2: { name: "tricep pushdown", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
+                                            order: [0, 1, 2],
+                                        },
+                                    },
+                                    1: {
+                                        dayName: "lower",
+                                        exercises: {
+                                            0: { name: "deadlift", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
+                                            1: { name: "pullups", sets: 3, reps: [12, 12, 12], weight: [0, 0, 0] },
+                                            2: { name: "rows", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
+                                            order: [0, 1, 2],
+                                        },
+                                    },
+                                    order: [0, 1],
                                 },
-                                1: { dayName: "lower", exercises:
-                                    {
-                                        0: { name: "deadlift", volume: "4x12", weight: "135" },
-                                        1: { name: "pullups", volume: "4x12", weight: "0" },
-                                        2: { name: "rows", volume: "4x12", weight: "95" },
-                                        order: [0, 1, 2],
-                                    }
-                                },
-                                order: [0, 1]
                             },
-                            },
-                            order: [0, 1]
+                            order: [0, 1],
                         },
-                        
                         activeSplitIndex: 0,
                         hiddenStats: { bench: { "2021-01-01": 135 } },
                         exerciseHistory: { bench: { "2021-01-01": 135 } },
                     });
+
 
                     console.log('User data saved successfully');
                     navigation.navigate('Home');

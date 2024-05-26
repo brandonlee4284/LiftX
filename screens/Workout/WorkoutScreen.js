@@ -154,10 +154,10 @@ const WorkoutScreen = ({ navigation }) => {
         </View>
     );
 
-    const navigateToWorkoutDetail = () => {
+    const navigateToStartWorkout = () => {
         if (selectedDay) {
             let day = selectedDay
-            navigation.navigate('WorkoutDetail', { day: day });
+            navigation.navigate('Start Workout', {day: day});
             setSelectedDay(null);
         }
     };
@@ -186,7 +186,7 @@ const WorkoutScreen = ({ navigation }) => {
                         {selectedDay?.exercises.map(renderExercise)}
                         <Button
                             title="Start Workout"
-                            onPress={navigateToWorkoutDetail}
+                            onPress={navigateToStartWorkout}
                             color="green"
                         />
                     </View>

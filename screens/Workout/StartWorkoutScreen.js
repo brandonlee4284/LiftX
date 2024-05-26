@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const WorkoutDetailScreen = ({ route }) => {
+const StartWorkoutScreen = ({ route }) => {
     console.log(route.params?.day);
-    // const { day } = route.params;
+    const { day } = route.params;
 
     return (
+        
         <View style={styles.container}>
             <Text style={styles.title}>{day.dayName} Workout</Text>
             {day.exercises.map((exercise, index) => (
@@ -38,4 +39,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default WorkoutDetailScreen;
+export default StartWorkoutScreen;

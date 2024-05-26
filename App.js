@@ -2,6 +2,7 @@ import React from 'react';
 import { AppRegistry, Platform } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
+
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from "@expo/vector-icons";
@@ -14,7 +15,7 @@ import LeaderboardScreen from './screens/Leaderboard/LeaderboardScreen';
 import ProfileScreen from './screens/Profile/ProfileScreen';
 import RecordScreen from './screens/Record/RecordScreen';
 import WorkoutScreen from './screens/Workout/WorkoutScreen';
-import WorkoutDetailScreen from './screens/Workout/WorkoutDetailScreen';
+import StartWorkoutScreen from './screens/Workout/StartWorkoutScreen';
 import ProfileEditScreen from './screens/Profile/ProfileEditScreen';
 import SettingScreen from './screens/Profile/SettingScreen';
 
@@ -29,64 +30,41 @@ if (Platform.OS === 'web') {
 }
 
 const Tab = createBottomTabNavigator();
-const AuthStack = createStackNavigator();
 const RootStack = createStackNavigator();
+const AuthStack = createStackNavigator();
 const Stack = createStackNavigator();
 
-function AppTabNavigator() {
+function HomeStack() {
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ color, size }) => {
-          let iconName;
-
-          if (route.name === 'Home') {
-            iconName = 'home-outline';
-          } else if (route.name === 'Leaderboard') {
-            iconName = 'podium-outline';
-          } else if (route.name === 'Record') {
-            iconName = 'add-circle-outline';
-          } else if (route.name === 'Profile') {
-            iconName = 'person-circle-outline';
-          }
-
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        headerShown: false
-      })}
-      tabBarOptions={{
-        activeTintColor: 'black',
-        inactiveTintColor: 'gray',
-      }}
-    >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Record" component={RecordScreen} />
-      <Tab.Screen name="Leaderboard" component={LeaderboardScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-    </Tab.Navigator>
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Workout" component={WorkoutScreen} />
+      <Stack.Screen name="Start Workout" component={StartWorkoutScreen} />
+    </Stack.Navigator>
   );
 }
 
-function ProfileEditStack() {
+function RecordStack() {
   return (
     <Stack.Navigator>
+      <Stack.Screen name="Record" component={RecordScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function LeaderboardStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
+    </Stack.Navigator>
+  );  
+}
+
+function ProfileStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Edit Profile" component={ProfileEditScreen} />
-    </Stack.Navigator>
-  );
-}
-
-function WorkoutActivityStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="WorkoutActivity" component={WorkoutScreen} />
-    </Stack.Navigator>
-  );
-}
-
-function WorkoutDetailStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="WorkoutDetail" component={WorkoutDetailScreen} />
     </Stack.Navigator>
   );
 }
@@ -108,6 +86,38 @@ function AuthNavigator() {
   );
 }
 
+const AppTabNavigator = () => (
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      tabBarIcon: ({ color, size }) => {
+        let iconName;
+
+        if (route.name === 'Home') {
+          iconName = 'home-outline';
+        } else if (route.name === 'Leaderboard') {
+          iconName = 'podium-outline';
+        } else if (route.name === 'Record') {
+          iconName = 'add-circle-outline';
+        } else if (route.name === 'Profile') {
+          iconName = 'person-circle-outline';
+        }
+
+        return <Ionicons name={iconName} size={size} color={color} />;
+      },
+      headerShown: false
+    })}
+    tabBarOptions={{
+      activeTintColor: 'black',
+      inactiveTintColor: 'gray',
+    }}
+  >
+    <Tab.Screen name="HomeNav" component={HomeStack} />
+    <Tab.Screen name="RecordNav" component={RecordStack} />
+    <Tab.Screen name="LeaderboardNav" component={LeaderboardStack} />
+    <Tab.Screen name="ProfileNav" component={ProfileStack} />
+  </Tab.Navigator>
+);
+
 function RootNavigator() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [user, setUser] = React.useState(null);
@@ -128,10 +138,8 @@ function RootNavigator() {
       {user ? (
         <>
           <RootStack.Screen name="App" component={AppTabNavigator} />
-          <RootStack.Screen name="ProfileEdit" component={ProfileEditStack} />
-          <RootStack.Screen name="Workout" component={WorkoutActivityStack} />
-          <RootStack.Screen name="WorkoutDetail" component={WorkoutDetailStack} />
           <RootStack.Screen name="Setting" component={SettingStack} />
+          {/* ADD DMS????? <-?, FRIENDS TAB */}
         </>
       ) : (
         <RootStack.Screen name="Auth" component={AuthNavigator} />
