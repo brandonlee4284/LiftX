@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native';
-import { getDoc, doc } from 'firebase/firestore';
+import { View, Text, StyleSheet, Dimensions, FlatList, Modal, TouchableOpacity, Button } from 'react-native';
+import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../FirebaseConfig';
 
 const { height, width } = Dimensions.get('window');
 
-// OPTIMIZE THESS FUNCTIONS TO BE MORE EFFICIENT, CURRENTLY RE-WRITES THE ENTIRE DOC EVERY TIME
+// OPTIMIZE THESE FUNCTIONS TO BE MORE EFFICIENT, CURRENTLY RE-WRITES THE ENTIRE DOC EVERY TIME
 const convertSplitsTo3DArray = (splits) => {
     return splits.order.map(splitIndex => {
         const split = splits[splitIndex];
@@ -57,11 +57,12 @@ const convert3DArrayToSplits = (array) => {
     return splits;
 };
 
-const WorkoutScreen = () => {
+const WorkoutScreen = ({ navigation }) => {
     const [privateUserData, setPrivateUserData] = useState({});
     const [workoutData, setWorkoutData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [maxDayCardHeight, setMaxDayCardHeight] = useState(0);
+    const [selectedDay, setSelectedDay] = useState(null);
 
     useEffect(() => {
         async function fetchPrivateUserData() {
@@ -98,9 +99,21 @@ const WorkoutScreen = () => {
             const splits = privateUserData.splits;
             const data = convertSplitsTo3DArray(splits);
             setWorkoutData(data);
-            console.log(data);
         }
     }, [privateUserData]);
+
+    const updateWorkoutData = async (data) => {
+        const splits = convert3DArrayToSplits(data);
+        const user = FIREBASE_AUTH.currentUser;
+        if (user) {
+            const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'data');
+            try {
+                await setDoc(privateDataDocRef, { splits }, { merge: true });
+            } catch (error) {
+                console.error('Error updating private data: ', error);
+            }
+        }
+    }
 
     const renderExercise = (exercise, index) => (
         <View key={index} style={styles.exerciseCard}>
@@ -109,17 +122,21 @@ const WorkoutScreen = () => {
     );
 
     const renderDay = ({ item }) => (
-        <View onLayout={event => {
-            const { height } = event.nativeEvent.layout;
-            if (height > maxDayCardHeight) {
-                setMaxDayCardHeight(height);
-            }
-        }} style={[styles.dayCard, { minHeight: maxDayCardHeight }]}>
+        <TouchableOpacity
+            onPress={() => setSelectedDay(item)}
+            onLayout={event => {
+                const { height } = event.nativeEvent.layout;
+                if (height > maxDayCardHeight) {
+                    setMaxDayCardHeight(height);
+                }
+            }}
+            style={[styles.dayCard, { minHeight: maxDayCardHeight }]}
+        >
             <Text style={styles.dayText}>{item.dayName}</Text>
             <View style={styles.exerciseList}>
                 {item.exercises.map(renderExercise)}
             </View>
-        </View>
+        </TouchableOpacity>
     );
 
     const renderSplit = ({ item }) => (
@@ -137,18 +154,13 @@ const WorkoutScreen = () => {
         </View>
     );
 
-    const updateWorkoutData = async (data) => {
-        const splits = convert3DArrayToSplits(data);
-        const user = FIREBASE_AUTH.currentUser;
-        if (user) {
-            const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'data');
-            try {
-                await setDoc(privateDataDocRef, { splits }, { merge: true });
-            } catch (error) {
-                console.error('Error updating private data: ', error);
-            }
+    const navigateToWorkoutDetail = () => {
+        if (selectedDay) {
+            let day = selectedDay
+            navigation.navigate('WorkoutDetail', { day: day });
+            setSelectedDay(null);
         }
-    }
+    };
 
     return (
         <View style={styles.container}>
@@ -159,6 +171,27 @@ const WorkoutScreen = () => {
                 contentContainerStyle={styles.verticalFlatListContent}
                 showsVerticalScrollIndicator={false}
             />
+
+            <Modal
+                visible={!!selectedDay}
+                animationType="slide"
+                onRequestClose={() => setSelectedDay(null)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalHeader}>
+                        <Text style={styles.modalTitle}>{selectedDay?.dayName}</Text>
+                        <Button title="Close" onPress={() => setSelectedDay(null)} />
+                    </View>
+                    <View style={styles.modalBody}>
+                        {selectedDay?.exercises.map(renderExercise)}
+                        <Button
+                            title="Start Workout"
+                            onPress={navigateToWorkoutDetail}
+                            color="green"
+                        />
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -217,6 +250,24 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: 'lightgray',
         marginTop: 40,
+    },
+    modalContainer: {
+        flex: 1,
+        padding: 20,
+        justifyContent: 'center',
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    modalTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+    modalBody: {
+        flex: 1,
     },
 });
 

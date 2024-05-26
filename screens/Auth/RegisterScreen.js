@@ -113,6 +113,7 @@ const RegisterScreen = ({ navigation }) => {
                         
                         activeSplitIndex: 0,
                         hiddenStats: { bench: { "2021-01-01": 135 } },
+                        exerciseHistory: { bench: { "2021-01-01": 135 } },
                     });
 
                     console.log('User data saved successfully');

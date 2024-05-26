@@ -1,4 +1,4 @@
-import React from 'react'; 
+import React from 'react';
 import { AppRegistry, Platform } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -6,28 +6,17 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from "@expo/vector-icons";
 
-// import LoadingScreen from './screens/LoadingScreen';
-// import HomeScreen from './screens/HomeScreen';
-// import LoginScreen from './screens/LoginScreen';
-// import RegisterScreen from './screens/RegisterScreen';
-// import LeaderboardScreen from './screens/LeaderboardScreen'
-// import ProfileScreen from './screens/ProfileScreen';
-// import RecordScreen from './screens/RecordScreen';
-// import WorkoutScreen from './screens/WorkoutScreen';
-// import ProfileEditScreen from './screens/ProfileEditScreen';
-// import SettingScreen from './screens/SettingScreen';
-
 import LoadingScreen from './screens/LoadingScreen';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/Auth/LoginScreen';
 import RegisterScreen from './screens/Auth/RegisterScreen';
-import LeaderboardScreen from './screens/Leaderboard/LeaderboardScreen'
+import LeaderboardScreen from './screens/Leaderboard/LeaderboardScreen';
 import ProfileScreen from './screens/Profile/ProfileScreen';
 import RecordScreen from './screens/Record/RecordScreen';
 import WorkoutScreen from './screens/Workout/WorkoutScreen';
+import WorkoutDetailScreen from './screens/Workout/WorkoutDetailScreen';
 import ProfileEditScreen from './screens/Profile/ProfileEditScreen';
 import SettingScreen from './screens/Profile/SettingScreen';
-
 
 import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
@@ -35,14 +24,13 @@ import { FIREBASE_AUTH } from './FirebaseConfig';
 AppRegistry.registerComponent('main', () => MainApp);
 
 if (Platform.OS === 'web') {
-    const rootTag = document.getElementById('root') || document.getElementById('main');
-    AppRegistry.runApplication('main', { rootTag });
+  const rootTag = document.getElementById('root') || document.getElementById('main');
+  AppRegistry.runApplication('main', { rootTag });
 }
 
 const Tab = createBottomTabNavigator();
 const AuthStack = createStackNavigator();
 const RootStack = createStackNavigator();
-
 const Stack = createStackNavigator();
 
 function AppTabNavigator() {
@@ -70,7 +58,6 @@ function AppTabNavigator() {
         activeTintColor: 'black',
         inactiveTintColor: 'gray',
       }}
-      
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Record" component={RecordScreen} />
@@ -88,10 +75,18 @@ function ProfileEditStack() {
   );
 }
 
-function WorkoutStack() {
+function WorkoutActivityStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Workout Activity" component={WorkoutScreen} />
+      <Stack.Screen name="WorkoutActivity" component={WorkoutScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function WorkoutDetailStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="WorkoutDetail" component={WorkoutDetailScreen} />
     </Stack.Navigator>
   );
 }
@@ -106,7 +101,7 @@ function SettingStack() {
 
 function AuthNavigator() {
   return (
-    <AuthStack.Navigator screenOptions={{headerShown: false}}>
+    <AuthStack.Navigator screenOptions={{ headerShown: false }}>
       <AuthStack.Screen name="Login" component={LoginScreen} />
       <AuthStack.Screen name="Register" component={RegisterScreen} />
     </AuthStack.Navigator>
@@ -132,15 +127,15 @@ function RootNavigator() {
     <RootStack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
         <>
-          <RootStack.Screen name="App" component={AppTabNavigator} user={user}/>
-          <RootStack.Screen name="ProfileEdit" component={ProfileEditStack} user={user}/>
-          <RootStack.Screen name="Workout" component={WorkoutStack} user={user}/>
-          <RootStack.Screen name="Setting" component={SettingStack} user={user}/>
-        </>  
+          <RootStack.Screen name="App" component={AppTabNavigator} />
+          <RootStack.Screen name="ProfileEdit" component={ProfileEditStack} />
+          <RootStack.Screen name="Workout" component={WorkoutActivityStack} />
+          <RootStack.Screen name="WorkoutDetail" component={WorkoutDetailStack} />
+          <RootStack.Screen name="Setting" component={SettingStack} />
+        </>
       ) : (
         <RootStack.Screen name="Auth" component={AuthNavigator} />
       )}
-      
     </RootStack.Navigator>
   );
 }
