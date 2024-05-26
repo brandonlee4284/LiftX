@@ -131,7 +131,7 @@ const WorkoutScreen = ({ navigation }) => {
         const minReps = Math.min(...exercise.reps);
         const maxReps = Math.max(...exercise.reps);
         const repsDisplay = minReps === maxReps ? minReps : `${minReps}-${maxReps}`;
-        
+
         return (
             <View key={index} style={styles.exerciseCard}>
                 <Text style={styles.exerciseText}>
@@ -141,16 +141,16 @@ const WorkoutScreen = ({ navigation }) => {
         );
     };
 
-    const renderExerciseInPopupView = (exercise, index) => (
-        <View key={index} style={styles.exerciseCardPopup}>
-            {exercise.reps.map((reps, setIndex) => (
-                <Text key={setIndex} style={styles.exerciseVolume}>
-                    {exercise.name} {reps} @ {exercise.weight[setIndex]} lb
+    const renderExerciseInPopupView = ({ item }) => (
+        <View key={item.index} style={styles.exerciseCardPopup}>
+            {item.reps.map((rep, repIndex) => (
+                <Text key={repIndex} style={styles.exerciseTextPopup}>
+                    {item.name} {rep} @ {item.weight[repIndex]} lbs
                 </Text>
             ))}
         </View>
     );
-    
+
 
     const renderDay = ({ item }) => (
         <TouchableOpacity
@@ -188,7 +188,7 @@ const WorkoutScreen = ({ navigation }) => {
     const navigateToStartWorkout = () => {
         if (selectedDay) {
             let day = selectedDay
-            navigation.navigate('Start Workout', {day: day});
+            navigation.navigate('Start Workout', { day: day });
             setSelectedDay(null);
         }
     };
@@ -218,7 +218,12 @@ const WorkoutScreen = ({ navigation }) => {
                                     <Button title="Close" onPress={() => setSelectedDay(null)} />
                                 </View>
                                 <View style={styles.modalBody}>
-                                    {selectedDay?.exercises.map(renderExerciseInPopupView)}
+                                    <FlatList
+                                        data={selectedDay.exercises}
+                                        renderItem={renderExerciseInPopupView}
+                                        keyExtractor={(exercise, index) => `${exercise.name}-${index}`}
+                                        contentContainerStyle={styles.popupExerciseList}
+                                    />
                                     <TouchableOpacity onPress={removeDay}>
                                         <Text style={styles.removeButton}>Remove {selectedDay?.dayName}</Text>
                                     </TouchableOpacity>
