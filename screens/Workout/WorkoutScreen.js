@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, FlatList, Modal, TouchableOpacity, Button } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Button } from 'react-native';
 import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../../FirebaseConfig';
 
 const { height, width } = Dimensions.get('window');
 
-// OPTIMIZE THESE FUNCTIONS TO BE MORE EFFICIENT, CURRENTLY RE-WRITES THE ENTIRE DOC EVERY TIME
 const convertSplitsTo3DArray = (splits) => {
     return splits.order.map(splitIndex => {
         const split = splits[splitIndex];
@@ -115,9 +114,29 @@ const WorkoutScreen = ({ navigation }) => {
         }
     }
 
+    const removeDay = async () => {
+        if (selectedDay) {
+            const updatedWorkoutData = workoutData.map(split => ({
+                ...split,
+                days: split.days.filter(day => day.dayName !== selectedDay.dayName)
+            }));
+
+            setWorkoutData(updatedWorkoutData);
+            await updateWorkoutData(updatedWorkoutData);
+            setSelectedDay(null);
+        }
+    };
+
     const renderExercise = (exercise, index) => (
         <View key={index} style={styles.exerciseCard}>
             <Text style={styles.exerciseText}>{exercise.name} @ {exercise.volume}</Text>
+        </View>
+    );
+
+    const renderExerciseInPopupView = (exercise, index) => (
+        <View key={index} style={styles.exerciseCardPopup}>
+            <Text style={styles.exerciseName}>{exercise.name}</Text>
+            <Text style={styles.exerciseVolume}>{exercise.volume}</Text>
         </View>
     );
 
@@ -174,23 +193,33 @@ const WorkoutScreen = ({ navigation }) => {
 
             <Modal
                 visible={!!selectedDay}
-                animationType="slide"
+                animationType="fade"
+                transparent={true}
                 onRequestClose={() => setSelectedDay(null)}
             >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>{selectedDay?.dayName}</Text>
-                        <Button title="Close" onPress={() => setSelectedDay(null)} />
+                <TouchableWithoutFeedback onPress={() => setSelectedDay(null)}>
+                    <View style={styles.modalOverlay}>
+                        <TouchableWithoutFeedback>
+                            <View style={styles.modalContainer}>
+                                <View style={styles.modalHeader}>
+                                    <Text style={styles.modalTitle}>{selectedDay?.dayName}</Text>
+                                    <Button title="Close" onPress={() => setSelectedDay(null)} />
+                                </View>
+                                <View style={styles.modalBody}>
+                                    {selectedDay?.exercises.map(renderExerciseInPopupView)}
+                                    <TouchableOpacity onPress={removeDay}>
+                                        <Text style={styles.removeButton}>Remove {selectedDay?.dayName}</Text>
+                                    </TouchableOpacity>
+                                    <Button
+                                        title="Start Workout"
+                                        onPress={navigateToWorkoutDetail}
+                                        color="green"
+                                    />
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
                     </View>
-                    <View style={styles.modalBody}>
-                        {selectedDay?.exercises.map(renderExercise)}
-                        <Button
-                            title="Start Workout"
-                            onPress={navigateToWorkoutDetail}
-                            color="green"
-                        />
-                    </View>
-                </View>
+                </TouchableWithoutFeedback>
             </Modal>
         </View>
     );
@@ -204,7 +233,6 @@ const styles = StyleSheet.create({
     splitContainer: {
         marginBottom: 20,
         alignItems: 'flex-start',
-        marginHorizontal: 10,
     },
     splitTitle: {
         fontSize: 24,
@@ -236,8 +264,24 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         marginBottom: 5,
     },
+    exerciseCardPopup: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        paddingHorizontal: 5,
+        marginBottom: 5,
+    },
     exerciseText: {
         fontSize: 14,
+    },
+    exerciseName: {
+        fontSize: 14,
+        flex: 1,
+        textAlign: 'left',
+    },
+    exerciseVolume: {
+        fontSize: 14,
+        textAlign: 'right',
     },
     exerciseList: {
         paddingBottom: 20,
@@ -251,10 +295,17 @@ const styles = StyleSheet.create({
         backgroundColor: 'lightgray',
         marginTop: 40,
     },
-    modalContainer: {
+    modalOverlay: {
         flex: 1,
-        padding: 20,
+        backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
     },
     modalHeader: {
         flexDirection: 'row',
@@ -267,7 +318,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     modalBody: {
-        flex: 1,
+    },
+    removeButton: {
+        fontSize: 16,
+        color: 'red',
+        marginTop: 10,
+        marginBottom: 20,
+        textAlign: 'center',
     },
 });
 

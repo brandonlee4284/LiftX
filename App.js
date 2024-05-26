@@ -78,7 +78,7 @@ function ProfileEditStack() {
 function WorkoutActivityStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="WorkoutActivity" component={WorkoutScreen} />
+      <Stack.Screen name="Choose Workout" component={WorkoutScreen} />
     </Stack.Navigator>
   );
 }
