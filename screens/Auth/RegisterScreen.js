@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
-import { doc, or, setDoc } from "firebase/firestore";
+import { createNewUser } from "../../api/auth";
 
 const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState("");
@@ -12,132 +10,7 @@ const RegisterScreen = ({ navigation }) => {
     const [errorMessage, setErrorMessage] = useState(null);
 
     const handleSignUp = () => {
-        const auth = FIREBASE_AUTH;
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(userCredentials => {
-                const user = userCredentials.user;
-                try {
-                    const userDocRef = doc(FIRESTORE_DB, "users", user.uid);
-                    setDoc(userDocRef, {
-                        name: name,
-                        username,
-                        email: email,
-                        bio: "This is a sample bio.", // Placeholder bio
-                        profilePicture: null, // Placeholder image
-                        numFriends: 0,
-                        friends: {},
-                        displayStats: { bench: "135" },
-                        activeSplit: {
-                            splitName: "PPL",
-                            day: {
-                                0: {
-                                    dayName: "push",
-                                    exercises: {
-                                        0: { name: "bench", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
-                                        1: { name: "overhead press", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
-                                        2: { name: "tricep pushdown", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
-                                        order: [0, 1, 2],
-                                    },
-                                },
-                                1: {
-                                    dayName: "pull",
-                                    exercises: {
-                                        0: { name: "deadlift", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
-                                        1: { name: "pullups", sets: 3, reps: [12, 12, 12], weight: [0, 0, 0] },
-                                        2: { name: "rows", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
-                                        order: [0, 1, 2],
-                                    },
-                                },
-                                2: {
-                                    dayName: "legs",
-                                    exercises: {
-                                        0: { name: "squats", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
-                                        1: { name: "leg press", sets: 3, reps: [12, 12, 12], weight: [180, 180, 180] },
-                                        2: { name: "leg curls", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
-                                        order: [0, 1, 2],
-                                    },
-                                },
-                                order: [0, 1, 2],
-                            },
-                        },
-                        privateMode: false,
-                    });
-
-                    const privateDataDocRef = doc(userDocRef, "userData", "data");
-                    setDoc(privateDataDocRef, {
-                        splits: {
-                            0: {
-                                splitName: "PPL",
-                                day: {
-                                    0: {
-                                        dayName: "push",
-                                        exercises: {
-                                            0: { name: "bench", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
-                                            1: { name: "overhead press", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
-                                            2: { name: "tricep pushdown", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
-                                            order: [0, 1, 2],
-                                        },
-                                    },
-                                    1: {
-                                        dayName: "pull",
-                                        exercises: {
-                                            0: { name: "deadlift", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
-                                            1: { name: "pullups", sets: 3, reps: [12, 12, 12], weight: [0, 0, 0] },
-                                            2: { name: "rows", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
-                                            order: [0, 1, 2],
-                                        },
-                                    },
-                                    2: {
-                                        dayName: "legs",
-                                        exercises: {
-                                            0: { name: "squats", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
-                                            1: { name: "leg press", sets: 3, reps: [12, 12, 12], weight: [180, 180, 180] },
-                                            2: { name: "leg curls", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
-                                            order: [0, 1, 2],
-                                        },
-                                    },
-                                    order: [0, 1, 2],
-                                },
-                            },
-                            1: {
-                                splitName: "Upper/Lower",
-                                day: {
-                                    0: {
-                                        dayName: "upper",
-                                        exercises: {
-                                            0: { name: "bench", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
-                                            1: { name: "overhead press", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
-                                            2: { name: "tricep pushdown", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
-                                            order: [0, 1, 2],
-                                        },
-                                    },
-                                    1: {
-                                        dayName: "lower",
-                                        exercises: {
-                                            0: { name: "deadlift", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
-                                            1: { name: "pullups", sets: 3, reps: [12, 12, 12], weight: [0, 0, 0] },
-                                            2: { name: "rows", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
-                                            order: [0, 1, 2],
-                                        },
-                                    },
-                                    order: [0, 1],
-                                },
-                            },
-                            order: [0, 1],
-                        },
-                        activeSplitIndex: 0,
-                        hiddenStats: { bench: { "2021-01-01": 135 } },
-                        exerciseHistory: { bench: { "2021-01-01": 135 } },
-                    });
-
-
-                    console.log('User data saved successfully');
-                    navigation.navigate('Home');
-                } catch (error) {
-                    console.error('Error saving user data: ', error);
-                }
-            })
-            .catch(error => setErrorMessage(error.message));
+        createNewUser(name, username, email, password, setErrorMessage);
     };
 
     return (

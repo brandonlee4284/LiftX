@@ -1,17 +1,13 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import { logoutUser } from "../../api/auth";
 
 const SettingScreen = () => {
-    const signOutUser = () => {
-        FIREBASE_AUTH.signOut();
-    };
-
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.body}>
-                    <TouchableOpacity style={{ marginTop: 32 }} onPress={signOutUser}>
+                    <TouchableOpacity style={{ marginTop: 32 }} onPress={logoutUser}>
                         <Text style={{ color: "red" }}>Logout</Text>
                     </TouchableOpacity>
                 </View>

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { AppRegistry, Platform } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -47,7 +47,7 @@ function HomeStack() {
 function RecordStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Record" component={RecordScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="Record" component={RecordScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -55,15 +55,15 @@ function RecordStack() {
 function LeaderboardStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Leaderboard" component={LeaderboardScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="Leaderboard" component={LeaderboardScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
-  );  
+  );
 }
 
 function ProfileStack() {
   return (
     <Stack.Navigator >
-      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Edit Profile" component={ProfileEditScreen} />
     </Stack.Navigator>
   );
@@ -104,12 +104,15 @@ const AppTabNavigator = () => (
 
         return <Ionicons name={iconName} size={size} color={color} />;
       },
-      headerShown: false
+      headerShown: false,
+      tabBarActiveTintColor: "black",
+      tabBarInactiveTintColor: "gray",
+      tabBarStyle: [
+        {
+          display: "flex"
+        }
+      ]
     })}
-    tabBarOptions={{
-      activeTintColor: 'black',
-      inactiveTintColor: 'gray',
-    }}
   >
     <Tab.Screen name="HomeNav" component={HomeStack} />
     <Tab.Screen name="RecordNav" component={RecordStack} />
@@ -119,10 +122,10 @@ const AppTabNavigator = () => (
 );
 
 function RootNavigator() {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [user, setUser] = React.useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     onAuthStateChanged(FIREBASE_AUTH, (user) => {
       setUser(user);
       setIsLoading(false);

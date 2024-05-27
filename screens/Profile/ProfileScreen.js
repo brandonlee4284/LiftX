@@ -1,62 +1,25 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { doc, getDoc } from "firebase/firestore";
-import { FIREBASE_AUTH, FIRESTORE_DB } from "../../FirebaseConfig";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from '@react-navigation/native';
+import { fetchPublicUserData, fetchPrivateUserData } from "../../api/userData";
 
 
 const ProfileScreen = ({ navigation, route }) => {
     const [publicUserData, setPublicUserData] = useState({});
     const [privateUserData, setPrivateUserData] = useState({});
 
-    const fetchPublicUserData = async () => {
-        const user = FIREBASE_AUTH.currentUser;
-        if (user) {
-            const userDocRef = doc(FIRESTORE_DB, 'users', user.uid);
-            try {
-                const docData = await getDoc(userDocRef);
-                if (docData.exists()) {
-                    setPublicUserData(docData.data());
-                } else {
-                    console.log('No such document!');
-                }
-            } catch (error) {
-                console.error('Error fetching public data: ', error);
-            }
-        }
-    };
-
-    const fetchPrivateUserData = async () => {
-        const user = FIREBASE_AUTH.currentUser;
-        if (user) {
-            const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'data');
-            try {
-                const docData = await getDoc(privateDataDocRef);
-                if (docData.exists()) {
-                    setPrivateUserData(docData.data());
-                } else {
-                    console.log('No such document!');
-                }
-            } catch (error) {
-                console.error('Error fetching private data: ', error);
-            }
-        }
-    };
-
-    
     useEffect(() => {
-      fetchPublicUserData();
-      fetchPrivateUserData();
+        setPrivateUserData(fetchPrivateUserData());
+        setPublicUserData(fetchPublicUserData());
 
-      const unsubscribe = navigation.addListener('focus', () => {
-          fetchPublicUserData();
-          fetchPrivateUserData();
-      });
+        const unsubscribe = navigation.addListener('focus', () => {
+            fetchPublicUserData();
+            fetchPrivateUserData();
+        });
 
-      return unsubscribe;
+        return unsubscribe;
     }, [navigation]);
-    
+
     const renderExerciseCard = (day, exercises) => {
         const dayNames = {
             M: "Monday",

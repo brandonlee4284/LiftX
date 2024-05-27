@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import { loginUser } from "../../api/auth";
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState("");
@@ -9,9 +8,7 @@ const LoginScreen = ({ navigation }) => {
     const [errorMessage, setErrorMessage] = useState(null);
 
     const handleLogin = () => {
-        const auth = FIREBASE_AUTH;
-        signInWithEmailAndPassword(auth, email, password)
-            .catch(error => setErrorMessage(error.message));
+        loginUser(email, password, setErrorMessage);
     };
 
     return (

@@ -1,62 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ScrollView } from 'react-native';
-import { getAuth } from "firebase/auth";
 import { Ionicons } from '@expo/vector-icons';
-import { FIREBASE_AUTH, FIRESTORE_DB } from "../FirebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
-
-
+import { fetchPublicUserData } from '../api/userData';
 
 const HomeScreen = ({ navigation }) => {
-    const [email, setEmail] = useState("");
-    const [displayName, setDisplayName] = useState("");
-
     const [publicUserData, setPublicUserData] = useState({});
-    const [privateUserData, setPrivateUserData] = useState({});
 
-  
     useEffect(() => {
-        const auth = getAuth();
-        const { email, displayName } = auth.currentUser;
-        setEmail(email);
-        setDisplayName(displayName);
-
-        const fetchPublicUserData = async () => {
-            const user = FIREBASE_AUTH.currentUser;
-            if (user) {
-              const userDocRef = doc(FIRESTORE_DB, 'users', user.uid);
-              try {
-                const docData = await getDoc(userDocRef);
-                if (docData.exists()) {
-                  setPublicUserData(docData.data());
-                } else {
-                  console.log('No such document!');
-                }
-              } catch (error) {
-                console.error('Error fetching public data: ', error);
-              }
+        async function fetchData() {
+            const data = await fetchPublicUserData();
+            if (data) {
+                setPublicUserData(data);
             }
-          };
-      
-          const fetchPrivateUserData = async () => {
-            const user = FIREBASE_AUTH.currentUser;
-            if (user) {
-              const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'data');
-              try {
-                const docData = await getDoc(privateDataDocRef);
-                if (docData.exists()) {
-                  setPrivateUserData(docData.data());
-                } else {
-                  console.log('No such document!');
-                }
-              } catch (error) {
-                console.error('Error fetching private data: ', error);
-              }
-            }
-          };
-      
-          fetchPublicUserData();
-          fetchPrivateUserData();
+        }
+        fetchData();
     }, []);
 
     useEffect(() => {
@@ -66,8 +23,6 @@ const HomeScreen = ({ navigation }) => {
     const handleWorkoutButtonPress = () => {
         navigation.navigate('Workout');
     };
-
-    let name = publicUserData.name
 
     return (
         <View style={styles.container}>
@@ -87,7 +42,7 @@ const HomeScreen = ({ navigation }) => {
             </View>
             <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.body}>
-                    <Text style={styles.welcomeMessage}>Welcome Back {name}!</Text>
+                    <Text style={styles.welcomeMessage}>Welcome Back {publicUserData.username}!</Text>
                     <TouchableOpacity style={styles.button} onPress={handleWorkoutButtonPress}>
                         <Text style={{ color: "white" }}>Start Today's Workout</Text>
                     </TouchableOpacity>
