@@ -53,9 +53,8 @@ export const convert3DArrayToSplits = (array) => {
     return splits;
 };
 
-
-// Fetch the user's public data from Firestore (username, strength levels, bio, etc.)
-export const fetchPublicUserData = async () => {
+// Fetch the user's public data from cloud db (Firestore) 
+export const cloudFetchPublicUserData = async () => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
         const userDocRef = doc(FIRESTORE_DB, 'users', user.uid);
@@ -72,20 +71,41 @@ export const fetchPublicUserData = async () => {
     }
 };
 
+// Fetch the user's public data, attempts to use local storage (username, strength levels, bio, etc.)
+export const fetchPublicUserData = async () => {
+    try {
+        const jsonValue = await AsyncStorage.getItem('publicUserData');
+        if (jsonValue != null) {
+            return JSON.parse(jsonValue);
+        }
+        return cloudFetchPublicUserData();
+    } catch (e) {
+        console.log('Error fetching public data from local storage, reverting to cloud backup: ', e);
+        return cloudFetchPublicUserData();
+    }
+};
+
+// Update the user's public data in the cloud (Firestore) and local storage
 export const updatePublicUserData = async (data) => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
         const userDocRef = doc(FIRESTORE_DB, 'users', user.uid);
+        try {
+            await AsyncStorage.setItem('publicUserData', JSON.stringify(data));
+        } catch (e) {
+            console.log('Error saving public data to local storage: ', e)
+        }
+
         try {
             await setDoc(userDocRef, data);
         } catch (error) {
             console.error('Error updating public data: ', error);
         }
     }
-}
+};
 
-// Fetch the user's private workout data from Firestore (1rm stats and history)
-export const fetchPrivateUserData = async () => {
+// Cloud fetch for private user data
+const cloudFetchPrivateUserData = async () => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
         const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'data');
@@ -103,10 +123,31 @@ export const fetchPrivateUserData = async () => {
     return null;
 };
 
+// Update the user's public data in the cloud (Firestore) and local storage
+export const fetchPrivateUserData = async () => {
+    try {
+        const jsonValue = await AsyncStorage.getItem('privateUserData');
+        if (jsonValue != null) {
+            return JSON.parse(jsonValue);
+        }
+        return cloudFetchPrivateUserData();
+    } catch (e) {
+        console.log('Error fetching private data from local storage, reverting to cloud backup: ', e);
+        return cloudFetchPrivateUserData();
+    }
+};
+
+// Update the user's private workout data in Firestore and local storage
 export const updatePrivateUserData = async (data) => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
         const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'data');
+        try {
+            await AsyncStorage.setItem('privateUserData', JSON.stringify(data));
+        } catch (e) {
+            console.log('Error saving private data to local storage: ', e)
+        }
+
         try {
             await setDoc(privateDataDocRef, data);
         } catch (error) {
@@ -115,8 +156,8 @@ export const updatePrivateUserData = async (data) => {
     }
 };
 
-// Fetch the user's split data from Firestore (split names and days)
-export const fetchPrivateUserSplits = async () => {
+// Cloud fetch for private user splits
+const cloudFetchPrivateUserSplits = async () => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
         const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'splits');
@@ -135,15 +176,36 @@ export const fetchPrivateUserSplits = async () => {
     return null;
 };
 
+// Fetch the user's split data from local storage or Firestore
+export const fetchPrivateUserSplits = async () => {
+    try {
+        const jsonValue = await AsyncStorage.getItem('privateUserSplits');
+        if (jsonValue != null) {
+            return convertSplitsTo3DArray(JSON.parse(jsonValue));
+        }
+        return cloudFetchPrivateUserSplits();
+    } catch (e) {
+        console.log('Error fetching private splits from local storage, reverting to cloud backup: ', e);
+        return cloudFetchPrivateUserSplits();
+    }
+};
+
+// Update the user's split data in Firestore and local storage
 export const updatePrivateUserSplits = async (data) => {
     const splits = convert3DArrayToSplits(data);
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
         const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'splits');
         try {
+            await AsyncStorage.setItem('privateUserSplits', JSON.stringify(splits));
+        } catch (e) {
+            console.log('Error saving private splits to local storage: ', e)
+        }
+
+        try {
             await setDoc(privateDataDocRef, { splits }, { merge: true });
         } catch (error) {
-            console.error('Error updating private data: ', error);
+            console.error('Error updating private splits: ', error);
         }
     }
 };

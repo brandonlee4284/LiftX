@@ -1,7 +1,6 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { FIREBASE_AUTH, FIRESTORE_DB } from "../FirebaseConfig";
-
+import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { updatePublicUserData, updatePrivateUserData, updatePrivateUserSplits } from "./userData";
 
 export const loginUser = async (email, password, setErrorMessage) => {
     const auth = FIREBASE_AUTH;
@@ -12,11 +11,10 @@ export const loginUser = async (email, password, setErrorMessage) => {
 export const createNewUser = async (name, username, email, password, setErrorMessage) => {
     const auth = FIREBASE_AUTH;
     createUserWithEmailAndPassword(auth, email, password)
-        .then(userCredentials => {
-            const user = userCredentials.user;
+        .then(() => {
             try {
-                const userDocRef = doc(FIRESTORE_DB, "users", user.uid);
-                setDoc(userDocRef, {
+                let initPublicUserData = 
+                {
                     username: username,
                     bio: "This is a sample bio.", // Placeholder bio
                     profilePicture: null, // Placeholder image
@@ -57,18 +55,18 @@ export const createNewUser = async (name, username, email, password, setErrorMes
                         },
                     },
                     privateMode: false,
-                });
+                }
 
-                const privateDataDocRef = doc(userDocRef, "userData", "data");
-                setDoc(privateDataDocRef, {
+                let initPrivateUserData = 
+                {
                     name: name,
                     email: email,
                     hiddenStats: { bench: { "2021-01-01": 135 } },
                     exerciseHistory: { bench: { "2021-01-01": 135 } },
-                });
+                }
 
-                const privateSplitsDocRef = doc(userDocRef, "userData", "splits");
-                setDoc(privateSplitsDocRef, {
+                let initPrivateSplitsData = 
+                {
                     splits: {
                         0: {
                             splitName: "PPL",
@@ -129,7 +127,11 @@ export const createNewUser = async (name, username, email, password, setErrorMes
                         },
                         order: [0, 1],
                     },
-                });
+                }
+                
+                updatePublicUserData(initPublicUserData);
+                updatePrivateUserData(initPrivateUserData);
+                updatePrivateUserSplits(initPrivateSplitsData);
 
                 console.log('User data saved successfully');
                 signInWithEmailAndPassword(auth, email, password)
