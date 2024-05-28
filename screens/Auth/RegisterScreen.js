@@ -3,14 +3,13 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-nativ
 import { createNewUser } from "../../api/auth";
 
 const RegisterScreen = ({ navigation }) => {
-    const [name, setName] = useState("");
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState(null);
 
     const handleSignUp = () => {
-        createNewUser(name, username, email, password, setErrorMessage);
+        createNewUser(username, email, password, setErrorMessage);
     };
 
     return (
@@ -22,15 +21,6 @@ const RegisterScreen = ({ navigation }) => {
             </View>
 
             <View style={styles.form}>
-                <View>
-                    <Text style={styles.inputTitle}>Full Name</Text>
-                    <TextInput
-                        style={styles.input}
-                        autoCapitalize="none"
-                        onChangeText={setName}
-                        value={name}
-                    />
-                </View>
 
                 <View style={{ marginTop: 32 }}>
                     <Text style={styles.inputTitle}>Username</Text>

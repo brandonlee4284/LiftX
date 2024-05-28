@@ -74,14 +74,14 @@ export const cloudFetchPublicUserData = async () => {
 // Fetch the user's public data, attempts to use local storage (username, strength levels, bio, etc.)
 export const fetchPublicUserData = async () => {
     try {
-        const jsonValue = await AsyncStorage.getItem('publicUserData');
+        const jsonValue = await AsyncStorage.getItem('@PublicUserData');
         if (jsonValue != null) {
             return JSON.parse(jsonValue);
         }
-        return cloudFetchPublicUserData();
+        return await cloudFetchPublicUserData();
     } catch (e) {
         console.log('Error fetching public data from local storage, reverting to cloud backup: ', e);
-        return cloudFetchPublicUserData();
+        return await cloudFetchPublicUserData();
     }
 };
 
@@ -91,7 +91,7 @@ export const updatePublicUserData = async (data) => {
     if (user) {
         const userDocRef = doc(FIRESTORE_DB, 'users', user.uid);
         try {
-            await AsyncStorage.setItem('publicUserData', JSON.stringify(data));
+            await AsyncStorage.setItem('@PublicUserData', JSON.stringify(data));
         } catch (e) {
             console.log('Error saving public data to local storage: ', e)
         }
@@ -126,14 +126,14 @@ const cloudFetchPrivateUserData = async () => {
 // Update the user's public data in the cloud (Firestore) and local storage
 export const fetchPrivateUserData = async () => {
     try {
-        const jsonValue = await AsyncStorage.getItem('privateUserData');
+        const jsonValue = await AsyncStorage.getItem('@PrivateUserData');
         if (jsonValue != null) {
             return JSON.parse(jsonValue);
         }
-        return cloudFetchPrivateUserData();
+        return await cloudFetchPrivateUserData();
     } catch (e) {
         console.log('Error fetching private data from local storage, reverting to cloud backup: ', e);
-        return cloudFetchPrivateUserData();
+        return await cloudFetchPrivateUserData();
     }
 };
 
@@ -143,7 +143,7 @@ export const updatePrivateUserData = async (data) => {
     if (user) {
         const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'data');
         try {
-            await AsyncStorage.setItem('privateUserData', JSON.stringify(data));
+            await AsyncStorage.setItem('@PrivateUserData', JSON.stringify(data));
         } catch (e) {
             console.log('Error saving private data to local storage: ', e)
         }
@@ -179,25 +179,28 @@ const cloudFetchPrivateUserSplits = async () => {
 // Fetch the user's split data from local storage or Firestore
 export const fetchPrivateUserSplits = async () => {
     try {
-        const jsonValue = await AsyncStorage.getItem('privateUserSplits');
+        const jsonValue = await AsyncStorage.getItem('@PrivateUserSplits');
         if (jsonValue != null) {
-            return convertSplitsTo3DArray(JSON.parse(jsonValue));
+            data = JSON.parse(jsonValue);
+        } else {
+            data = await cloudFetchPrivateUserSplits();
         }
-        return cloudFetchPrivateUserSplits();
+
+        return convertSplitsTo3DArray(data.splits);
     } catch (e) {
-        console.log('Error fetching private splits from local storage, reverting to cloud backup: ', e);
-        return cloudFetchPrivateUserSplits();
-    }
+    console.log('Error fetching private splits from local storage, reverting to cloud backup: ', e);
+    return await convertSplitsTo3DArray(cloudFetchPrivateUserSplits().splits);
+}
 };
 
 // Update the user's split data in Firestore and local storage
-export const updatePrivateUserSplits = async (data) => {
-    const splits = convert3DArrayToSplits(data);
+export const updatePrivateUserSplits = async (data, flat = false) => {
+    const splits = (!flat) ? convert3DArrayToSplits(data) : data;
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
         const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'userData', 'splits');
         try {
-            await AsyncStorage.setItem('privateUserSplits', JSON.stringify(splits));
+            await AsyncStorage.setItem('@PrivateUserSplits', JSON.stringify(splits));
         } catch (e) {
             console.log('Error saving private splits to local storage: ', e)
         }

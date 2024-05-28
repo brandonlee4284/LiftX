@@ -28,20 +28,6 @@ const WorkoutScreen = ({ navigation }) => {
         }
     }, [selectedDay]);
 
-    // Adding functionality to update workout 
-    // const removeDay = async () => {
-    //     if (selectedDay) {
-    //         const updatedWorkoutData = workoutData.map(split => ({
-    //             ...split,
-    //             days: split.days.filter(day => day.dayName !== selectedDay.dayName)
-    //         }));
-
-    //         setWorkoutData(updatedWorkoutData);
-    //         await updateWorkoutData(updatedWorkoutData);
-    //         setSelectedDay(null);
-    //     }
-    // };
-
     const renderExercise = (exercise, index) => {
         const minReps = Math.min(...exercise.reps);
         const maxReps = Math.max(...exercise.reps);
@@ -149,7 +135,7 @@ const WorkoutScreen = ({ navigation }) => {
                                         renderItem={renderExerciseInPopupView}
                                         contentContainerStyle={styles.popupExerciseList}
                                     />
-                                    <TouchableOpacity onPress={removeDay}>
+                                    <TouchableOpacity>
                                         <Text style={styles.removeButton}>Remove {selectedDay?.dayName}</Text>
                                     </TouchableOpacity>
                                     <Button

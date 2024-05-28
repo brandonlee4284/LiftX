@@ -1,6 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { updatePublicUserData, updatePrivateUserData, updatePrivateUserSplits } from "./userData";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const loginUser = async (email, password, setErrorMessage) => {
     const auth = FIREBASE_AUTH;
@@ -8,12 +9,12 @@ export const loginUser = async (email, password, setErrorMessage) => {
         .catch(error => setErrorMessage(error.message));
 };
 
-export const createNewUser = async (name, username, email, password, setErrorMessage) => {
+export const createNewUser = async (username, email, password, setErrorMessage) => {
     const auth = FIREBASE_AUTH;
     createUserWithEmailAndPassword(auth, email, password)
         .then(() => {
             try {
-                let initPublicUserData = 
+                let initPublicUserData =
                 {
                     username: username,
                     bio: "This is a sample bio.", // Placeholder bio
@@ -57,15 +58,14 @@ export const createNewUser = async (name, username, email, password, setErrorMes
                     privateMode: false,
                 }
 
-                let initPrivateUserData = 
+                let initPrivateUserData =
                 {
-                    name: name,
                     email: email,
                     hiddenStats: { bench: { "2021-01-01": 135 } },
                     exerciseHistory: { bench: { "2021-01-01": 135 } },
                 }
 
-                let initPrivateSplitsData = 
+                let initPrivateSplitsData =
                 {
                     splits: {
                         0: {
@@ -128,13 +128,16 @@ export const createNewUser = async (name, username, email, password, setErrorMes
                         order: [0, 1],
                     },
                 }
-                
-                updatePublicUserData(initPublicUserData);
-                updatePrivateUserData(initPrivateUserData);
-                updatePrivateUserSplits(initPrivateSplitsData);
 
-                console.log('User data saved successfully');
-                signInWithEmailAndPassword(auth, email, password)
+                updatePublicUserData(initPublicUserData).then(
+                    updatePrivateUserData(initPrivateUserData).then(
+                        updatePrivateUserSplits(initPrivateSplitsData, flat=true).then(() => {
+                            console.log('User data saved successfully');
+                            signInWithEmailAndPassword(auth, email, password);
+                        }
+                        )
+                    )
+                )
             } catch (error) {
                 console.error('Error saving user data: ', error);
             }
@@ -143,5 +146,11 @@ export const createNewUser = async (name, username, email, password, setErrorMes
 };
 
 export const logoutUser = async () => {
+    const keys = ['@PublicUserData', '@PrivateUserData', '@PrivateUserSplits']
+    try {
+        await AsyncStorage.multiRemove(keys)
+    } catch (e) {
+        console.log('Error removing user data from local storage: ', e);
+    }
     FIREBASE_AUTH.signOut();
 }
