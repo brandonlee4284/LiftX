@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Button } from 'react-native';
+import { View, Text, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Button, StyleSheet, Dimensions } from 'react-native';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 
-import { fetchPrivateUserSplits, updateWorkoutData } from '../../api/userData';
-import styles from './WorkoutStyles';
+import { fetchPrivateUserSplits, updatePrivateUserSplits, convert3DArrayToSplits } from '../../api/userData';
+
+const { height, width } = Dimensions.get('window');
 
 const WorkoutScreen = ({ navigation }) => {
     const [workoutData, setWorkoutData] = useState([]);
     const [maxDayCardHeight, setMaxDayCardHeight] = useState(0);
     const [selectedDay, setSelectedDay] = useState(null);
     const [selectedExercises, setSelectedExercises] = useState([]);
+    const [editMode, setEditMode] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
             const data = await fetchPrivateUserSplits();
-            if (data) {
+            console.log("Fetched workout data:", data);
+            if (data && Array.isArray(data)) {
                 setWorkoutData(data);
+            } else {
+                console.error("Invalid data structure:", data);
             }
         }
 
@@ -54,14 +59,36 @@ const WorkoutScreen = ({ navigation }) => {
             >
                 <View style={styles.exercisePopupContainer}>
                     {item.reps.map((rep, repIndex) => (
-                        <Text key={repIndex} style={styles.exerciseTextPopup}>
-                            {item.name} {rep} @ {item.weight[repIndex]} lbs
-                        </Text>
+                        <View key={repIndex} style={styles.exerciseRow}>
+                            <Text style={styles.exerciseTextPopup}>
+                                {item.name} {rep} @ {item.weight[repIndex]} lbs
+                            </Text>
+                            {editMode && (
+                                <TouchableOpacity
+                                    style={styles.deleteButton}
+                                    onPress={() => deleteExerciseRow(item, repIndex)}
+                                >
+                                    <Text style={styles.deleteButtonText}>X</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
                     ))}
                 </View>
             </TouchableOpacity>
         </ScaleDecorator>
     );
+
+    const deleteExerciseRow = (exercise, repIndex) => {
+        const updatedExercises = selectedExercises.map((ex) => {
+            if (ex.name === exercise.name) {
+                const updatedReps = ex.reps.filter((_, index) => index !== repIndex);
+                const updatedWeights = ex.weight.filter((_, index) => index !== repIndex);
+                return { ...ex, reps: updatedReps, weight: updatedWeights, sets: updatedReps.length };
+            }
+            return ex;
+        }).filter((ex) => ex.reps.length > 0);
+        setSelectedExercises(updatedExercises);
+    };
 
     const renderDay = ({ item }) => (
         <TouchableOpacity
@@ -103,6 +130,38 @@ const WorkoutScreen = ({ navigation }) => {
         }
     };
 
+    const handleEditModeToggle = async () => {
+        if (editMode) {
+            const updatedWorkoutData = workoutData.map(split => {
+                if (split.days.some(day => day.dayName === selectedDay.dayName)) {
+                    return {
+                        ...split,
+                        days: split.days.map(day => {
+                            if (day.dayName === selectedDay.dayName) {
+                                return { ...day, exercises: selectedExercises };
+                            }
+                            return day;
+                        })
+                    };
+                }
+                return split;
+            });
+    
+            const updatedWorkoutDataForStorage = {
+                splits: convert3DArrayToSplits(updatedWorkoutData),
+            };
+    
+            try {
+                await updatePrivateUserSplits(updatedWorkoutDataForStorage, true);
+            } catch (error) {
+                console.error('Error updating private user splits: ', error);
+            }
+    
+            setWorkoutData(updatedWorkoutData);
+        }
+        setEditMode(!editMode);
+    };
+
     return (
         <View style={styles.container}>
             <FlatList
@@ -125,7 +184,7 @@ const WorkoutScreen = ({ navigation }) => {
                             <View style={styles.modalContainer}>
                                 <View style={styles.modalHeader}>
                                     <Text style={styles.modalTitle}>{selectedDay?.dayName}</Text>
-                                    <Button title="Close" onPress={() => setSelectedDay(null)} />
+                                    <Button title={editMode ? "Done" : "Edit"} onPress={handleEditModeToggle} />
                                 </View>
                                 <View style={styles.modalBody}>
                                     <DraggableFlatList
@@ -154,3 +213,118 @@ const WorkoutScreen = ({ navigation }) => {
 };
 
 export default WorkoutScreen;
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    splitContainer: {
+        marginBottom: 20,
+        alignItems: 'flex-start',
+    },
+    splitTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        margin: 15,
+    },
+    horizontalFlatListContent: {
+        paddingHorizontal: 10,
+    },
+    dayCard: {
+        alignItems: 'center',
+        width: width * 0.30,
+        backgroundColor: '#e0e0e0',
+        borderColor: '#000',
+        borderWidth: 1,
+        borderRadius: 10,
+        marginHorizontal: 5,
+        padding: 10,
+    },
+    dayText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    exerciseCard: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        width: '100%',
+        paddingHorizontal: 5,
+        marginBottom: 5,
+    },
+    exerciseCardPopup: {
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        width: '100%',
+        paddingHorizontal: 5,
+        marginBottom: 5,
+    },
+    exercisePopupContainer: {
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        width: '100%',
+    },
+    exerciseRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+    },
+    exerciseText: {
+        fontSize: 14,
+    },
+    exerciseTextPopup: {
+        fontSize: 16,
+        textAlign: 'left',
+    },
+    exerciseList: {
+        paddingBottom: 20,
+    },
+    verticalFlatListContent: {
+        paddingVertical: 20,
+    },
+    line: {
+        width: '100%',
+        height: 1,
+        backgroundColor: 'lightgray',
+        marginTop: 40,
+    },
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContainer: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    modalTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+    },
+    modalBody: {},
+    removeButton: {
+        fontSize: 16,
+        color: 'red',
+        marginTop: 10,
+        marginBottom: 20,
+        textAlign: 'center',
+    },
+    deleteButton: {
+        marginLeft: 10,
+    },
+    deleteButtonText: {
+        color: 'red',
+        fontSize: 16,
+    },
+});
