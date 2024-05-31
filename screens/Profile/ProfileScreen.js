@@ -3,57 +3,19 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'rea
 import { Ionicons } from "@expo/vector-icons";
 import { fetchPublicUserData, fetchPrivateUserData } from "../../api/userData";
 
-
 const ProfileScreen = ({ navigation, route }) => {
     const [publicUserData, setPublicUserData] = useState({});
-    const [privateUserData, setPrivateUserData] = useState({});
 
     useEffect(() => {
-        setPrivateUserData(fetchPrivateUserData());
-        setPublicUserData(fetchPublicUserData());
+        async function fetchData() {
+            const data = await fetchPublicUserData();
+            if (data) {
+                setPublicUserData(data);
+            }
+        }
 
-        const unsubscribe = navigation.addListener('focus', () => {
-            fetchPublicUserData();
-            fetchPrivateUserData();
-        });
-
-        return unsubscribe;
-    }, [navigation]);
-
-    const renderExerciseCard = (day, exercises) => {
-        const dayNames = {
-            M: "Monday",
-            Tu: "Tuesday",
-            W: "Wednesday",
-            Th: "Thursday",
-            F: "Friday",
-            S: "Saturday",
-            Su: "Sunday"
-        };
-
-        return (
-            <View key={day} style={styles.dayCard}>
-                <Text style={styles.dayTitle}>{dayNames[day]}</Text>
-                {exercises.map((exercise, index) => (
-                    <View key={index} style={styles.exerciseRow}>
-                        <Text style={styles.exerciseName}>{exercise.exercise}</Text>
-                        <Text style={styles.exerciseStats}>{exercise.stats}</Text>
-                    </View>
-                ))}
-            </View>
-        );
-    };
-
-    let { workoutSplit, gymStats, bio, profilePicture, displayName, username, email, friendsCount } = publicUserData;
-    //console.log('Public User Data:', publicUserData.activity);
-    //workoutSplit = publicUserData.activeSplit
-    //gymStats = publicUserData.displayStats
-    bio = publicUserData.bio
-    profilePicture = publicUserData.profilePicture
-    displayName = publicUserData.name
-    email = publicUserData.email
-    friendsCount = publicUserData.numFriends
-    username = publicUserData.username
+        fetchData();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -74,19 +36,18 @@ const ProfileScreen = ({ navigation, route }) => {
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.body}>
-                    {profilePicture ? (
-                        <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+                    {!!publicUserData.profilePicture ? (
+                        <Image source={{ uri: publicUserData.profilePicture }} style={styles.profilePicture} />
                     ) : (
                         <Ionicons name="person-circle" size={150} color="gray" style={styles.profileIcon} />
                     )}
-                    <Text style={styles.displayName}>{displayName}</Text>
-                    <Text style={styles.username}>@{username}</Text>
+                    <Text style={styles.username}>@{publicUserData.username}</Text>
                     <Text style={styles.friendsCount}>
-                        <Text style={styles.boldText}>{friendsCount}</Text> friends
+                        <Text style={styles.boldText}>{publicUserData.numFriends}</Text> friends
                     </Text>
-                    <Text style={styles.bio}>{bio}</Text>
+                    <Text style={styles.bio}>{publicUserData.bio}</Text>
 
-                    <View style={styles.splitContainer}>
+                    {/* <View style={styles.splitContainer}>
                         <View style={styles.line} />
                         <Text style={styles.splitText}>Current Split</Text>
                     </View>
@@ -105,7 +66,7 @@ const ProfileScreen = ({ navigation, route }) => {
                                 <Text style={styles.statValue}>{stats}</Text>
                             </View>
                         ))}
-                    </View>
+                    </View> */}
 
                     <View style={styles.line} />
 
