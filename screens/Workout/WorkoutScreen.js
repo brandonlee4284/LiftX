@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Button, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Button, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 
 import { fetchPrivateUserSplits, updatePrivateUserSplits, convert3DArrayToSplits } from '../../api/userData';
@@ -12,6 +12,10 @@ const WorkoutScreen = ({ navigation }) => {
     const [selectedDay, setSelectedDay] = useState(null);
     const [selectedExercises, setSelectedExercises] = useState([]);
     const [editMode, setEditMode] = useState(false);
+    const [isAddSplitModalVisible, setIsAddSplitModalVisible] = useState(false);
+    const [newSplit, setNewSplit] = useState({ dayName: '', exercises: [] });
+    const [isNewSplitModalVisible, setIsNewSplitModalVisible] = useState(false);
+    const [newSplitName, setNewSplitName] = useState('');
 
     useEffect(() => {
         async function fetchData() {
@@ -33,6 +37,16 @@ const WorkoutScreen = ({ navigation }) => {
         }
     }, [selectedDay]);
 
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity onPress={() => setIsNewSplitModalVisible(true)} style={{ marginRight: 25 }}>
+                    <Text style={{ fontSize: 26, color: '#000' }}>+</Text>
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
+
     const renderExercise = (exercise, index) => {
         const minReps = Math.min(...exercise.reps);
         const maxReps = Math.max(...exercise.reps);
@@ -45,6 +59,27 @@ const WorkoutScreen = ({ navigation }) => {
                 </Text>
             </View>
         );
+    };
+
+    
+    const handleSaveNewSplitModal = async () => {
+        const updatedWorkoutData = [...workoutData, { splitName: newSplitName, days: [] }];
+    
+        const updatedWorkoutDataForStorage = {
+            splits: convert3DArrayToSplits(updatedWorkoutData),
+        };
+    
+        try {
+            await updatePrivateUserSplits(updatedWorkoutDataForStorage, true);
+            setWorkoutData(updatedWorkoutData);
+            setIsNewSplitModalVisible(false);
+        } catch (error) {
+            console.error('Error adding new split: ', error);
+        }
+    };
+
+    const handleSaveNewSplit = async () => {
+        
     };
 
     const renderExerciseInPopupView = ({ item, drag, isActive }) => (
@@ -64,12 +99,23 @@ const WorkoutScreen = ({ navigation }) => {
                                 {item.name} {rep} @ {item.weight[repIndex]} lbs
                             </Text>
                             {editMode && (
-                                <TouchableOpacity
-                                    style={styles.deleteButton}
-                                    onPress={() => deleteExerciseRow(item, repIndex)}
-                                >
-                                    <Text style={styles.deleteButtonText}>X</Text>
-                                </TouchableOpacity>
+                                <>
+                                    <TouchableOpacity
+                                        style={styles.deleteButton}
+                                        onPress={() => deleteExerciseRow(item, repIndex)}
+                                    >
+                                        <Text style={styles.deleteButtonText}>X</Text>
+                                    </TouchableOpacity>
+
+                                    <TextInput
+                                        style={styles.textInput}
+                                        keyboardType="numeric"
+                                    />
+                                    <TextInput
+                                        style={styles.textInput}
+                                        keyboardType="numeric"
+                                    />
+                                </>
                             )}
                         </View>
                     ))}
@@ -92,7 +138,10 @@ const WorkoutScreen = ({ navigation }) => {
 
     const renderDay = ({ item }) => (
         <TouchableOpacity
-            onPress={() => setSelectedDay(item)}
+            onPress={() => {
+                setSelectedDay(item);
+                setEditMode(false); // Always set edit mode to false when a day is selected
+            }}
             onLayout={event => {
                 const { height } = event.nativeEvent.layout;
                 if (height > maxDayCardHeight) {
@@ -113,9 +162,20 @@ const WorkoutScreen = ({ navigation }) => {
             <Text style={styles.splitTitle}>{item.splitName}</Text>
             <FlatList
                 horizontal
-                data={item.days}
-                renderItem={renderDay}
-                keyExtractor={(day, index) => `${day.dayName}-${index}`}
+                data={[...item.days, { isAddButton: true }]} // Add a dummy item for the add button
+                renderItem={({ item }) =>
+                    item.isAddButton ? (
+                        <TouchableOpacity
+                            style={[styles.dayCard, styles.addSplitCard, { minHeight: maxDayCardHeight }]}
+                            onPress={() => setIsAddSplitModalVisible(true)}
+                        >
+                            <Text style={styles.addSplitText}>+</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        renderDay({ item })
+                    )
+                }
+                keyExtractor={(day, index) => `day-${index}`}
                 contentContainerStyle={styles.horizontalFlatListContent}
                 showsHorizontalScrollIndicator={false}
             />
@@ -146,21 +206,67 @@ const WorkoutScreen = ({ navigation }) => {
                 }
                 return split;
             });
-    
+
             const updatedWorkoutDataForStorage = {
                 splits: convert3DArrayToSplits(updatedWorkoutData),
             };
-    
+
             try {
                 await updatePrivateUserSplits(updatedWorkoutDataForStorage, true);
             } catch (error) {
                 console.error('Error updating private user splits: ', error);
             }
-    
+
             setWorkoutData(updatedWorkoutData);
         }
         setEditMode(!editMode);
     };
+
+    const handleModalClose = () => {
+        setSelectedDay(null);
+        setEditMode(false); // Toggle edit mode when closing the modal
+    };
+
+    const removeDay = async () => {
+        const updatedWorkoutData = workoutData.map(split => ({
+            ...split,
+            days: split.days.filter(day => day.dayName !== selectedDay.dayName)
+        }));
+
+        const updatedWorkoutDataForStorage = {
+            splits: convert3DArrayToSplits(updatedWorkoutData),
+        };
+
+        try {
+            await updatePrivateUserSplits(updatedWorkoutDataForStorage, true);
+            setWorkoutData(updatedWorkoutData);
+            handleModalClose();
+        } catch (error) {
+            console.error('Error removing day: ', error);
+        }
+    };
+
+    const handleAddExerciseRow = () => {
+        setNewSplit(prevState => ({
+            ...prevState,
+            exercises: [...prevState.exercises, { name: '', sets: '', reps: '', weight: '' }]
+        }));
+    };
+
+    const handleNewSplitChange = (value, index, key) => {
+        const updatedExercises = newSplit.exercises.map((exercise, idx) => {
+            if (index === idx) {
+                return { ...exercise, [key]: value };
+            }
+            return exercise;
+        });
+
+        setNewSplit(prevState => ({
+            ...prevState,
+            exercises: updatedExercises
+        }));
+    };
+
 
     return (
         <View style={styles.container}>
@@ -173,12 +279,12 @@ const WorkoutScreen = ({ navigation }) => {
             />
 
             <Modal
-                visible={!!selectedDay}
+                visible={selectedDay !== null}
                 animationType="fade"
                 transparent={true}
-                onRequestClose={() => setSelectedDay(null)}
+                onRequestClose={handleModalClose}
             >
-                <TouchableWithoutFeedback onPress={() => setSelectedDay(null)}>
+                <TouchableWithoutFeedback onPress={handleModalClose}>
                     <View style={styles.modalOverlay}>
                         <TouchableWithoutFeedback>
                             <View style={styles.modalContainer}>
@@ -194,7 +300,7 @@ const WorkoutScreen = ({ navigation }) => {
                                         renderItem={renderExerciseInPopupView}
                                         contentContainerStyle={styles.popupExerciseList}
                                     />
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={removeDay}>
                                         <Text style={styles.removeButton}>Remove {selectedDay?.dayName}</Text>
                                     </TouchableOpacity>
                                     <Button
@@ -207,6 +313,93 @@ const WorkoutScreen = ({ navigation }) => {
                         </TouchableWithoutFeedback>
                     </View>
                 </TouchableWithoutFeedback>
+            </Modal>
+
+            <Modal
+                visible={isAddSplitModalVisible}
+                animationType="fade"
+                transparent={true}
+                onRequestClose={() => setIsAddSplitModalVisible(false)}
+            >
+                <TouchableWithoutFeedback onPress={() => setIsAddSplitModalVisible(false)}>
+                    <View style={styles.modalOverlay}>
+                        <TouchableWithoutFeedback>
+                            <View style={styles.modalContainer}>
+                                <ScrollView contentContainerStyle={styles.modalBodyCentered}>
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="Day Name"
+                                        value={newSplit.dayName}
+                                        onChangeText={(text) => setNewSplit({ ...newSplit, dayName: text })}
+                                    />
+                                    {newSplit.exercises.map((exercise, index) => (
+                                        <View key={index} style={styles.exerciseInputRowCentered}>
+                                            <TextInput
+                                                style={[styles.input, styles.smallInput]}
+                                                placeholder="Name"
+                                                value={exercise.name}
+                                                onChangeText={(text) => handleNewSplitChange(text, index, 'name')}
+                                            />
+                                            <TextInput
+                                                style={[styles.input, styles.smallInput]}
+                                                placeholder="Sets"
+                                                value={exercise.sets}
+                                                keyboardType="numeric"
+                                                onChangeText={(text) => handleNewSplitChange(text, index, 'sets')}
+                                            />
+                                            <Text> X </Text>
+                                            <TextInput
+                                                style={[styles.input, styles.smallInput]}
+                                                placeholder="Reps"
+                                                value={exercise.reps}
+                                                keyboardType="numeric"
+                                                onChangeText={(text) => handleNewSplitChange(text, index, 'reps')}
+                                            />
+                                            <Text> @ </Text>
+                                            <TextInput
+                                                style={[styles.input, styles.smallInput]}
+                                                placeholder="Weight"
+                                                value={exercise.weight}
+                                                keyboardType="numeric"
+                                                onChangeText={(text) => handleNewSplitChange(text, index, 'weight')}
+                                            />
+                                        </View>
+                                    ))}
+                                    <TouchableOpacity onPress={handleAddExerciseRow} style={styles.addExerciseButton}>
+                                        <Text style={styles.addExerciseButtonText}>Add Exercise</Text>
+                                    </TouchableOpacity>
+                                    <Button
+                                        title="Save"
+                                        onPress={handleSaveNewSplit}
+                                        color="blue"
+                                    />
+                                </ScrollView>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+
+            <Modal
+                visible={isNewSplitModalVisible}
+                animationType="fade"
+                onRequestClose={() => setIsNewSplitModalVisible(false)}
+                transparent={true}
+            >
+                <View style={styles.addSplitModalContainer}>
+                    <TouchableWithoutFeedback onPress={() => setIsNewSplitModalVisible(false)}>
+                        <View style={styles.overlay} />
+                    </TouchableWithoutFeedback>
+                    <View style={styles.addSplitModalContent}>
+                        <Text style={styles.modalTitle}>Add New Split</Text>
+                        <TextInput
+                            style={styles.textInput}
+                            value={newSplitName}
+                            onChangeText={setNewSplitName}
+                        />
+                        <Button title="Save" onPress={handleSaveNewSplitModal} />
+                    </View>
+                </View>
             </Modal>
         </View>
     );
@@ -234,7 +427,7 @@ const styles = StyleSheet.create({
     dayCard: {
         alignItems: 'center',
         width: width * 0.30,
-        backgroundColor: '#e0e0e0',
+        backgroundColor: '#fff',
         borderColor: '#000',
         borderWidth: 1,
         borderRadius: 10,
@@ -301,6 +494,7 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 10,
         width: '80%',
+        maxHeight: '80%',
     },
     modalHeader: {
         flexDirection: 'row',
@@ -312,7 +506,13 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
     },
-    modalBody: {},
+    modalBody: {
+        flexGrow: 1,
+    },
+    modalBodyCentered: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     removeButton: {
         fontSize: 16,
         color: 'red',
@@ -326,5 +526,82 @@ const styles = StyleSheet.create({
     deleteButtonText: {
         color: 'red',
         fontSize: 16,
+    },
+    addSplitCard: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: width * 0.30,
+        backgroundColor: '#fff',
+        borderColor: '#000',
+        borderWidth: 1,
+        borderRadius: 10,
+        marginHorizontal: 5,
+        padding: 10,
+    },
+    addSplitText: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        color: '#000',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        padding: 10,
+        marginVertical: 10,
+        width: '100%',
+    },
+    exerciseInputRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+    },
+    exerciseInputRowCentered: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        marginVertical: 5,
+    },
+    smallInput: {
+        width: '20%',
+        textAlign: 'center',
+    },
+    addExerciseButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 10,
+    },
+    addExerciseButtonText: {
+        color: 'blue',
+        fontSize: 16,
+    },
+    textInput: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        width: 200,
+        textAlign: 'center',
+        marginVertical: 30
+    },
+    addSplitModalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    addSplitModalContent: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+        alignItems: 'center',
+    },
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
 });

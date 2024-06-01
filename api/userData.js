@@ -212,3 +212,13 @@ export const updatePrivateUserSplits = async (data, flat = false) => {
         }
     }
 };
+
+export const logoutUser = async () => {
+    try {
+        await AsyncStorage.clear();
+        // Navigate to login screen or any other action needed on logout
+        // Example: navigation.navigate('LoginScreen');
+    } catch (error) {
+        console.error('Error clearing local storage: ', error);
+    }
+};
