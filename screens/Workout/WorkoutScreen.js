@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Button, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 import { fetchPrivateUserSplits, updatePrivateUserSplits, convert3DArrayToSplits } from '../../api/userData';
 
 const { height, width } = Dimensions.get('window');
@@ -16,13 +16,19 @@ const WorkoutScreen = ({ navigation }) => {
     const [newSplit, setNewSplit] = useState({ dayName: '', exercises: [] });
     const [isNewSplitModalVisible, setIsNewSplitModalVisible] = useState(false);
     const [newSplitName, setNewSplitName] = useState('');
+    const [selectedSplit, setSelectedSplit] = useState(null);
+
 
     useEffect(() => {
         async function fetchData() {
             const data = await fetchPrivateUserSplits();
             console.log("Fetched workout data:", data);
             if (data && Array.isArray(data)) {
-                setWorkoutData(data);
+                const initializedData = data.map(split => ({
+                    ...split,
+                    days: split.days || [],
+                }));
+                setWorkoutData(initializedData);
             } else {
                 console.error("Invalid data structure:", data);
             }
@@ -37,6 +43,7 @@ const WorkoutScreen = ({ navigation }) => {
         }
     }, [selectedDay]);
 
+
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
@@ -46,6 +53,8 @@ const WorkoutScreen = ({ navigation }) => {
             ),
         });
     }, [navigation]);
+
+    
 
     const renderExercise = (exercise, index) => {
         const minReps = Math.min(...exercise.reps);
@@ -79,7 +88,51 @@ const WorkoutScreen = ({ navigation }) => {
     };
 
     const handleSaveNewSplit = async () => {
-        
+        if (!selectedSplit) return;
+    
+        const updatedWorkoutData = workoutData.map(split => {
+            if (split.splitName === selectedSplit) {
+                return {
+                    ...split,
+                    days: [...split.days, {
+                        dayName: newSplit.dayName,
+                        exercises: newSplit.exercises.map(exercise => ({
+                            ...exercise,
+                            reps: exercise.reps || [],
+                            weight: exercise.weight || [],
+                        })),
+                    }]
+                };
+            }
+            return split;
+        });
+    
+        const updatedWorkoutDataForStorage = {
+            splits: convert3DArrayToSplits(updatedWorkoutData),
+        };
+    
+        try {
+            await updatePrivateUserSplits(updatedWorkoutDataForStorage, true);
+            setWorkoutData(updatedWorkoutData);
+            setIsAddSplitModalVisible(false);
+            setNewSplit({ dayName: '', exercises: [] });
+            setSelectedSplit(null); // Reset selectedSplit after adding the day
+        } catch (error) {
+            console.error('Error adding new split: ', error);
+        }
+    };
+    
+
+    const handleEditExerciseChange = (exercise, repIndex, key, value) => {
+        const updatedExercises = selectedExercises.map((ex) => {
+            if (ex.name === exercise.name) {
+                const updatedReps = key === 'reps' ? ex.reps.map((rep, index) => index === repIndex ? parseInt(value, 10) : rep) : ex.reps;
+                const updatedWeights = key === 'weight' ? ex.weight.map((weight, index) => index === repIndex ? parseInt(value, 10) : weight) : ex.weight;
+                return { ...ex, reps: updatedReps, weight: updatedWeights, sets: updatedReps.length };
+            }
+            return ex;
+        });
+        setSelectedExercises(updatedExercises);
     };
 
     const renderExerciseInPopupView = ({ item, drag, isActive }) => (
@@ -95,25 +148,30 @@ const WorkoutScreen = ({ navigation }) => {
                 <View style={styles.exercisePopupContainer}>
                     {item.reps.map((rep, repIndex) => (
                         <View key={repIndex} style={styles.exerciseRow}>
+                            {editMode && (
+                                <TouchableOpacity
+                                    style={styles.deleteButton}
+                                    onPress={() => deleteExerciseRow(item, repIndex)}
+                                >
+                                    <Text style={styles.deleteButtonText}>X</Text>
+                                </TouchableOpacity>
+                            )}
                             <Text style={styles.exerciseTextPopup}>
                                 {item.name} {rep} @ {item.weight[repIndex]} lbs
                             </Text>
                             {editMode && (
                                 <>
-                                    <TouchableOpacity
-                                        style={styles.deleteButton}
-                                        onPress={() => deleteExerciseRow(item, repIndex)}
-                                    >
-                                        <Text style={styles.deleteButtonText}>X</Text>
-                                    </TouchableOpacity>
-
                                     <TextInput
-                                        style={styles.textInput}
+                                        style={styles.textInputEditSplit}
                                         keyboardType="numeric"
+                                        value={rep.toString()}
+                                        onChangeText={(text) => handleEditExerciseChange(item, repIndex, 'reps', text)}
                                     />
                                     <TextInput
-                                        style={styles.textInput}
+                                        style={styles.textInputEditSplit}
                                         keyboardType="numeric"
+                                        value={item.weight[repIndex].toString()}
+                                        onChangeText={(text) => handleEditExerciseChange(item, repIndex, 'weight', text)}
                                     />
                                 </>
                             )}
@@ -157,17 +215,41 @@ const WorkoutScreen = ({ navigation }) => {
         </TouchableOpacity>
     );
 
+    const deleteSplit = async (splitName) => {
+        const updatedWorkoutData = workoutData.filter(split => split.splitName !== splitName);
+        const updatedWorkoutDataForStorage = {
+            splits: convert3DArrayToSplits(updatedWorkoutData),
+        };
+    
+        try {
+            await updatePrivateUserSplits(updatedWorkoutDataForStorage, true);
+            setWorkoutData(updatedWorkoutData);
+        } catch (error) {
+            console.error('Error deleting split: ', error);
+        }
+    };
+
     const renderSplit = ({ item }) => (
         <View style={styles.splitContainer}>
-            <Text style={styles.splitTitle}>{item.splitName}</Text>
+            <View style={styles.splitHeader}>
+                <Text style={styles.splitTitle}>{item.splitName}</Text>
+                <TouchableOpacity onPress={() => deleteSplit(item.splitName)}>
+                    <Icon name="trash-outline" size={24} color="red" />
+                </TouchableOpacity>
+            </View>
             <FlatList
                 horizontal
-                data={[...item.days, { isAddButton: true }]} // Add a dummy item for the add button
+                data={[...item.days, { isAddButton: true, splitName: item.splitName }]} // Add splitName to the dummy item
                 renderItem={({ item }) =>
                     item.isAddButton ? (
                         <TouchableOpacity
                             style={[styles.dayCard, styles.addSplitCard, { minHeight: maxDayCardHeight }]}
-                            onPress={() => setIsAddSplitModalVisible(true)}
+                            onPress={() => {
+                                setNewSplit({ dayName: '', exercises: [] });
+                                setSelectedDay(null); // Deselect any day
+                                setSelectedSplit(item.splitName); // Set the selected split
+                                setIsAddSplitModalVisible(true);
+                            }}
                         >
                             <Text style={styles.addSplitText}>+</Text>
                         </TouchableOpacity>
@@ -249,21 +331,41 @@ const WorkoutScreen = ({ navigation }) => {
     const handleAddExerciseRow = () => {
         setNewSplit(prevState => ({
             ...prevState,
-            exercises: [...prevState.exercises, { name: '', sets: '', reps: '', weight: '' }]
+            exercises: [...prevState.exercises, { name: '', sets: '', reps: [], weight: [] }],
         }));
     };
 
     const handleNewSplitChange = (value, index, key) => {
         const updatedExercises = newSplit.exercises.map((exercise, idx) => {
             if (index === idx) {
-                return { ...exercise, [key]: value };
+                let updatedExercise = { ...exercise };
+    
+                if (key === 'sets') {
+                    // Update sets and keep reps and weight arrays unchanged
+                    updatedExercise.sets = value;
+                } else if (key === 'reps') {
+                    // Update reps with the new value and maintain the length equal to sets
+                    const sets = parseInt(newSplit.exercises[index].sets, 10) || 0;
+                    updatedExercise.reps = Array(sets).fill(value.trim());
+                    updatedExercise.repsDisplay = value.trim(); // Store single value for display
+                } else if (key === 'weight') {
+                    // Update weight with the new value and maintain the length equal to sets
+                    const sets = parseInt(newSplit.exercises[index].sets, 10) || 0;
+                    updatedExercise.weight = Array(sets).fill(value.trim());
+                    updatedExercise.weightDisplay = value.trim(); // Store single value for display
+                } else {
+                    // For other keys, simply update the value
+                    updatedExercise[key] = value;
+                }
+    
+                return updatedExercise;
             }
             return exercise;
         });
-
+    
         setNewSplit(prevState => ({
             ...prevState,
-            exercises: updatedExercises
+            exercises: updatedExercises,
         }));
     };
 
@@ -351,17 +453,15 @@ const WorkoutScreen = ({ navigation }) => {
                                             <TextInput
                                                 style={[styles.input, styles.smallInput]}
                                                 placeholder="Reps"
-                                                value={exercise.reps}
-                                                keyboardType="numeric"
-                                                onChangeText={(text) => handleNewSplitChange(text, index, 'reps')}
+                                                value={exercise.repsDisplay || ''}
+                                                onChangeText={value => handleNewSplitChange(value, index, 'reps')}
                                             />
                                             <Text> @ </Text>
                                             <TextInput
                                                 style={[styles.input, styles.smallInput]}
                                                 placeholder="Weight"
-                                                value={exercise.weight}
-                                                keyboardType="numeric"
-                                                onChangeText={(text) => handleNewSplitChange(text, index, 'weight')}
+                                                value={exercise.weightDisplay || ''}
+                                                onChangeText={value => handleNewSplitChange(value, index, 'weight')}
                                             />
                                         </View>
                                     ))}
@@ -393,7 +493,7 @@ const WorkoutScreen = ({ navigation }) => {
                     <View style={styles.addSplitModalContent}>
                         <Text style={styles.modalTitle}>Add New Split</Text>
                         <TextInput
-                            style={styles.textInput}
+                            style={styles.textInputAddSplit}
                             value={newSplitName}
                             onChangeText={setNewSplitName}
                         />
@@ -420,6 +520,13 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         margin: 15,
+    },
+    splitHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        paddingHorizontal: 15,
     },
     horizontalFlatListContent: {
         paddingHorizontal: 10,
@@ -521,7 +628,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     deleteButton: {
-        marginLeft: 10,
+        marginRight: 10,
     },
     deleteButtonText: {
         color: 'red',
@@ -577,12 +684,19 @@ const styles = StyleSheet.create({
         color: 'blue',
         fontSize: 16,
     },
-    textInput: {
+    textInputAddSplit: {
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
         width: 200,
         textAlign: 'center',
         marginVertical: 30
+    },
+    textInputEditSplit: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+        width: 50,
+        textAlign: 'center',
+        marginHorizontal: 10,
     },
     addSplitModalContainer: {
         flex: 1,
