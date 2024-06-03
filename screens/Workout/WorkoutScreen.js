@@ -125,15 +125,44 @@ const WorkoutScreen = ({ navigation }) => {
 
     const handleEditExerciseChange = (exercise, repIndex, key, value) => {
         const updatedExercises = selectedExercises.map((ex) => {
+            if (ex.name === exercise.name && repIndex === null) {
+                return { ...ex, [key]: value };
+            }
             if (ex.name === exercise.name) {
-                const updatedReps = key === 'reps' ? ex.reps.map((rep, index) => index === repIndex ? parseInt(value, 10) : rep) : ex.reps;
-                const updatedWeights = key === 'weight' ? ex.weight.map((weight, index) => index === repIndex ? parseInt(value, 10) : weight) : ex.weight;
+                const updatedReps = key === 'reps' ? [...ex.reps] : ex.reps;
+                const updatedWeights = key === 'weight' ? [...ex.weight] : ex.weight;
+    
+                if (key === 'reps') {
+                    if (value === '') {
+                        updatedReps[repIndex] = '';
+                    } else {
+                        updatedReps[repIndex] = parseInt(value, 10);
+                    }
+                }
+    
+                if (key === 'weight') {
+                    if (value === '') {
+                        updatedWeights[repIndex] = '';
+                    } else {
+                        updatedWeights[repIndex] = parseInt(value, 10);
+                    }
+                }
+    
                 return { ...ex, reps: updatedReps, weight: updatedWeights, sets: updatedReps.length };
             }
             return ex;
         });
         setSelectedExercises(updatedExercises);
     };
+        
+    // Add an "Add Exercise" button in edit mode
+    const renderAddExerciseButton = () => (
+        editMode && (
+            <TouchableOpacity onPress={handleAddExerciseInEdit} style={styles.addExerciseButton}>
+                <Text style={styles.addExerciseButtonText}>Add Exercise</Text>
+            </TouchableOpacity>
+        )
+    );
 
     const renderExerciseInPopupView = ({ item, drag, isActive }) => (
         <ScaleDecorator>
@@ -146,8 +175,17 @@ const WorkoutScreen = ({ navigation }) => {
                 ]}
             >
                 <View style={styles.exercisePopupContainer}>
-                    {item.reps.map((rep, repIndex) => (
-                        <View key={repIndex} style={styles.exerciseRow}>
+                    {editMode && (
+                        <TextInput
+                            key={`name-${item.name}-${item.sets}`}
+                            style={styles.textInputEditSplit}
+                            value={item.name}
+                            onChangeText={(text) => handleEditExerciseChange(item, null, 'name', text)}
+                            placeholder="Exercise Name"
+                        />
+                    )}
+                    {(item.reps.length > 0 ? item.reps : ['']).map((rep, repIndex) => (
+                        <View key={`rep-${repIndex}`} style={styles.exerciseRow}>
                             {editMode && (
                                 <TouchableOpacity
                                     style={styles.deleteButton}
@@ -157,30 +195,51 @@ const WorkoutScreen = ({ navigation }) => {
                                 </TouchableOpacity>
                             )}
                             <Text style={styles.exerciseTextPopup}>
-                                {item.name} {rep} @ {item.weight[repIndex]} lbs
+                                {item.name} {rep} @ {item.weight[repIndex] || ''} lbs
                             </Text>
                             {editMode && (
                                 <>
                                     <TextInput
+                                        key={`rep-${item.name}-${repIndex}`}
                                         style={styles.textInputEditSplit}
                                         keyboardType="numeric"
                                         value={rep.toString()}
                                         onChangeText={(text) => handleEditExerciseChange(item, repIndex, 'reps', text)}
                                     />
                                     <TextInput
+                                        key={`weight-${item.name}-${repIndex}`}
                                         style={styles.textInputEditSplit}
                                         keyboardType="numeric"
-                                        value={item.weight[repIndex].toString()}
+                                        value={(item.weight[repIndex] || '').toString()}
                                         onChangeText={(text) => handleEditExerciseChange(item, repIndex, 'weight', text)}
                                     />
                                 </>
                             )}
                         </View>
                     ))}
+                    {editMode && (
+                        <TouchableOpacity onPress={() => addSet(item)} style={styles.addSetButton}>
+                            <Text style={styles.addSetButtonText}>+ Add Set</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </TouchableOpacity>
         </ScaleDecorator>
     );
+
+    const addSet = (exercise) => {
+        const updatedExercises = selectedExercises.map((ex) => {
+            if (ex.name === exercise.name) {
+                return {
+                    ...ex,
+                    reps: [...ex.reps, ''],
+                    weight: [...ex.weight, ''],
+                };
+            }
+            return ex;
+        });
+        setSelectedExercises(updatedExercises);
+    };
 
     const deleteExerciseRow = (exercise, repIndex) => {
         const updatedExercises = selectedExercises.map((ex) => {
@@ -336,39 +395,45 @@ const WorkoutScreen = ({ navigation }) => {
     };
 
     const handleNewSplitChange = (value, index, key) => {
-        const updatedExercises = newSplit.exercises.map((exercise, idx) => {
-            if (index === idx) {
-                let updatedExercise = { ...exercise };
+        setNewSplit(prevState => {
+            const updatedExercises = prevState.exercises.map((exercise, idx) => {
+                if (index === idx) {
+                    let updatedExercise = { ...exercise };
     
-                if (key === 'sets') {
-                    // Update sets and keep reps and weight arrays unchanged
-                    updatedExercise.sets = value;
-                } else if (key === 'reps') {
-                    // Update reps with the new value and maintain the length equal to sets
-                    const sets = parseInt(newSplit.exercises[index].sets, 10) || 0;
-                    updatedExercise.reps = Array(sets).fill(value.trim());
-                    updatedExercise.repsDisplay = value.trim(); // Store single value for display
-                } else if (key === 'weight') {
-                    // Update weight with the new value and maintain the length equal to sets
-                    const sets = parseInt(newSplit.exercises[index].sets, 10) || 0;
-                    updatedExercise.weight = Array(sets).fill(value.trim());
-                    updatedExercise.weightDisplay = value.trim(); // Store single value for display
-                } else {
-                    // For other keys, simply update the value
-                    updatedExercise[key] = value;
+                    switch (key) {
+                        case 'sets':
+                            updatedExercise.sets = value;
+                            break;
+                        case 'reps':
+                            updatedExercise.repsDisplay = value;
+                            updatedExercise.reps = Array(parseInt(value, 10) || 0).fill(value);
+                            break;
+                        case 'weight':
+                            updatedExercise.weightDisplay = value;
+                            updatedExercise.weight = Array(parseInt(exercise.sets, 10) || 0).fill(value);
+                            break;
+                        default:
+                            updatedExercise[key] = value;
+                            break;
+                    }
+    
+                    return updatedExercise;
                 }
+                return exercise;
+            });
     
-                return updatedExercise;
-            }
-            return exercise;
+            return {
+                ...prevState,
+                exercises: updatedExercises,
+            };
         });
-    
-        setNewSplit(prevState => ({
-            ...prevState,
-            exercises: updatedExercises,
-        }));
     };
 
+    
+    const handleAddExerciseInEdit = () => {
+        const newExercise = { name: '', sets: 1, reps: [], weight: [] };
+        setSelectedExercises([...selectedExercises, newExercise]);
+    };
 
     return (
         <View style={styles.container}>
@@ -400,16 +465,21 @@ const WorkoutScreen = ({ navigation }) => {
                                         onDragEnd={({ data }) => setSelectedExercises(data)}
                                         keyExtractor={(exercise, index) => `${exercise.name}-${index}`}
                                         renderItem={renderExerciseInPopupView}
+                                        ListFooterComponent={renderAddExerciseButton}
                                         contentContainerStyle={styles.popupExerciseList}
                                     />
+                                    {!!editMode && (
                                     <TouchableOpacity onPress={removeDay}>
                                         <Text style={styles.removeButton}>Remove {selectedDay?.dayName}</Text>
                                     </TouchableOpacity>
-                                    <Button
-                                        title="Start Workout"
-                                        onPress={navigateToStartWorkout}
-                                        color="green"
-                                    />
+                                    )}
+                                    {!editMode && (
+                                        <Button
+                                            title="Start Workout"
+                                            onPress={navigateToStartWorkout}
+                                            color="green"
+                                        />
+                                    )}
                                 </View>
                             </View>
                         </TouchableWithoutFeedback>
@@ -453,6 +523,7 @@ const WorkoutScreen = ({ navigation }) => {
                                             <TextInput
                                                 style={[styles.input, styles.smallInput]}
                                                 placeholder="Reps"
+                                                keyboardType="numeric"
                                                 value={exercise.repsDisplay || ''}
                                                 onChangeText={value => handleNewSplitChange(value, index, 'reps')}
                                             />
@@ -460,6 +531,7 @@ const WorkoutScreen = ({ navigation }) => {
                                             <TextInput
                                                 style={[styles.input, styles.smallInput]}
                                                 placeholder="Weight"
+                                                keyboardType="numeric"
                                                 value={exercise.weightDisplay || ''}
                                                 onChangeText={value => handleNewSplitChange(value, index, 'weight')}
                                             />
@@ -501,6 +573,9 @@ const WorkoutScreen = ({ navigation }) => {
                     </View>
                 </View>
             </Modal>
+
+            
+
         </View>
     );
 };
@@ -717,5 +792,47 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    addExerciseButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 10,
+    },
+    addExerciseButtonText: {
+        color: 'blue',
+        fontSize: 16,
+    },
+    textInputEditSplit: {
+        borderColor: 'gray',
+        borderWidth: 1,
+        margin: 5,
+        padding: 5,
+        borderRadius: 5,
+    },
+    exerciseListContainer: {
+        padding: 10,
+    },
+    exerciseText: {
+        fontSize: 16,
+    },
+    addExerciseButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginVertical: 10,
+    },
+    addExerciseButtonText: {
+        color: 'blue',
+        fontSize: 16,
+    },
+    addSetButton: {
+        marginVertical: 5,
+        alignSelf: 'center',
+        backgroundColor: '#f0f0f0',
+        borderRadius: 5,
+        padding: 5,
+    },
+    addSetButtonText: {
+        color: '#007bff',
+        fontSize: 16,
     },
 });
