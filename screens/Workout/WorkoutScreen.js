@@ -457,7 +457,7 @@ const WorkoutScreen = ({ navigation }) => {
                             <View style={styles.modalContainer}>
                                 <View style={styles.modalHeader}>
                                     <Text style={styles.modalTitle}>{selectedDay?.dayName}</Text>
-                                    <Button title={editMode ? "Done" : "Edit"} onPress={handleEditModeToggle} />
+                                    <Button title={editMode ? "Save" : "Edit"} onPress={handleEditModeToggle} />
                                 </View>
                                 <View style={styles.modalBody}>
                                     <DraggableFlatList

@@ -13,43 +13,48 @@ const LoginScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.greeting}>LiftX Login</Text>
+            <View style={styles.card}>
+                <Text style={styles.greeting}>LiftX Login</Text>
+                <Text style={styles.subGreeting}>Login to your LiftX account</Text>
 
-            <View style={styles.errorMessage}>
-                {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-            </View>
-
-            <View style={styles.form}>
-                <View>
-                    <Text style={styles.inputTitle}>Email Address</Text>
-                    <TextInput
-                        style={styles.input}
-                        autoCapitalize="none"
-                        onChangeText={setEmail}
-                        value={email}
-                    />
+                <View style={styles.errorMessage}>
+                    {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
                 </View>
 
-                <View style={{ marginTop: 32 }}>
-                    <Text style={styles.inputTitle}>Password</Text>
-                    <TextInput
-                        style={styles.input}
-                        secureTextEntry
-                        autoCapitalize="none"
-                        onChangeText={setPassword}
-                        value={password}
-                    />
-                </View>
-            </View>
+                <View style={styles.form}>
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            style={styles.input}
+                            autoCapitalize="none"
+                            onChangeText={setEmail}
+                            value={email}
+                            placeholder="Email"
+                            placeholderTextColor="#8A8F9E"
+                        />
+                    </View>
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                <Text style={{ color: "white" }}>Sign In</Text>
-            </TouchableOpacity>
+                    <View style={[styles.inputContainer, { marginTop: 16 }]}>
+                        <TextInput
+                            style={styles.input}
+                            secureTextEntry
+                            autoCapitalize="none"
+                            onChangeText={setPassword}
+                            value={password}
+                            placeholder="Password"
+                            placeholderTextColor="#8A8F9E"
+                        />
+                    </View>
+                </View>
+
+                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                    <Text style={{ color: "white", fontWeight: "600" }}>Log In</Text>
+                </TouchableOpacity>
+            </View>
 
             <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }}>
-                <Text style={{ color: "#414959", fontSize: 13 }}>
+                <Text style={{ color: "#8A8F9E", fontSize: 13 }}>
                     New to LiftX?
-                    <Text style={{ fontWeight: "500", color: "black" }} onPress={() => navigation.navigate("Register")}> Sign Up</Text>
+                    <Text style={{ fontWeight: "500", color: "white" }} onPress={() => navigation.navigate("Register")}> Sign Up</Text>
                 </Text>
             </TouchableOpacity>
         </View>
@@ -59,20 +64,38 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center"
+        justifyContent: "center",
+        backgroundColor: "#131122",
+        paddingHorizontal: 20,
+    },
+    card: {
+        backgroundColor: "#282442",
+        borderRadius: 10,
+        padding: 30,
+        marginHorizontal: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 5,
     },
     greeting: {
-        marginTop: 32,
-        fontSize: 26,
+        fontSize: 24,
         fontWeight: "bold",
         textAlign: "center",
+        color: "#ffffff",
+    },
+    subGreeting: {
+        fontSize: 14,
+        textAlign: "center",
+        color: "#8A8F9E",
+        marginTop: 8,
     },
     errorMessage: {
         height: 70,
         alignItems: "center",
         justifyContent: "center",
         marginHorizontal: 30,
-        color: "red"
     },
     error: {
         color: "#E9446A",
@@ -81,28 +104,35 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     form: {
-        marginBottom: 48,
-        marginHorizontal: 30
+        marginBottom: 24,
     },
-    inputTitle: {
-        color: "#8A8F9E",
-        fontSize: 10,
-        textTransform: "uppercase"
+    inputContainer: {
+        marginBottom: 16,
     },
     input: {
-        borderBottomColor: "#8A8F9E",
-        borderBottomWidth: StyleSheet.hairlineWidth,
+        backgroundColor: "#342c5c",
+        borderRadius: 12,
         height: 40,
         fontSize: 15,
-        color: "#161F3D"
+        color: "#FFFFFF",
+        paddingHorizontal: 10,
+    },
+    optionsContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginVertical: 16,
+    },
+    rememberMeContainer: {
+        flexDirection: "row",
+        alignItems: "center",
     },
     loginButton: {
-        marginHorizontal: 30,
         backgroundColor: "black",
-        borderRadius: 4,
+        borderRadius: 12,
         height: 52,
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
     }
 });
 
