@@ -28,9 +28,9 @@ const StartWorkoutScreen = ({ route }) => {
                 {day.exercises.map((exercise, index) => (
                     <View key={index} style={styles.exerciseCard}>
                         <Text style={styles.exerciseText}>{exercise.name}</Text>
-                        {exercise.reps.map((set, setIndex) => (
+                        {exercise.reps.map((rep, setIndex) => (
                             <Text key={setIndex} style={styles.setText}>
-                                Set {setIndex + 1}: {set.reps} {set.volume} @ {set.weight} lbs
+                                Set {setIndex + 1}: {rep} reps @ {exercise.weight[setIndex]} lbs
                             </Text>
                         ))}
                     </View>
