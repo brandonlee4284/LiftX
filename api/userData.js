@@ -3,8 +3,6 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const convertSplitsTo3DArray = (splits) => {
-    console.log(splits)
-    // console.log(splits.order)
     return splits.order.map(splitIndex => {
         const split = splits[splitIndex];
         return {
@@ -185,7 +183,7 @@ export const fetchPrivateUserSplits = async () => {
     try {
         const jsonValue = await AsyncStorage.getItem('@PrivateUserSplits');
         if (jsonValue != null) {
-            data = JSON.parse(jsonValue);
+            data = convertSplitsTo3DArray(JSON.parse(jsonValue));
         } else {
             console.log('Local storage empty, reverting to cloud backup');
             data = await cloudFetchPrivateUserSplits();
