@@ -3,6 +3,8 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const convertSplitsTo3DArray = (splits) => {
+    console.log(splits)
+    // console.log(splits.order)
     return splits.order.map(splitIndex => {
         const split = splits[splitIndex];
         return {
@@ -78,6 +80,7 @@ export const fetchPublicUserData = async () => {
         if (jsonValue != null) {
             return JSON.parse(jsonValue);
         }
+        console.log('Local storage empty, reverting to cloud backup');
         return await cloudFetchPublicUserData();
     } catch (e) {
         console.log('Error fetching public data from local storage, reverting to cloud backup: ', e);
@@ -130,6 +133,7 @@ export const fetchPrivateUserData = async () => {
         if (jsonValue != null) {
             return JSON.parse(jsonValue);
         }
+        console.log('Local storage empty, reverting to cloud backup');
         return await cloudFetchPrivateUserData();
     } catch (e) {
         console.log('Error fetching private data from local storage, reverting to cloud backup: ', e);
@@ -165,7 +169,7 @@ const cloudFetchPrivateUserSplits = async () => {
             const docData = await getDoc(privateDataDocRef);
             if (docData.exists()) {
                 const data = docData.data();
-                return convertSplitsTo3DArray(data.splits);
+                return convertSplitsTo3DArray(data.splits.splits);
             } else {
                 console.log('No such document!');
             }
@@ -183,14 +187,15 @@ export const fetchPrivateUserSplits = async () => {
         if (jsonValue != null) {
             data = JSON.parse(jsonValue);
         } else {
+            console.log('Local storage empty, reverting to cloud backup');
             data = await cloudFetchPrivateUserSplits();
         }
 
-        return convertSplitsTo3DArray(data.splits);
+        return data;
     } catch (e) {
-    console.log('Error fetching private splits from local storage, reverting to cloud backup: ', e);
-    return await convertSplitsTo3DArray(cloudFetchPrivateUserSplits().splits);
-}
+        console.log('Error fetching private splits from local storage, reverting to cloud backup: ', e);
+        return await cloudFetchPrivateUserSplits();
+    }
 };
 
 // Update the user's split data in Firestore and local storage
