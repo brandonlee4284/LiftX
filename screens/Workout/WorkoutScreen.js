@@ -55,22 +55,6 @@ const WorkoutScreen = ({ navigation }) => {
     }, [navigation]);
 
     
-
-    const renderExercise = (exercise, index) => {
-        const minReps = Math.min(...exercise.reps);
-        const maxReps = Math.max(...exercise.reps);
-        const repsDisplay = minReps === maxReps ? minReps : `${minReps}-${maxReps}`;
-
-        return (
-            <View key={index} style={styles.exerciseCard}>
-                <Text style={styles.exerciseText}>
-                    {exercise.name} {exercise.sets}x{repsDisplay}
-                </Text>
-            </View>
-        );
-    };
-
-    
     const handleSaveNewSplitModal = async () => {
         const updatedWorkoutData = [...workoutData, { splitName: newSplitName, days: [] }];
     
@@ -154,78 +138,6 @@ const WorkoutScreen = ({ navigation }) => {
         });
         setSelectedExercises(updatedExercises);
     };
-        
-    // Add an "Add Exercise" button in edit mode
-    const renderAddExerciseButton = () => (
-        editMode && (
-            <TouchableOpacity onPress={handleAddExerciseInEdit} style={styles.addExerciseButton}>
-                <Text style={styles.addExerciseButtonText}>Add Exercise</Text>
-            </TouchableOpacity>
-        )
-    );
-
-    const renderExerciseInPopupView = ({ item, drag, isActive }) => (
-        <ScaleDecorator>
-            <TouchableOpacity
-                onLongPress={drag}
-                disabled={isActive}
-                style={[
-                    styles.exerciseCardPopup,
-                    { backgroundColor: isActive ? "red" : "transparent" },
-                ]}
-            >
-                <View style={styles.exercisePopupContainer}>
-                    {editMode && (
-                        <TextInput
-                            key={`name-${item.name}-${item.sets}`}
-                            style={styles.textInputEditSplit}
-                            value={item.name}
-                            onChangeText={(text) => handleEditExerciseChange(item, null, 'name', text)}
-                            placeholder="Exercise Name"
-                        />
-                    )}
-                    {(item.reps.length > 0 ? item.reps : ['']).map((rep, repIndex) => (
-                        <View key={`rep-${repIndex}`} style={styles.exerciseRow}>
-                            {editMode && (
-                                <TouchableOpacity
-                                    style={styles.deleteButton}
-                                    onPress={() => deleteExerciseRow(item, repIndex)}
-                                >
-                                    <Text style={styles.deleteButtonText}>X</Text>
-                                </TouchableOpacity>
-                            )}
-                            <Text style={styles.exerciseTextPopup}>
-                                {item.name} {rep} @ {item.weight[repIndex] || ''} lbs
-                            </Text>
-                            {editMode && (
-                                <>
-                                    <TextInput
-                                        key={`rep-${item.name}-${repIndex}`}
-                                        style={styles.textInputEditSplit}
-                                        keyboardType="numeric"
-                                        value={rep.toString()}
-                                        onChangeText={(text) => handleEditExerciseChange(item, repIndex, 'reps', text)}
-                                    />
-                                    <TextInput
-                                        key={`weight-${item.name}-${repIndex}`}
-                                        style={styles.textInputEditSplit}
-                                        keyboardType="numeric"
-                                        value={(item.weight[repIndex] || '').toString()}
-                                        onChangeText={(text) => handleEditExerciseChange(item, repIndex, 'weight', text)}
-                                    />
-                                </>
-                            )}
-                        </View>
-                    ))}
-                    {editMode && (
-                        <TouchableOpacity onPress={() => addSet(item)} style={styles.addSetButton}>
-                            <Text style={styles.addSetButtonText}>+ Add Set</Text>
-                        </TouchableOpacity>
-                    )}
-                </View>
-            </TouchableOpacity>
-        </ScaleDecorator>
-    );
 
     const addSet = (exercise) => {
         const updatedExercises = selectedExercises.map((ex) => {
@@ -253,27 +165,6 @@ const WorkoutScreen = ({ navigation }) => {
         setSelectedExercises(updatedExercises);
     };
 
-    const renderDay = ({ item }) => (
-        <TouchableOpacity
-            onPress={() => {
-                setSelectedDay(item);
-                setEditMode(false); // Always set edit mode to false when a day is selected
-            }}
-            onLayout={event => {
-                const { height } = event.nativeEvent.layout;
-                if (height > maxDayCardHeight) {
-                    setMaxDayCardHeight(height);
-                }
-            }}
-            style={[styles.dayCard, { minHeight: maxDayCardHeight }]}
-        >
-            <Text style={styles.dayText}>{item.dayName}</Text>
-            <View style={styles.exerciseList}>
-                {item.exercises.map(renderExercise)}
-            </View>
-        </TouchableOpacity>
-    );
-
     const deleteSplit = async (splitName) => {
         const updatedWorkoutData = workoutData.filter(split => split.splitName !== splitName);
         const updatedWorkoutDataForStorage = {
@@ -287,42 +178,6 @@ const WorkoutScreen = ({ navigation }) => {
             console.error('Error deleting split: ', error);
         }
     };
-
-    const renderSplit = ({ item }) => (
-        <View style={styles.splitContainer}>
-            <View style={styles.splitHeader}>
-                <Text style={styles.splitTitle}>{item.splitName}</Text>
-                <TouchableOpacity onPress={() => deleteSplit(item.splitName)}>
-                    <Icon name="trash-outline" size={24} color="red" />
-                </TouchableOpacity>
-            </View>
-            <FlatList
-                horizontal
-                data={[...item.days, { isAddButton: true, splitName: item.splitName }]} // Add splitName to the dummy item
-                renderItem={({ item }) =>
-                    item.isAddButton ? (
-                        <TouchableOpacity
-                            style={[styles.dayCard, styles.addSplitCard, { minHeight: maxDayCardHeight }]}
-                            onPress={() => {
-                                setNewSplit({ dayName: '', exercises: [] });
-                                setSelectedDay(null); // Deselect any day
-                                setSelectedSplit(item.splitName); // Set the selected split
-                                setIsAddSplitModalVisible(true);
-                            }}
-                        >
-                            <Text style={styles.addSplitText}>+</Text>
-                        </TouchableOpacity>
-                    ) : (
-                        renderDay({ item })
-                    )
-                }
-                keyExtractor={(day, index) => `day-${index}`}
-                contentContainerStyle={styles.horizontalFlatListContent}
-                showsHorizontalScrollIndicator={false}
-            />
-            <View style={styles.line} />
-        </View>
-    );
 
     const navigateToStartWorkout = () => {
         if (selectedDay) {
@@ -434,6 +289,151 @@ const WorkoutScreen = ({ navigation }) => {
         const newExercise = { name: '', sets: 1, reps: [], weight: [] };
         setSelectedExercises([...selectedExercises, newExercise]);
     };
+        
+    const renderExercise = (exercise, index) => {
+        const minReps = Math.min(...exercise.reps);
+        const maxReps = Math.max(...exercise.reps);
+        const repsDisplay = minReps === maxReps ? minReps : `${minReps}-${maxReps}`;
+
+        return (
+            <View key={index} style={styles.exerciseCard}>
+                <Text style={styles.exerciseText}>
+                    {exercise.name} {exercise.sets}x{repsDisplay}
+                </Text>
+            </View>
+        );
+    };
+
+    const renderAddExerciseButton = () => (
+        editMode && (
+            <TouchableOpacity onPress={handleAddExerciseInEdit} style={styles.addExerciseButton}>
+                <Text style={styles.addExerciseButtonText}>Add Exercise</Text>
+            </TouchableOpacity>
+        )
+    );
+
+    const renderExerciseInPopupView = ({ item, drag, isActive }) => (
+        <ScaleDecorator>
+            <TouchableOpacity
+                onLongPress={drag}
+                disabled={isActive}
+                style={[
+                    styles.exerciseCardPopup,
+                    { backgroundColor: isActive ? "red" : "transparent" },
+                ]}
+            >
+                <View style={styles.exercisePopupContainer}>
+                    {editMode && (
+                        <TextInput
+                            key={`name-${item.name}-${item.sets}`}
+                            style={styles.textInputEditSplit}
+                            value={item.name}
+                            onChangeText={(text) => handleEditExerciseChange(item, null, 'name', text)}
+                            placeholder="Exercise Name"
+                        />
+                    )}
+                    {(item.reps.length > 0 ? item.reps : ['']).map((rep, repIndex) => (
+                        <View key={`rep-${repIndex}`} style={styles.exerciseRow}>
+                            {editMode && (
+                                <TouchableOpacity
+                                    style={styles.deleteButton}
+                                    onPress={() => deleteExerciseRow(item, repIndex)}
+                                >
+                                    <Text style={styles.deleteButtonText}>X</Text>
+                                </TouchableOpacity>
+                            )}
+                            <Text style={styles.exerciseTextPopup}>
+                                {item.name} {rep} @ {item.weight[repIndex] || ''} lbs
+                            </Text>
+                            {editMode && (
+                                <>
+                                    <TextInput
+                                        key={`rep-${item.name}-${repIndex}`}
+                                        style={styles.textInputEditSplit}
+                                        keyboardType="numeric"
+                                        value={rep.toString()}
+                                        onChangeText={(text) => handleEditExerciseChange(item, repIndex, 'reps', text)}
+                                    />
+                                    <TextInput
+                                        key={`weight-${item.name}-${repIndex}`}
+                                        style={styles.textInputEditSplit}
+                                        keyboardType="numeric"
+                                        value={(item.weight[repIndex] || '').toString()}
+                                        onChangeText={(text) => handleEditExerciseChange(item, repIndex, 'weight', text)}
+                                    />
+                                </>
+                            )}
+                        </View>
+                    ))}
+                    {editMode && (
+                        <TouchableOpacity onPress={() => addSet(item)} style={styles.addSetButton}>
+                            <Text style={styles.addSetButtonText}>+ Add Set</Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
+            </TouchableOpacity>
+        </ScaleDecorator>
+    );
+
+
+    const renderDay = ({ item }) => (
+        <TouchableOpacity
+            onPress={() => {
+                setSelectedDay(item);
+                setEditMode(false); // Always set edit mode to false when a day is selected
+            }}
+            onLayout={event => {
+                const { height } = event.nativeEvent.layout;
+                if (height > maxDayCardHeight) {
+                    setMaxDayCardHeight(height);
+                }
+            }}
+            style={[styles.dayCard, { minHeight: maxDayCardHeight }]}
+        >
+            <Text style={styles.dayText}>{item.dayName}</Text>
+            <View style={styles.exerciseList}>
+                {item.exercises.map(renderExercise)}
+            </View>
+        </TouchableOpacity>
+    );
+
+    const renderSplit = ({ item }) => (
+        <View style={styles.splitContainer}>
+            <View style={styles.splitHeader}>
+                <Text style={styles.splitTitle}>{item.splitName}</Text>
+                <TouchableOpacity onPress={() => deleteSplit(item.splitName)}>
+                    <Icon name="trash-outline" size={24} color="red" />
+                </TouchableOpacity>
+            </View>
+            <FlatList
+                horizontal
+                data={[...item.days, { isAddButton: true, splitName: item.splitName }]} // Add splitName to the dummy item
+                renderItem={({ item }) =>
+                    item.isAddButton ? (
+                        <TouchableOpacity
+                            style={[styles.dayCard, styles.addSplitCard, { minHeight: maxDayCardHeight }]}
+                            onPress={() => {
+                                setNewSplit({ dayName: '', exercises: [] });
+                                setSelectedDay(null); // Deselect any day
+                                setSelectedSplit(item.splitName); // Set the selected split
+                                setIsAddSplitModalVisible(true);
+                            }}
+                        >
+                            <Text style={styles.addSplitText}>+</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        renderDay({ item })
+                    )
+                }
+                keyExtractor={(day, index) => `day-${index}`}
+                contentContainerStyle={styles.horizontalFlatListContent}
+                showsHorizontalScrollIndicator={false}
+            />
+            <View style={styles.line} />
+        </View>
+    );
+
+   
 
     return (
         <View style={styles.container}>
