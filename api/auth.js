@@ -5,8 +5,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const loginUser = async (email, password, setErrorMessage) => {
     const auth = FIREBASE_AUTH;
-    signInWithEmailAndPassword(auth, email, password)
-        .catch(error => setErrorMessage(error.message));
+    signInWithEmailAndPassword(auth, email, password).then(async () => {
+        const keys = ['@PublicUserData', '@PrivateUserData', '@PrivateUserSplits']
+        try {
+            await AsyncStorage.multiRemove(keys)
+        } catch (e) {
+            console.log('Error removing user data from local storage: ', e);
+        }
+    }
+    ).catch(error => setErrorMessage(error.message));
 };
 
 export const createNewUser = async (username, email, password, setErrorMessage) => {
@@ -131,7 +138,7 @@ export const createNewUser = async (username, email, password, setErrorMessage) 
 
                 updatePublicUserData(initPublicUserData).then(
                     updatePrivateUserData(initPrivateUserData).then(
-                        updatePrivateUserSplits(initPrivateSplitsData, flat=true).then(() => {
+                        updatePrivateUserSplits(initPrivateSplitsData, flat = true).then(() => {
                             console.log('User data saved successfully');
                             signInWithEmailAndPassword(auth, email, password);
                         }
