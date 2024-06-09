@@ -111,7 +111,8 @@ const AppTabNavigator = () => (
         {
           display: "flex"
         }
-      ]
+      ], 
+      tabBarShowLabel: false,
     })}
   >
     <Tab.Screen name="HomeNav" component={HomeStack} />
