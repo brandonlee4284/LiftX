@@ -36,7 +36,12 @@ const Stack = createStackNavigator();
 
 function HomeStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+    screenOptions={{
+      headerStyle: { backgroundColor: '#121212' }, // Set the header background color to black
+      headerTintColor: 'white', // Set the header text color to white
+    }}
+    >
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Workout" component={WorkoutScreen} />
       <Stack.Screen name="Start Workout" component={StartWorkoutScreen} />
@@ -71,7 +76,12 @@ function ProfileStack() {
 
 function SettingStack() {
   return (
-    <Stack.Navigator >
+    <Stack.Navigator 
+    screenOptions={{
+      headerStyle: { backgroundColor: '#121212' }, // Set the header background color to black
+      headerTintColor: 'white', // Set the header text color to white
+    }}
+    >
       <Stack.Screen name="Settings" component={SettingScreen} />
     </Stack.Navigator>
   );
@@ -105,11 +115,13 @@ const AppTabNavigator = () => (
         return <Ionicons name={iconName} size={size} color={color} />;
       },
       headerShown: false,
-      tabBarActiveTintColor: "black",
+      tabBarActiveTintColor: "white",
       tabBarInactiveTintColor: "gray",
       tabBarStyle: [
         {
-          display: "flex"
+          display: "flex",
+          backgroundColor: "#121212",
+          borderTopWidth: 0,
         }
       ], 
       tabBarShowLabel: false,

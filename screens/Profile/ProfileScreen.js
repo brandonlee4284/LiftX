@@ -23,13 +23,13 @@ const ProfileScreen = ({ navigation, route }) => {
                 <Text style={styles.title}>LiftX</Text>
                 <View style={styles.iconContainer}>
                     <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                        <Ionicons name="person-add-outline" size={28} color="black" style={styles.profileIcon} />
+                        <Ionicons name="person-add-outline" size={28} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                        <Ionicons name="chatbubble-ellipses-outline" size={28} color="black" style={styles.profileIcon} />
+                        <Ionicons name="chatbubble-ellipses-outline" size={28} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
-                        <Ionicons name="settings-outline" size={28} color="black" style={styles.profileIcon} />
+                        <Ionicons name="settings-outline" size={28} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -83,7 +83,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
-        paddingTop: 50
+        paddingTop: 70,
+        backgroundColor: '#121212' // Dark background color
     },
     profilePicture: {
         width: 150,
@@ -94,7 +95,8 @@ const styles = StyleSheet.create({
     displayName: {
         fontSize: 24,
         fontWeight: "bold",
-        marginBottom: 10
+        marginBottom: 10,
+        color: 'white' // Light text color
     },
     username: {
         fontSize: 18,
@@ -103,7 +105,7 @@ const styles = StyleSheet.create({
     },
     friendsCount: {
         fontSize: 18,
-        color: "black",
+        color: "white",
         marginBottom: 20
     },
     boldText: {
@@ -112,7 +114,8 @@ const styles = StyleSheet.create({
     bio: {
         fontSize: 16,
         textAlign: "center",
-        marginBottom: 20
+        marginBottom: 20,
+        color: 'white' // Light text color
     },
     splitContainer: {
         width: '100%',
@@ -129,7 +132,7 @@ const styles = StyleSheet.create({
     splitText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'black',
+        color: 'white', // Light text color
         marginBottom: 20
     },
     daysContainer: {
@@ -138,7 +141,7 @@ const styles = StyleSheet.create({
     },
     dayCard: {
         width: 200,
-        backgroundColor: "white",
+        backgroundColor: "#1E1E1E", // Dark card background color
         borderRadius: 10,
         padding: 15,
         marginHorizontal: 10,
@@ -152,7 +155,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
         marginBottom: 30,
-        textAlign: "center"
+        textAlign: "center",
+        color: 'white' // Light text color
     },
     exerciseRow: {
         flexDirection: "row",
@@ -162,12 +166,14 @@ const styles = StyleSheet.create({
     exerciseName: {
         fontSize: 16,
         flex: 1,
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        color: 'white' // Light text color
     },
     exerciseStats: {
         fontSize: 16,
         fontWeight: "bold",
-        textAlign: "right"
+        textAlign: "right",
+        color: 'white' // Light text color
     },
     statsContainer: {
         width: '80%',
@@ -176,7 +182,7 @@ const styles = StyleSheet.create({
     statsHeader: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'black',
+        color: 'white', // Light text color
         textAlign: 'center',
         marginBottom: 20
     },
@@ -187,14 +193,16 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     statExercise: {
-        fontSize: 16
+        fontSize: 16,
+        color: 'white' // Light text color
     },
     statValue: {
         fontSize: 16,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        color: 'white' // Light text color
     },
     editButton: {
-        backgroundColor: "black",
+        backgroundColor: "gray",
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 5,
@@ -214,7 +222,8 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 24,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: 'white' // Light text color
     },
     body: {
         alignItems: "center",
