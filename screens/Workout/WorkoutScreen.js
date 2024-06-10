@@ -194,7 +194,9 @@ const WorkoutScreen = ({ navigation }) => {
                         ...split,
                         days: split.days.map(day => {
                             if (day.dayName === selectedDay.dayName) {
-                                return { ...day, exercises: selectedExercises };
+                                const updatedDay = { ...day, exercises: selectedExercises };
+                                setSelectedDay(updatedDay)
+                                return updatedDay;
                             }
                             return day;
                         })
@@ -257,15 +259,15 @@ const WorkoutScreen = ({ navigation }) => {
     
                     switch (key) {
                         case 'sets':
-                            updatedExercise.sets = value;
+                            updatedExercise.sets = parseInt(value, 10) || 0;
                             break;
                         case 'reps':
                             updatedExercise.repsDisplay = value;
-                            updatedExercise.reps = Array(parseInt(value, 10) || 0).fill(value);
+                            updatedExercise.reps = Array(updatedExercise.sets).fill(value);
                             break;
                         case 'weight':
                             updatedExercise.weightDisplay = value;
-                            updatedExercise.weight = Array(parseInt(exercise.sets, 10) || 0).fill(value);
+                            updatedExercise.weight = Array(updatedExercise.sets).fill(value);
                             break;
                         default:
                             updatedExercise[key] = value;
