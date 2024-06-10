@@ -14,9 +14,6 @@ const StartWorkoutScreen = ({ route }) => {
         navigation.setOptions({ headerShown: false });
         navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
 
-        return () => {
-            navigation.getParent()?.setOptions({ tabBarStyle: { display: 'flex' } });
-        };
     });
 
     const handleEndWorkout = () => {

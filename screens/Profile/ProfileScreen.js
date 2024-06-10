@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { fetchPublicUserData, fetchPrivateUserData } from "../../api/userData";
+
+const { height, width } = Dimensions.get('window');
 
 const ProfileScreen = ({ navigation, route }) => {
     const [publicUserData, setPublicUserData] = useState({});
@@ -23,13 +25,13 @@ const ProfileScreen = ({ navigation, route }) => {
                 <Text style={styles.title}>LiftX</Text>
                 <View style={styles.iconContainer}>
                     <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                        <Ionicons name="person-add-outline" size={28} color="white" style={styles.profileIcon} />
+                        <Ionicons name="person-add-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                        <Ionicons name="chatbubble-ellipses-outline" size={28} color="white" style={styles.profileIcon} />
+                        <Ionicons name="chatbubble-ellipses-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
-                        <Ionicons name="settings-outline" size={28} color="white" style={styles.profileIcon} />
+                        <Ionicons name="settings-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -39,7 +41,7 @@ const ProfileScreen = ({ navigation, route }) => {
                     {!!publicUserData.profilePicture ? (
                         <Image source={{ uri: publicUserData.profilePicture }} style={styles.profilePicture} />
                     ) : (
-                        <Ionicons name="person-circle" size={150} color="gray" style={styles.profileIcon} />
+                        <Ionicons name="person-circle" size={getResponsiveFontSize(150)} color="gray" style={styles.profileIcon} />
                     )}
                     <Text style={styles.username}>@{publicUserData.username}</Text>
                     <Text style={styles.friendsCount}>
@@ -79,6 +81,11 @@ const ProfileScreen = ({ navigation, route }) => {
     );
 };
 
+const getResponsiveFontSize = (baseFontSize) => {
+    const scale = width / 425; 
+    return Math.round(baseFontSize * scale);
+};
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -93,7 +100,7 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     displayName: {
-        fontSize: 24,
+        fontSize: getResponsiveFontSize(24),
         fontWeight: "bold",
         marginBottom: 10,
         color: 'white' // Light text color
@@ -104,7 +111,7 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     friendsCount: {
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(18),
         color: "white",
         marginBottom: 20
     },
@@ -112,7 +119,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold"
     },
     bio: {
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
         textAlign: "center",
         marginBottom: 20,
         color: 'white' // Light text color
@@ -130,7 +137,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     splitText: {
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(18),
         fontWeight: 'bold',
         color: 'white', // Light text color
         marginBottom: 20
@@ -152,7 +159,7 @@ const styles = StyleSheet.create({
         elevation: 5
     },
     dayTitle: {
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(18),
         fontWeight: "bold",
         marginBottom: 30,
         textAlign: "center",
@@ -164,13 +171,13 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     exerciseName: {
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
         flex: 1,
         flexWrap: 'wrap',
         color: 'white' // Light text color
     },
     exerciseStats: {
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
         fontWeight: "bold",
         textAlign: "right",
         color: 'white' // Light text color
@@ -180,7 +187,7 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     statsHeader: {
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(18),
         fontWeight: 'bold',
         color: 'white', // Light text color
         textAlign: 'center',
@@ -193,11 +200,11 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     statExercise: {
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
         color: 'white' // Light text color
     },
     statValue: {
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
         fontWeight: "bold",
         color: 'white' // Light text color
     },
@@ -210,7 +217,7 @@ const styles = StyleSheet.create({
     },
     editButtonText: {
         color: "white",
-        fontSize: 16
+        fontSize: getResponsiveFontSize(16)
     },
     topBar: {
         flexDirection: 'row',
@@ -221,7 +228,7 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     title: {
-        fontSize: 24,
+        fontSize: getResponsiveFontSize(24),
         fontWeight: 'bold',
         color: 'white' // Light text color
     },

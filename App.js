@@ -128,7 +128,7 @@ const AppTabNavigator = () => (
     })}
   >
     <Tab.Screen name="HomeNav" component={HomeStack} />
-    <Tab.Screen name="RecordNav" component={RecordStack} />
+    {/*<Tab.Screen name="RecordNav" component={RecordStack} />*/}
     <Tab.Screen name="LeaderboardNav" component={LeaderboardStack} />
     <Tab.Screen name="ProfileNav" component={ProfileStack} />
   </Tab.Navigator>

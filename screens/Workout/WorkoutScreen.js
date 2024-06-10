@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Button, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -20,7 +21,29 @@ const WorkoutScreen = ({ navigation }) => {
     const [newSplitName, setNewSplitName] = useState('');
     const [selectedSplit, setSelectedSplit] = useState(null);
 
+    useFocusEffect(
+        React.useCallback(() => {
+            navigation.setOptions({ headerShown: false });
+            navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
 
+            return () => {
+                navigation.getParent()?.setOptions({ 
+                    headerShown: false,
+                    tabBarActiveTintColor: "white",
+                    tabBarInactiveTintColor: "gray",
+                    tabBarStyle: [
+                      {
+                        display: "flex",
+                        backgroundColor: "#121212",
+                        borderTopWidth: 0,
+                      }
+                    ], 
+                    tabBarShowLabel: false, });
+            };
+        }, [navigation])
+    );
+
+    
     useEffect(() => {
         async function fetchData() {
             const data = await fetchPrivateUserSplits();
@@ -46,15 +69,6 @@ const WorkoutScreen = ({ navigation }) => {
     }, [selectedDay]);
 
 
-    useEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <TouchableOpacity onPress={() => setIsNewSplitModalVisible(true)} style={{ marginRight: 25 }}>
-                    <Text style={{ fontSize: 26, color: 'white' }}>+</Text>
-                </TouchableOpacity>
-            ),
-        });
-    }, [navigation]);
 
     
     const handleSaveNewSplitModal = async () => {
@@ -186,6 +200,10 @@ const WorkoutScreen = ({ navigation }) => {
             navigation.navigate('Start Workout', { day: selectedDay });
             setSelectedDay(null);
         }
+    };
+
+    const navigateToHome = () => {
+        navigation.navigate('Home');
     };
 
     const handleEditModeToggle = async () => {
@@ -407,7 +425,7 @@ const WorkoutScreen = ({ navigation }) => {
             <View style={styles.splitHeader}>
                 <Text style={styles.splitTitle}>{item.splitName}</Text>
                 <TouchableOpacity onPress={() => deleteSplit(item.splitName)} style={{marginRight:10, marginBottom: 30}}>
-                    <Icon name="trash-outline" size={24} color="white" />
+                    <Icon name="trash-outline" size={getResponsiveFontSize(24)} color="white" />
                 </TouchableOpacity>
             </View>
             <Carousel
@@ -448,6 +466,17 @@ const WorkoutScreen = ({ navigation }) => {
                 keyExtractor={(item, index) => `split-${index}`}
                 contentContainerStyle={styles.verticalFlatListContent}
                 showsVerticalScrollIndicator={false}
+                ListHeaderComponent={() => (
+                    <View style={styles.topBar}>
+                        <TouchableOpacity onPress={navigateToHome}>
+                            <Icon name="arrow-back-circle-outline" style={{ fontSize: getResponsiveFontSize(24), color: 'white', marginRight: 10 }} />
+                        </TouchableOpacity>
+                        <Text style={styles.title}>Select a workout</Text>
+                        <TouchableOpacity onPress={() => setIsNewSplitModalVisible(true)}>
+                            <Icon name="add-circle-outline" style={{ fontSize: getResponsiveFontSize(24), color: 'white', marginRight: 10 }} />
+                        </TouchableOpacity>
+                    </View>
+                )}
             />
 
             <Modal
@@ -588,17 +617,36 @@ const WorkoutScreen = ({ navigation }) => {
 
 export default WorkoutScreen;
 
+const getResponsiveFontSize = (baseFontSize) => {
+    const scale = width / 425; 
+    return Math.round(baseFontSize * scale);
+};
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#121212',
+        paddingTop: 70,
+    },
+    topBar: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        paddingHorizontal: 15,
+        marginBottom: 40,
+    },
+    title: {
+        fontSize: getResponsiveFontSize(24),
+        fontWeight: 'bold',
+        color: 'white', // Light text color
     },
     splitContainer: {
         marginBottom: 20,
         alignItems: 'flex-start',
     },
     splitTitle: {
-        fontSize: 24,
+        fontSize: getResponsiveFontSize(24),
         fontWeight: 'bold',
         margin: 5,
         marginBottom: 30,
@@ -629,7 +677,7 @@ const styles = StyleSheet.create({
     },
     
     dayText: {
-        fontSize: 18,
+        fontSize: getResponsiveFontSize(18),
         fontWeight: 'bold',
         marginVertical: 30,
         color: 'white'
@@ -645,13 +693,13 @@ const styles = StyleSheet.create({
     exerciseName: {
         flex: 1,
         textAlign: 'left',
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
         color: '#fff',
     },
     exerciseVolume: {
         flex: 1,
         textAlign: 'right',
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
         color: '#fff',
     },
     exerciseCardPopup: {
@@ -675,7 +723,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     exerciseTextPopup: {
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
         textAlign: 'left',
     },
     exerciseList: {
@@ -723,7 +771,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     modalTitle: {
-        fontSize: 24,
+        fontSize: getResponsiveFontSize(24),
         fontWeight: 'bold',
     },
     modalBody: {
@@ -734,7 +782,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     removeButton: {
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
         color: 'red',
         marginTop: 10,
         marginBottom: 20,
@@ -745,7 +793,7 @@ const styles = StyleSheet.create({
     },
     deleteButtonText: {
         color: 'red',
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
     },
     addSplitCard: {
         alignItems: 'center',
@@ -762,7 +810,7 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
     },
     addSplitText: {
-        fontSize: 30,
+        fontSize: getResponsiveFontSize(30),
         fontWeight: 'bold',
         color: 'white',
     },
@@ -798,7 +846,7 @@ const styles = StyleSheet.create({
     },
     addExerciseButtonText: {
         color: 'blue',
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
     },
     textInputAddSplit: {
         borderBottomWidth: 1,
@@ -841,7 +889,7 @@ const styles = StyleSheet.create({
     },
     addExerciseButtonText: {
         color: 'blue',
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
     },
     textInputEditSplit: {
         borderColor: 'gray',
@@ -854,7 +902,7 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     exerciseText: {
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
         color: 'white'
     },
     addExerciseButton: {
@@ -864,7 +912,7 @@ const styles = StyleSheet.create({
     },
     addExerciseButtonText: {
         color: 'blue',
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
     },
     addSetButton: {
         marginVertical: 5,
@@ -875,7 +923,7 @@ const styles = StyleSheet.create({
     },
     addSetButtonText: {
         color: '#007bff',
-        fontSize: 16,
+        fontSize: getResponsiveFontSize(16),
     },
     carousel: {
         paddingVertical: 10,

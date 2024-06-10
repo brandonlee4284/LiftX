@@ -1,6 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ActivityIndicator, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+const { height, width } = Dimensions.get('window');
 
 const LeaderboardScreen = ({ navigation }) => {
     React.useEffect(() => {
@@ -13,13 +15,13 @@ const LeaderboardScreen = ({ navigation }) => {
                 <Text style={styles.title}>LiftX</Text>
                 <View style={styles.iconContainer}>
                     <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                        <Ionicons name="person-add-outline" size={28} color="white" style={styles.profileIcon} />
+                        <Ionicons name="person-add-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                        <Ionicons name="chatbubble-ellipses-outline" size={28} color="white" style={styles.profileIcon} />
+                        <Ionicons name="chatbubble-ellipses-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
-                        <Ionicons name="settings-outline" size={28} color="white" style={styles.profileIcon} />
+                        <Ionicons name="settings-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -33,6 +35,12 @@ const LeaderboardScreen = ({ navigation }) => {
         </View>
     );
 };
+
+const getResponsiveFontSize = (baseFontSize) => {
+    const scale = width / 425; 
+    return Math.round(baseFontSize * scale);
+};
+
 
 const styles = StyleSheet.create({
     container: {
@@ -53,7 +61,7 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     title: {
-        fontSize: 24,
+        fontSize: getResponsiveFontSize(24),
         fontWeight: 'bold',
         color: 'white' // Light text color
     },

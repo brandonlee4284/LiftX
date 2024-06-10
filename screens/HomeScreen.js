@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchPublicUserData } from '../api/userData';
+
+const { height, width } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
     const [publicUserData, setPublicUserData] = useState({});
@@ -20,6 +22,7 @@ const HomeScreen = ({ navigation }) => {
         LayoutAnimation.easeInEaseOut();
     }, []);
 
+
     const handleWorkoutButtonPress = () => {
         navigation.navigate('Workout');
     };
@@ -32,13 +35,13 @@ const HomeScreen = ({ navigation }) => {
                     <Text style={styles.title}>LiftX</Text>
                     <View style={styles.iconContainer}>
                         <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                            <Ionicons name="person-add-outline" size={28} color="white" style={styles.profileIcon} />
+                            <Ionicons name="person-add-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                            <Ionicons name="chatbubble-ellipses-outline" size={28} color="white" style={styles.profileIcon} />
+                            <Ionicons name="chatbubble-ellipses-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
-                            <Ionicons name="settings-outline" size={28} color="white" style={styles.profileIcon} />
+                            <Ionicons name="settings-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -48,7 +51,7 @@ const HomeScreen = ({ navigation }) => {
                         <TouchableOpacity style={styles.button} onPress={handleWorkoutButtonPress}>
                         <View style={styles.buttonContent}>
                             <Text style={styles.buttonText}>Start Today's Workout</Text>
-                            <Ionicons name="arrow-forward-circle-outline" size={28} color="black" style={styles.icon} />
+                            <Ionicons name="arrow-forward-circle-outline" size={getResponsiveFontSize(28)} color="black" style={styles.icon} />
                         </View>
                         </TouchableOpacity>
                     </View>
@@ -56,6 +59,16 @@ const HomeScreen = ({ navigation }) => {
             </ScrollView>
         </View>
     );
+};
+
+const getResponsiveFontSize = (baseFontSize) => {
+    const scale = width / 425; 
+    return Math.round(baseFontSize * scale);
+};
+
+const getResponsiveMargin = (baseMargin) => {
+    const scale = width / 500; 
+    return Math.round(baseMargin * scale);
 };
 
 const styles = StyleSheet.create({
@@ -77,7 +90,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     title: {
-        fontSize: 24,
+        fontSize: getResponsiveFontSize(24),
         fontWeight: 'bold',
         color: 'white', // Light text color
     },
@@ -92,22 +105,22 @@ const styles = StyleSheet.create({
         marginLeft: 15,
     },
     welcomeMessage: {
-        fontSize: 26,
+        fontSize: getResponsiveFontSize(26),
         marginBottom: 20,
         color: 'white', // Light text color,
         marginLeft: 20
     },
     buttonContainer: {
         alignItems: "center", // Center content horizontally
-        marginBottom: 20, // Add margin bottom to create space between the message and button
     },
     button: {
         backgroundColor: "white",
         borderRadius: 20,
-        height: 100,
-        width: 400,
+        height: height * 0.12,
+        width: width * 0.95,
         alignItems: "center", // Center button content horizontally
         justifyContent: "center", // Center button content vertically
+        padding: 20
     },
     buttonContent: {
         flexDirection: 'row', // Align text and icon horizontally
@@ -115,8 +128,8 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: "black",
-        fontSize: 24,
-        marginRight: 90, // Add space between text and icon
+        fontSize: getResponsiveFontSize(24),
+        marginRight: getResponsiveMargin(90), // Add space between text and icon
     },
     icon: {
         padding: 10,
