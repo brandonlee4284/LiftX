@@ -68,7 +68,7 @@ export const createNewUser = async (username, email, password, setErrorMessage) 
                 let initPrivateUserData =
                 {
                     email: email,
-                    hiddenStats: { bench: { "2021-01-01": 135 } },
+                    hiddenStats: { bench: 135 },
                     exerciseHistory: { bench: { "2021-01-01": 135 } },
                 }
 
