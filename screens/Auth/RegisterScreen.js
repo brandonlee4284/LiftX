@@ -59,7 +59,7 @@ const RegisterScreen = ({ navigation }) => {
                 </View>
 
                 <TouchableOpacity style={styles.loginButton} onPress={handleSignUp}>
-                    <Text style={{ color: "white", fontWeight: "600" }}>Sign Up</Text>
+                    <Text style={{ color: "black", fontWeight: "600" }}>Sign Up</Text>
                 </TouchableOpacity>
             </View>
 
@@ -77,11 +77,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
-        backgroundColor: "#131122",
+        backgroundColor: "#121212",
         paddingHorizontal: 20,
     },
     card: {
-        backgroundColor: "#282442",
+        backgroundColor: "black",
         borderRadius: 10,
         padding: 30,
         marginHorizontal: 10,
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     input: {
-        backgroundColor: "#342c5c",
+        backgroundColor: "#121212",
         borderRadius: 12,
         height: 40,
         fontSize: 15,
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
     loginButton: {
-        backgroundColor: "black",
+        backgroundColor: "white",
         borderRadius: 12,
         height: 52,
         alignItems: "center",

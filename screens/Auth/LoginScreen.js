@@ -47,7 +47,7 @@ const LoginScreen = ({ navigation }) => {
                 </View>
 
                 <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                    <Text style={{ color: "white", fontWeight: "600" }}>Log In</Text>
+                    <Text style={{ color: "black", fontWeight: "600" }}>Log In</Text>
                 </TouchableOpacity>
             </View>
 
@@ -61,15 +61,16 @@ const LoginScreen = ({ navigation }) => {
     );
 };
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
-        backgroundColor: "#131122",
+        backgroundColor: "#121212", // Dark background color
         paddingHorizontal: 20,
     },
     card: {
-        backgroundColor: "#282442",
+        backgroundColor: "black", // Darker card background color
         borderRadius: 10,
         padding: 30,
         marginHorizontal: 10,
@@ -83,12 +84,12 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
         textAlign: "center",
-        color: "#ffffff",
+        color: "white", // Light text color
     },
     subGreeting: {
         fontSize: 14,
         textAlign: "center",
-        color: "#8A8F9E",
+        color: "#8A8F9E", // Lighter text color
         marginTop: 8,
     },
     errorMessage: {
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 30,
     },
     error: {
-        color: "#E9446A",
+        color: "#E9446A", // Error text color
         fontSize: 13,
         fontWeight: "600",
         textAlign: "center"
@@ -110,11 +111,11 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     input: {
-        backgroundColor: "#342c5c",
+        backgroundColor: "#121212", // Darker input background color
         borderRadius: 12,
         height: 40,
         fontSize: 15,
-        color: "#FFFFFF",
+        color: "white", // Light text color
         paddingHorizontal: 10,
     },
     optionsContainer: {
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     loginButton: {
-        backgroundColor: "black",
+        backgroundColor: "white", // Button color
         borderRadius: 12,
         height: 52,
         alignItems: "center",

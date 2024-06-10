@@ -13,13 +13,13 @@ const LeaderboardScreen = ({ navigation }) => {
                 <Text style={styles.title}>LiftX</Text>
                 <View style={styles.iconContainer}>
                     <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                        <Ionicons name="person-add-outline" size={28} color="black" style={styles.profileIcon} />
+                        <Ionicons name="person-add-outline" size={28} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                        <Ionicons name="chatbubble-ellipses-outline" size={28} color="black" style={styles.profileIcon} />
+                        <Ionicons name="chatbubble-ellipses-outline" size={28} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
-                        <Ionicons name="settings-outline" size={28} color="black" style={styles.profileIcon} />
+                        <Ionicons name="settings-outline" size={28} color="white" style={styles.profileIcon} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
-        paddingTop: 50
+        paddingTop: 70,
+        backgroundColor: '#121212' // Dark background color
     },
     scrollContent: {
         minWidth: '100%',
@@ -53,7 +54,8 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 24,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        color: 'white' // Light text color
     },
     body: {
         alignItems: "center",
@@ -66,6 +68,11 @@ const styles = StyleSheet.create({
     profileIcon: {
         marginLeft: 15
     },
+    loadingText: {
+        color: 'white', // Light text color
+        marginBottom: 10
+    }
 });
+
 
 export default LeaderboardScreen;

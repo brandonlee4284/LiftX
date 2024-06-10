@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Button, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Carousel from 'react-native-reanimated-carousel';
 import { fetchPrivateUserSplits, updatePrivateUserSplits, convert3DArrayToSplits } from '../../api/userData';
+
 
 const { height, width } = Dimensions.get('window');
 
@@ -48,7 +50,7 @@ const WorkoutScreen = ({ navigation }) => {
         navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity onPress={() => setIsNewSplitModalVisible(true)} style={{ marginRight: 25 }}>
-                    <Text style={{ fontSize: 26, color: '#000' }}>+</Text>
+                    <Text style={{ fontSize: 26, color: 'white' }}>+</Text>
                 </TouchableOpacity>
             ),
         });
@@ -194,7 +196,9 @@ const WorkoutScreen = ({ navigation }) => {
                         ...split,
                         days: split.days.map(day => {
                             if (day.dayName === selectedDay.dayName) {
-                                return { ...day, exercises: selectedExercises };
+                                const updatedDay = { ...day, exercises: selectedExercises };
+                                setSelectedDay(updatedDay)
+                                return updatedDay;
                             }
                             return day;
                         })
@@ -257,15 +261,15 @@ const WorkoutScreen = ({ navigation }) => {
     
                     switch (key) {
                         case 'sets':
-                            updatedExercise.sets = value;
+                            updatedExercise.sets = parseInt(value, 10) || 0;
                             break;
                         case 'reps':
                             updatedExercise.repsDisplay = value;
-                            updatedExercise.reps = Array(parseInt(value, 10) || 0).fill(value);
+                            updatedExercise.reps = Array(updatedExercise.sets).fill(value);
                             break;
                         case 'weight':
                             updatedExercise.weightDisplay = value;
-                            updatedExercise.weight = Array(parseInt(exercise.sets, 10) || 0).fill(value);
+                            updatedExercise.weight = Array(updatedExercise.sets).fill(value);
                             break;
                         default:
                             updatedExercise[key] = value;
@@ -289,6 +293,7 @@ const WorkoutScreen = ({ navigation }) => {
         const newExercise = { name: '', sets: 1, reps: [], weight: [] };
         setSelectedExercises([...selectedExercises, newExercise]);
     };
+
         
     const renderExercise = (exercise, index) => {
         const minReps = Math.min(...exercise.reps);
@@ -297,12 +302,12 @@ const WorkoutScreen = ({ navigation }) => {
 
         return (
             <View key={index} style={styles.exerciseCard}>
-                <Text style={styles.exerciseText}>
-                    {exercise.name} {exercise.sets}x{repsDisplay}
-                </Text>
+                <Text style={styles.exerciseName}>{exercise.name}</Text>
+                <Text style={styles.exerciseVolume}>{exercise.sets}x{repsDisplay}</Text>
             </View>
         );
     };
+
 
     const renderAddExerciseButton = () => (
         editMode && (
@@ -401,21 +406,23 @@ const WorkoutScreen = ({ navigation }) => {
         <View style={styles.splitContainer}>
             <View style={styles.splitHeader}>
                 <Text style={styles.splitTitle}>{item.splitName}</Text>
-                <TouchableOpacity onPress={() => deleteSplit(item.splitName)}>
-                    <Icon name="trash-outline" size={24} color="red" />
+                <TouchableOpacity onPress={() => deleteSplit(item.splitName)} style={{marginRight:10, marginBottom: 30}}>
+                    <Icon name="trash-outline" size={24} color="white" />
                 </TouchableOpacity>
             </View>
-            <FlatList
-                horizontal
-                data={[...item.days, { isAddButton: true, splitName: item.splitName }]} // Add splitName to the dummy item
-                renderItem={({ item }) =>
+            <Carousel
+                loop={false}
+                width={width}
+                height={maxDayCardHeight}
+                data={[...item.days, { isAddButton: true, splitName: item.splitName }]}
+                renderItem={({ item }) => 
                     item.isAddButton ? (
                         <TouchableOpacity
                             style={[styles.dayCard, styles.addSplitCard, { minHeight: maxDayCardHeight }]}
                             onPress={() => {
                                 setNewSplit({ dayName: '', exercises: [] });
-                                setSelectedDay(null); // Deselect any day
-                                setSelectedSplit(item.splitName); // Set the selected split
+                                setSelectedDay(null);
+                                setSelectedSplit(item.splitName);
                                 setIsAddSplitModalVisible(true);
                             }}
                         >
@@ -426,13 +433,11 @@ const WorkoutScreen = ({ navigation }) => {
                     )
                 }
                 keyExtractor={(day, index) => `day-${index}`}
-                contentContainerStyle={styles.horizontalFlatListContent}
-                showsHorizontalScrollIndicator={false}
+                style={styles.carousel}
             />
             <View style={styles.line} />
         </View>
     );
-
    
 
     return (
@@ -477,7 +482,7 @@ const WorkoutScreen = ({ navigation }) => {
                                         <Button
                                             title="Start Workout"
                                             onPress={navigateToStartWorkout}
-                                            color="green"
+                                            color="black"
                                         />
                                     )}
                                 </View>
@@ -573,7 +578,8 @@ const WorkoutScreen = ({ navigation }) => {
                     </View>
                 </View>
             </Modal>
-
+            
+           
             
 
         </View>
@@ -585,7 +591,7 @@ export default WorkoutScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#121212',
     },
     splitContainer: {
         marginBottom: 20,
@@ -594,7 +600,9 @@ const styles = StyleSheet.create({
     splitTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        margin: 15,
+        margin: 5,
+        marginBottom: 30,
+        color: 'white'
     },
     splitHeader: {
         flexDirection: 'row',
@@ -608,25 +616,43 @@ const styles = StyleSheet.create({
     },
     dayCard: {
         alignItems: 'center',
-        width: width * 0.30,
-        backgroundColor: '#fff',
-        borderColor: '#000',
-        borderWidth: 1,
-        borderRadius: 10,
-        marginHorizontal: 5,
-        padding: 10,
+        width: width * 0.9,  // Reduced width to 70% of the screen width
+        backgroundColor: '#000',
+        borderWidth: 0,
+        borderRadius: 40,
+        marginHorizontal: 20,  // Reduced margin
+        padding: 5,  // Reduced padding to make the card more compact
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 0 }, // Shadow on all sides
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
     },
+    
     dayText: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginVertical: 30,
+        color: 'white'
     },
     exerciseCard: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
         width: '100%',
-        paddingHorizontal: 5,
+        paddingHorizontal: 40,
+        paddingVertical: 5,
         marginBottom: 5,
+    },
+    exerciseName: {
+        flex: 1,
+        textAlign: 'left',
+        fontSize: 16,
+        color: '#fff',
+    },
+    exerciseVolume: {
+        flex: 1,
+        textAlign: 'right',
+        fontSize: 16,
+        color: '#fff',
     },
     exerciseCardPopup: {
         flexDirection: 'column',
@@ -634,11 +660,13 @@ const styles = StyleSheet.create({
         width: '100%',
         paddingHorizontal: 5,
         marginBottom: 5,
+        
     },
     exercisePopupContainer: {
         flexDirection: 'column',
         justifyContent: 'flex-start',
         width: '100%',
+        
     },
     exerciseRow: {
         flexDirection: 'row',
@@ -646,15 +674,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
     },
-    exerciseText: {
-        fontSize: 14,
-    },
     exerciseTextPopup: {
         fontSize: 16,
         textAlign: 'left',
     },
     exerciseList: {
-        paddingBottom: 20,
+        paddingBottom: 40,
     },
     verticalFlatListContent: {
         paddingVertical: 20,
@@ -662,7 +687,6 @@ const styles = StyleSheet.create({
     line: {
         width: '100%',
         height: 1,
-        backgroundColor: 'lightgray',
         marginTop: 40,
     },
     modalOverlay: {
@@ -672,11 +696,25 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     modalContainer: {
-        backgroundColor: '#fff',
+        backgroundColor: 'white',
         padding: 20,
-        borderRadius: 10,
+        borderRadius: 40,
         width: '80%',
         maxHeight: '80%',
+
+        /*
+        alignItems: 'center',
+        width: width * 0.9,  // Reduced width to 70% of the screen width
+        backgroundColor: '#000',
+        borderWidth: 0,
+        borderRadius: 40,
+        marginHorizontal: 20,  // Reduced margin
+        padding: 5,  // Reduced padding to make the card more compact
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 0 }, // Shadow on all sides
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
+        */
     },
     modalHeader: {
         flexDirection: 'row',
@@ -712,18 +750,21 @@ const styles = StyleSheet.create({
     addSplitCard: {
         alignItems: 'center',
         justifyContent: 'center',
-        width: width * 0.30,
-        backgroundColor: '#fff',
-        borderColor: '#000',
-        borderWidth: 1,
-        borderRadius: 10,
-        marginHorizontal: 5,
-        padding: 10,
+        width: width * 0.9,  // Reduced width to 70% of the screen width
+        backgroundColor: '#000',
+        borderWidth: 0,
+        borderRadius: 40,
+        marginHorizontal: 20,  // Reduced margin
+        padding: 5,  // Reduced padding to make the card more compact
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 0 }, // Shadow on all sides
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
     },
     addSplitText: {
         fontSize: 30,
         fontWeight: 'bold',
-        color: '#000',
+        color: 'white',
     },
     input: {
         borderWidth: 1,
@@ -814,6 +855,7 @@ const styles = StyleSheet.create({
     },
     exerciseText: {
         fontSize: 16,
+        color: 'white'
     },
     addExerciseButton: {
         alignItems: 'center',
@@ -834,5 +876,9 @@ const styles = StyleSheet.create({
     addSetButtonText: {
         color: '#007bff',
         fontSize: 16,
+    },
+    carousel: {
+        paddingVertical: 10,
+        justifyContent: 'center'
     },
 });

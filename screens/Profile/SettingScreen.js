@@ -20,7 +20,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        backgroundColor: '#121212' // Dark background color
     },
     scrollContent: {
         minWidth: '100%',
@@ -28,6 +29,12 @@ const styles = StyleSheet.create({
     body: {
         alignItems: "center",
         marginTop: 50
+    },
+    logoutButton: {
+        marginTop: 32
+    },
+    logoutText: {
+        color: "red"
     },
 });
 

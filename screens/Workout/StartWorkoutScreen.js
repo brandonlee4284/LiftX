@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons'; // Import FontAwesome5 for icons
 import { Entypo } from '@expo/vector-icons'; // Import FontAwesome5 for icons
-
 
 const StartWorkoutScreen = ({ route }) => {
     const navigation = useNavigation();
@@ -11,13 +10,11 @@ const StartWorkoutScreen = ({ route }) => {
     const [activeSetIndex, setActiveSetIndex] = useState(0);
     const [completed, setCompleted] = useState(false); // State to track workout completion
 
-    // Hide the header and bottom tab bar
     useFocusEffect(() => {
         navigation.setOptions({ headerShown: false });
         navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
 
         return () => {
-            navigation.getParent()?.setOptions({ headerShown: false });
             navigation.getParent()?.setOptions({ tabBarStyle: { display: 'flex' } });
         };
     });
@@ -36,46 +33,64 @@ const StartWorkoutScreen = ({ route }) => {
         }
     };
 
+    const handlePreviousSet = () => {
+        const prevIndex = activeSetIndex - 1;
+        if (prevIndex >= 0) {
+            setActiveSetIndex(prevIndex);
+        }
+    };
+
+    const handleSkipSet = () => {
+        handleNextSet();
+    };
+
+    useEffect(() => {
+        setActiveSetIndex(0); // Set the first set as active when loading the screen
+    }, []);
+
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                 <Text style={styles.title}>{day.dayName} Workout</Text>
                 {day.exercises.map((exercise, exerciseIndex) => (
-                    exercise.reps.map((rep, setIndex) => (
-                        <TouchableOpacity
-                            key={`${exerciseIndex}-${setIndex}`}
-                            style={[
-                                styles.setCard,
-                                { opacity: (exerciseIndex * exercise.reps.length) + setIndex === activeSetIndex ? 1 : 0.6 },
-                                { transform: [{ scale: (exerciseIndex * exercise.reps.length) + setIndex === activeSetIndex ? 1 : 0.8 }] }
-                            ]}
-                        >
-                            <Text style={styles.exerciseText}>{exercise.name}</Text>
-                            <Text style={styles.setText}>
-                                Set {setIndex + 1}: {rep} reps @ {exercise.weight[setIndex]} lbs
-                            </Text>
-                        </TouchableOpacity>
-                    ))
-                ))}
+                    exercise.reps.map((rep, setIndex) => {
+                        const globalSetIndex = exercise.reps.slice(0, setIndex).length + day.exercises.slice(0, exerciseIndex).reduce((sum, ex) => sum + ex.reps.length, 0);
+                        const isActive = globalSetIndex === activeSetIndex;
 
-                
+                        return (
+                            <TouchableOpacity
+                                key={`${exerciseIndex}-${setIndex}`}
+                                style={[
+                                    styles.setCard,
+                                    { opacity: isActive ? 1 : 0.6 },
+                                    { transform: [{ scale: isActive ? 1 : 0.8 }] }
+                                ]}
+                            >
+                                <Text style={styles.exerciseText}>{exercise.name}</Text>
+                                <Text style={styles.setText}>
+                                    Set {setIndex + 1}: {rep} reps @ {exercise.weight[setIndex]} lbs
+                                </Text>
+                            </TouchableOpacity>
+                        );
+                    })
+                ))}
             </ScrollView>
             {!completed && (
                 <>
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={handleNextSet}>
-                        <FontAwesome5 name="check-circle" size={42} color="#009688" />
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.button} onPress={handleNextSet}>
+                            <FontAwesome5 name="check-circle" size={42} color="#009688" />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={handleSkipSet}>
+                            <Entypo name="circle-with-cross" size={42} color="#ff5c5c" />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={handleNextSet}>
+                            <FontAwesome5 name="step-forward" size={42} color="gray" />
+                        </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity style={styles.endWorkoutButton} onPress={handleEndWorkout}>
+                        <Text style={styles.endWorkoutText}>End Workout</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={handleNextSet}>
-                        <Entypo name="circle-with-cross" size={42} color="#ff5c5c" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={handleNextSet}>
-                        <FontAwesome5 name="step-forward" size={42} color="gray" />
-                    </TouchableOpacity>
-                </View>
-                <TouchableOpacity style={styles.endWorkoutButton} onPress={handleEndWorkout}>
-                    <Text style={styles.endWorkoutText}>End Workout</Text>
-                </TouchableOpacity>
                 </>
             )}
             {completed && (
