@@ -141,34 +141,23 @@ const WorkoutScreen = ({ navigation }) => {
     };
     
 
-    const handleEditExerciseChange = (exercise, repIndex, key, value) => {
-        const updatedExercises = selectedExercises.map((ex) => {
-            if (ex.name === exercise.name && repIndex === null) {
-                return { ...ex, [key]: value };
-            }
-            if (ex.name === exercise.name) {
-                const updatedReps = key === 'reps' ? [...ex.reps] : ex.reps;
-                const updatedWeights = key === 'weight' ? [...ex.weight] : ex.weight;
+    const handleEditExerciseChange = (item, repIndex, field, value) => {
+        const updatedExercises = selectedExercises.map((exercise) => {
+            if (exercise.name === item.name) {
+                if (repIndex !== null) {
+                    const updatedReps = exercise.reps.map((rep, index) => index === repIndex ? value : rep);
+                    const updatedWeight = exercise.weight.map((weight, index) => index === repIndex ? value : weight);
     
-                if (key === 'reps') {
-                    if (value === '') {
-                        updatedReps[repIndex] = '';
-                    } else {
-                        updatedReps[repIndex] = parseInt(value, 10);
+                    if (field === 'reps') {
+                        return { ...exercise, reps: updatedReps };
+                    } else if (field === 'weight') {
+                        return { ...exercise, weight: updatedWeight };
                     }
+                } else {
+                    return { ...exercise, name: value };
                 }
-    
-                if (key === 'weight') {
-                    if (value === '') {
-                        updatedWeights[repIndex] = '';
-                    } else {
-                        updatedWeights[repIndex] = parseInt(value, 10);
-                    }
-                }
-    
-                return { ...ex, reps: updatedReps, weight: updatedWeights, sets: updatedReps.length };
             }
-            return ex;
+            return exercise;
         });
         setSelectedExercises(updatedExercises);
     };
@@ -367,52 +356,55 @@ const WorkoutScreen = ({ navigation }) => {
             >
                 <View style={styles.exercisePopupContainer}>
                     {editMode && (
-                        <TextInput
-                            key={`name-${item.name}-${item.sets}`}
-                            style={styles.textInputEditSplit}
-                            value={item.name}
-                            onChangeText={(text) => handleEditExerciseChange(item, null, 'name', text)}
-                            placeholder="Exercise Name"
-                        />
-                    )}
-                    {(item.reps.length > 0 ? item.reps : ['']).map((rep, repIndex) => (
-                        <View key={`rep-${repIndex}`} style={styles.exerciseRow}>
-                            {editMode && (
-                                <TouchableOpacity
-                                    style={styles.deleteButton}
-                                    onPress={() => deleteExerciseRow(item, repIndex)}
-                                >
-                                    <Text style={styles.deleteButtonText}>X</Text>
-                                </TouchableOpacity>
-                            )}
-                            {/*<FontAwesome6 name="square-caret-right" size={getResponsiveFontSize(24)} color="black" style={styles.icon} />*/}
-                            <Text style={styles.exerciseTextPopup}>        
-                                {rep} x {item.name}  
-                            </Text>
-                            {editMode && (
-                                <>
+                        <View style={styles.editExerciseContainer}>
+                            <TextInput
+                                key={`name-${item.id}`}
+                                style={styles.editTextInputExerciseName}
+                                value={item.name}
+                                onChangeText={(text) => handleEditExerciseChange(item, null, 'name', text)}
+                                placeholder="Exercise Name"
+                            />
+                            {(item.reps.length > 0 ? item.reps : ['']).map((rep, repIndex) => (
+                                <View key={`rep-${repIndex}`} style={styles.editExerciseRow}>
+                                    <TouchableOpacity
+                                        style={styles.editDeleteButton}
+                                        onPress={() => deleteExerciseRow(item, repIndex)}
+                                    >
+                                        <Text style={styles.editDeleteButtonText}>X</Text>
+                                    </TouchableOpacity>
                                     <TextInput
                                         key={`rep-${item.name}-${repIndex}`}
-                                        style={styles.textInputEditSplit}
+                                        style={styles.editTextInputReps}
                                         keyboardType="numeric"
                                         value={rep.toString()}
                                         onChangeText={(text) => handleEditExerciseChange(item, repIndex, 'reps', text)}
                                     />
+                                    <Text style={styles.editExerciseText}>x</Text>
+                                    <Text style={styles.editExerciseName}>{item.name}</Text>
+                                    <Text style={styles.editExerciseText}>@</Text>
                                     <TextInput
                                         key={`weight-${item.name}-${repIndex}`}
-                                        style={styles.textInputEditSplit}
+                                        style={styles.editTextInputWeight}
                                         keyboardType="numeric"
                                         value={(item.weight[repIndex] || '').toString()}
                                         onChangeText={(text) => handleEditExerciseChange(item, repIndex, 'weight', text)}
                                     />
-                                </>
-                            )}
+                                </View>
+                            ))}
+                            <TouchableOpacity onPress={() => addSet(item)} style={styles.editAddSetButton}>
+                                <Text style={styles.editAddSetButtonText}>+ Add Set</Text>
+                            </TouchableOpacity>
                         </View>
-                    ))}
-                    {editMode && (
-                        <TouchableOpacity onPress={() => addSet(item)} style={styles.addSetButton}>
-                            <Text style={styles.addSetButtonText}>+ Add Set</Text>
-                        </TouchableOpacity>
+                    )}
+                    {!editMode && (
+                        (item.reps.length > 0 ? item.reps : ['']).map((rep, repIndex) => (
+                            <View key={`rep-${repIndex}`} style={styles.exerciseRow}>
+                                <FontAwesome6 name="dumbbell" size={getResponsiveFontSize(24)} color="black" style={styles.icon} />
+                                <Text style={styles.exerciseTextPopup}>        
+                                    {rep} x {item.name}  
+                                </Text>
+                            </View>
+                        ))
                     )}
                 </View>
             </TouchableOpacity>
@@ -511,6 +503,7 @@ const WorkoutScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            {/* split render */}
             <FlatList
                 ref={flatListRef}
                 data={workoutData}
@@ -536,7 +529,8 @@ const WorkoutScreen = ({ navigation }) => {
             <TouchableOpacity onPress={scrollDown} style={styles.scrollDownButton}>
                 <Icon name="arrow-down-circle-outline" size={getResponsiveFontSize(36)} color="white" style={styles.scrollDownButton}/>
             </TouchableOpacity>
-
+            
+            {/* popup card */}
             <Modal
                 visible={selectedDay !== null}
                 animationType="fade"
@@ -558,7 +552,7 @@ const WorkoutScreen = ({ navigation }) => {
                                         keyExtractor={(exercise, index) => `${exercise.name}-${index}`}
                                         renderItem={renderExerciseInPopupView}
                                         ListFooterComponent={renderAddExerciseButton}
-                                        contentContainerStyle={styles.flatListContentContainer}
+                                        contentContainerStyle={editMode ? styles.flatListEditMode : styles.flatListContentContainer}
                                     />
                                 </View>
                                 <View style={styles.modalFooter}>
@@ -578,7 +572,8 @@ const WorkoutScreen = ({ navigation }) => {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
-
+            
+            {/* add a new day */}
             <Modal
                 visible={isAddSplitModalVisible}
                 animationType="fade"
@@ -590,9 +585,11 @@ const WorkoutScreen = ({ navigation }) => {
                         <TouchableWithoutFeedback>
                             <View style={styles.modalContainer}>
                                 <ScrollView contentContainerStyle={styles.modalBodyCentered}>
+                                    <Text style={{fontSize: getResponsiveFontSize(16), fontWeight: 'bold'}}>Day Name</Text>
                                     <TextInput
                                         style={styles.input}
                                         placeholder="Day Name"
+                                        placeholderTextColor="gray"
                                         value={newSplit.dayName}
                                         onChangeText={(text) => setNewSplit({ ...newSplit, dayName: text })}
                                     />
@@ -601,12 +598,14 @@ const WorkoutScreen = ({ navigation }) => {
                                             <TextInput
                                                 style={[styles.input, styles.smallInput]}
                                                 placeholder="Name"
+                                                placeholderTextColor="gray"
                                                 value={exercise.name}
                                                 onChangeText={(text) => handleNewSplitChange(text, index, 'name')}
                                             />
                                             <TextInput
                                                 style={[styles.input, styles.smallInput]}
                                                 placeholder="Sets"
+                                                placeholderTextColor="gray"
                                                 value={exercise.sets}
                                                 keyboardType="numeric"
                                                 onChangeText={(text) => handleNewSplitChange(text, index, 'sets')}
@@ -615,6 +614,7 @@ const WorkoutScreen = ({ navigation }) => {
                                             <TextInput
                                                 style={[styles.input, styles.smallInput]}
                                                 placeholder="Reps"
+                                                placeholderTextColor="gray"
                                                 keyboardType="numeric"
                                                 value={exercise.repsDisplay || ''}
                                                 onChangeText={value => handleNewSplitChange(value, index, 'reps')}
@@ -623,19 +623,20 @@ const WorkoutScreen = ({ navigation }) => {
                                             <TextInput
                                                 style={[styles.input, styles.smallInput]}
                                                 placeholder="Weight"
+                                                placeholderTextColor="gray"
                                                 keyboardType="numeric"
                                                 value={exercise.weightDisplay || ''}
                                                 onChangeText={value => handleNewSplitChange(value, index, 'weight')}
                                             />
                                         </View>
                                     ))}
-                                    <TouchableOpacity onPress={handleAddExerciseRow} style={styles.addExerciseButton}>
-                                        <Text style={styles.addExerciseButtonText}>Add Exercise</Text>
+                                    <TouchableOpacity onPress={handleAddExerciseRow} style={styles.addExerciseButton2}>
+                                        <Text style={styles.addExerciseButtonText2}>Add Exercise</Text>
                                     </TouchableOpacity>
                                     <Button
                                         title="Save"
                                         onPress={handleSaveNewSplit}
-                                        color="blue"
+                                        color="black"
                                     />
                                 </ScrollView>
                             </View>
@@ -644,6 +645,7 @@ const WorkoutScreen = ({ navigation }) => {
                 </TouchableWithoutFeedback>
             </Modal>
 
+            {/* add a new split */}
             <Modal
                 visible={isNewSplitModalVisible}
                 animationType="fade"
@@ -661,7 +663,7 @@ const WorkoutScreen = ({ navigation }) => {
                             value={newSplitName}
                             onChangeText={setNewSplitName}
                         />
-                        <Button title="Save" onPress={handleSaveNewSplitModal} />
+                        <Button title="Save" onPress={handleSaveNewSplitModal} color='black' />
                     </View>
                 </View>
             </Modal>
@@ -780,6 +782,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        justifyContent: 'left',
         width: '100%',
     },
     exerciseRowNotEdit: {
@@ -805,6 +808,11 @@ const styles = StyleSheet.create({
         marginTop: 40,
     },
     flatListContentContainer: {
+        alignItems: 'left', // Center items horizontally
+        justifyContent: 'center', // Center items vertically
+        flexGrow: 1,
+    },
+    flatListEditMode: {
         alignItems: 'center', // Center items horizontally
         justifyContent: 'center', // Center items vertically
         flexGrow: 1,
@@ -899,6 +907,7 @@ const styles = StyleSheet.create({
         padding: 10,
         marginVertical: 10,
         width: '100%',
+        marginHorizontal: 3
     },
     exerciseInputRow: {
         flexDirection: 'row',
@@ -922,9 +931,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginVertical: 10,
     },
-    addExerciseButtonText: {
-        color: 'blue',
-        fontSize: getResponsiveFontSize(16),
+    addExerciseButton2: {
+        marginVertical: 10,
+        backgroundColor: 'black',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
     },
     textInputAddSplit: {
         borderBottomWidth: 1,
@@ -965,10 +977,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginVertical: 10,
     },
-    addExerciseButtonText: {
-        color: 'blue',
-        fontSize: getResponsiveFontSize(16),
-    },
     textInputEditSplit: {
         borderColor: 'gray',
         borderWidth: 1,
@@ -990,6 +998,10 @@ const styles = StyleSheet.create({
     },
     addExerciseButtonText: {
         color: 'blue',
+        fontSize: getResponsiveFontSize(16),
+    },
+    addExerciseButtonText2: {
+        color: 'white',
         fontSize: getResponsiveFontSize(16),
     },
     addSetButton: {
@@ -1029,5 +1041,74 @@ const styles = StyleSheet.create({
     },
     icon: {
         margin: 10
+    },
+    editExerciseContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    editExerciseRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    editTextInputExerciseName: {
+        width: width*0.7,
+        height: height*0.045,
+        borderColor: 'gray',
+        borderWidth: 1,
+        paddingHorizontal: 8,
+        marginBottom: 12,
+        textAlign: 'center',
+        borderRadius: 10,
+    },
+    editTextInputReps: {
+        width: width*0.1,
+        height: height*0.045,
+        borderColor: 'gray',
+        borderWidth: 1,
+        paddingHorizontal: 8,
+        marginHorizontal: 5,
+        textAlign: 'center',
+        borderRadius: 10,
+    },
+    editTextInputWeight: {
+        width: width*0.14,
+        height: height*0.045,
+        borderColor: 'gray',
+        borderWidth: 1,
+        paddingHorizontal: 8,
+        marginHorizontal: 5,
+        textAlign: 'center',
+        borderRadius: 10,
+    },
+    editDeleteButton: {
+        marginRight: 10,
+        backgroundColor: 'black',
+        padding: 10,
+        borderRadius: 10,
+    },
+    editDeleteButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
+    editExerciseText: {
+        fontSize: getResponsiveFontSize(14),
+        marginHorizontal: 5,
+        fontWeight: 'bold',
+    },
+    editExerciseName: {
+        fontSize: getResponsiveFontSize(14),
+        fontWeight: 'bold',
+    },
+    editAddSetButton: {
+        marginVertical: 10,
+        backgroundColor: 'black',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 20,
+    },
+    editAddSetButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
     },
 });
