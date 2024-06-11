@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { logoutUser } from "../../api/auth";
 
 const SettingScreen = () => {
+    const navigation = useNavigation();
+    useEffect(() => {
+        navigation.setOptions({ headerShown: false });
+        
+    }, [navigation]);
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>

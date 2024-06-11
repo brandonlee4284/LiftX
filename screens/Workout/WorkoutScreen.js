@@ -3,6 +3,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { View, Text, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Button, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import Carousel from 'react-native-reanimated-carousel';
 import { fetchPrivateUserSplits, updatePrivateUserSplits, convert3DArrayToSplits } from '../../api/userData';
 
@@ -361,7 +362,7 @@ const WorkoutScreen = ({ navigation }) => {
                 disabled={isActive}
                 style={[
                     styles.exerciseCardPopup,
-                    { backgroundColor: isActive ? "red" : "transparent" },
+                    { backgroundColor: isActive ? "white" : "transparent" },
                 ]}
             >
                 <View style={styles.exercisePopupContainer}>
@@ -384,8 +385,9 @@ const WorkoutScreen = ({ navigation }) => {
                                     <Text style={styles.deleteButtonText}>X</Text>
                                 </TouchableOpacity>
                             )}
-                            <Text style={styles.exerciseTextPopup}>
-                                {item.name} {rep} @ {item.weight[repIndex] || ''} lbs
+                            {/*<FontAwesome6 name="square-caret-right" size={getResponsiveFontSize(24)} color="black" style={styles.icon} />*/}
+                            <Text style={styles.exerciseTextPopup}>        
+                                {rep} x {item.name}  
                             </Text>
                             {editMode && (
                                 <>
@@ -546,7 +548,7 @@ const WorkoutScreen = ({ navigation }) => {
                         <TouchableWithoutFeedback>
                             <View style={styles.modalContainer}>
                                 <View style={styles.modalHeader}>
-                                    <Text style={styles.modalTitle}>{selectedDay?.dayName}</Text>
+                                    <Text style={styles.modalTitle}>{selectedDay?.dayName?.toUpperCase()}</Text>
                                     <Button title={editMode ? "Save" : "Edit"} onPress={handleEditModeToggle} />
                                 </View>
                                 <View style={styles.modalBody}>
@@ -556,19 +558,19 @@ const WorkoutScreen = ({ navigation }) => {
                                         keyExtractor={(exercise, index) => `${exercise.name}-${index}`}
                                         renderItem={renderExerciseInPopupView}
                                         ListFooterComponent={renderAddExerciseButton}
-                                        contentContainerStyle={styles.popupExerciseList}
+                                        contentContainerStyle={styles.flatListContentContainer}
                                     />
+                                </View>
+                                <View style={styles.modalFooter}>
                                     {!!editMode && (
-                                    <TouchableOpacity onPress={removeDay}>
-                                        <Text style={styles.removeButton}>Remove {selectedDay?.dayName}</Text>
+                                    <TouchableOpacity onPress={removeDay} style={styles.removeButton}>
+                                        <Text style={{color: 'white', textAlign: 'center', fontWeight: 'bold'}}>Remove {selectedDay?.dayName}</Text>
                                     </TouchableOpacity>
                                     )}
                                     {!editMode && (
-                                        <Button
-                                            title="Start Workout"
-                                            onPress={navigateToStartWorkout}
-                                            color="black"
-                                        />
+                                        <TouchableOpacity onPress={navigateToStartWorkout} style={styles.startButton}>
+                                            <Text style={{color: 'white', textAlign: 'center', fontWeight: 'bold'}}>Start Workout</Text>
+                                        </TouchableOpacity>
                                     )}
                                 </View>
                             </View>
@@ -751,12 +753,14 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         fontSize: getResponsiveFontSize(16),
         color: '#fff',
+        fontWeight: 'bold'
     },
     exerciseVolume: {
         flex: 1,
         textAlign: 'right',
         fontSize: getResponsiveFontSize(16),
         color: '#fff',
+        fontWeight: 'bold'
     },
     exerciseCardPopup: {
         flexDirection: 'column',
@@ -778,9 +782,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
     },
+    exerciseRowNotEdit: {
+        flexDirection: 'row',
+        justifyContent: 'left',
+        alignItems: 'center',
+        width: '100%',
+    },
     exerciseTextPopup: {
         fontSize: getResponsiveFontSize(16),
         textAlign: 'left',
+        fontWeight: 'bold'
     },
     exerciseList: {
         paddingBottom: 40,
@@ -793,6 +804,11 @@ const styles = StyleSheet.create({
         height: 1,
         marginTop: 40,
     },
+    flatListContentContainer: {
+        alignItems: 'center', // Center items horizontally
+        justifyContent: 'center', // Center items vertically
+        flexGrow: 1,
+    },
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.5)',
@@ -804,21 +820,7 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 40,
         width: '80%',
-        maxHeight: '80%',
-
-        /*
-        alignItems: 'center',
-        width: width * 0.9,  // Reduced width to 70% of the screen width
-        backgroundColor: '#000',
-        borderWidth: 0,
-        borderRadius: 40,
-        marginHorizontal: 20,  // Reduced margin
-        padding: 5,  // Reduced padding to make the card more compact
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 0 }, // Shadow on all sides
-        shadowOpacity: 0.5,
-        shadowRadius: 5,
-        */
+        maxHeight: '80%',    
     },
     modalHeader: {
         flexDirection: 'row',
@@ -829,23 +831,43 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: getResponsiveFontSize(24),
         fontWeight: 'bold',
+        marginTop: 10
     },
     modalBody: {
         flexGrow: 1,
+        flexShrink: 1,
+        paddingVertical: 10,
+        
     },
     modalBodyCentered: {
         justifyContent: 'center',
         alignItems: 'center',
     },
+
+    modalFooter: {
+        marginTop: 20,
+    },
     removeButton: {
         fontSize: getResponsiveFontSize(16),
-        color: 'red',
+        color: 'white',
         marginTop: 10,
         marginBottom: 20,
         textAlign: 'center',
+        backgroundColor: 'black',
+        borderRadius: 20,
+        padding: 20
+
     },
     deleteButton: {
         marginRight: 10,
+    },
+    startButton: {
+        fontSize: getResponsiveFontSize(16),
+        textAlign: 'center',
+        backgroundColor: 'black',
+        borderRadius: 20,
+        padding: 20
+
     },
     deleteButtonText: {
         color: 'red',
@@ -959,7 +981,7 @@ const styles = StyleSheet.create({
     },
     exerciseText: {
         fontSize: getResponsiveFontSize(16),
-        color: 'white'
+        color: 'white',
     },
     addExerciseButton: {
         alignItems: 'center',
@@ -1004,5 +1026,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginHorizontal: 5,
         backgroundColor: 'rgba(255, 255, 255, 0.3)', // Default inactive dot color
+    },
+    icon: {
+        margin: 10
     },
 });
