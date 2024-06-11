@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ScrollView, Dimensions } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchPublicUserData } from '../api/userData';
 
@@ -22,6 +23,21 @@ const HomeScreen = ({ navigation }) => {
         LayoutAnimation.easeInEaseOut();
     }, []);
 
+    useFocusEffect(
+        React.useCallback(() => {
+            navigation.setOptions({ headerShown: false });
+            navigation.getParent()?.setOptions({
+                tabBarStyle: {
+                    display: 'flex',
+                    backgroundColor: '#121212',
+                    borderTopWidth: 0,
+                },
+                tabBarActiveTintColor: 'white',
+                tabBarInactiveTintColor: 'gray',
+                tabBarShowLabel: false,
+            });
+        }, [navigation])
+    );
 
     const handleWorkoutButtonPress = () => {
         navigation.navigate('Workout');

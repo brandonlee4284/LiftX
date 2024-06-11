@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import React, { useState, useEffect, useRef } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import { View, Text, FlatList, Modal, TouchableOpacity, TouchableWithoutFeedback, Button, StyleSheet, Dimensions, TextInput, ScrollView } from 'react-native';
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -20,29 +20,39 @@ const WorkoutScreen = ({ navigation }) => {
     const [isNewSplitModalVisible, setIsNewSplitModalVisible] = useState(false);
     const [newSplitName, setNewSplitName] = useState('');
     const [selectedSplit, setSelectedSplit] = useState(null);
+    const [currentOffset, setCurrentOffset] = useState(0);
+    const isFocused = useIsFocused();
+    const flatListRef = useRef(null);
 
-    useFocusEffect(
-        React.useCallback(() => {
+    useEffect(() => {
+        if (isFocused) {
+            // Hide the header and tab bar when the screen is focused
             navigation.setOptions({ headerShown: false });
             navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
+        } else {
+            // Get the navigation state to determine the previous screen
+            const state = navigation.getState();
+            const routes = state.routes;
+            const previousRoute = routes[routes.length - 2]?.name;
 
-            return () => {
-                navigation.getParent()?.setOptions({ 
-                    headerShown: false,
-                    tabBarActiveTintColor: "white",
-                    tabBarInactiveTintColor: "gray",
-                    tabBarStyle: [
-                      {
-                        display: "flex",
-                        backgroundColor: "#121212",
+            if (previousRoute === 'Home') {
+                // Show the tab bar if navigating back to the Home screen
+                navigation.getParent()?.setOptions({
+                    tabBarStyle: {
+                        display: 'flex',
+                        backgroundColor: '#121212',
                         borderTopWidth: 0,
-                      }
-                    ], 
-                    tabBarShowLabel: false, });
-            };
-        }, [navigation])
-    );
-
+                    },
+                    tabBarActiveTintColor: 'white',
+                    tabBarInactiveTintColor: 'gray',
+                    tabBarShowLabel: false,
+                });
+            } else if (previousRoute === 'StartWorkout') {
+                // Keep the tab bar hidden if navigating to the StartWorkout screen
+                navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
+            }
+        }
+    }, [isFocused, navigation]);
     
     useEffect(() => {
         async function fetchData() {
@@ -69,7 +79,14 @@ const WorkoutScreen = ({ navigation }) => {
     }, [selectedDay]);
 
 
-
+    const scrollDown = () => {
+        const newOffset = currentOffset + 500;
+        flatListRef.current?.scrollToOffset({
+            offset: newOffset, // Adjust this value to scroll by a certain amount
+            animated: true,
+        });
+        setCurrentOffset(newOffset);
+    };
     
     const handleSaveNewSplitModal = async () => {
         const updatedWorkoutData = [...workoutData, { splitName: newSplitName, days: [] }];
@@ -327,6 +344,8 @@ const WorkoutScreen = ({ navigation }) => {
     };
 
 
+
+
     const renderAddExerciseButton = () => (
         editMode && (
             <TouchableOpacity onPress={handleAddExerciseInEdit} style={styles.addExerciseButton}>
@@ -420,6 +439,34 @@ const WorkoutScreen = ({ navigation }) => {
         </TouchableOpacity>
     );
 
+    const [activeIndex, setActiveIndex] = useState({});
+
+    const handleCarouselChange = (index, splitName) => {
+        setActiveIndex((prevState) => ({
+            ...prevState,
+            [splitName]: index,
+        }));
+    };
+
+    const renderDots = (splitName, item) => {
+        const dotsCount = item.days.length + 1;
+        const activeDotIndex = activeIndex[splitName] || 0;
+
+        return (
+            <View style={styles.dotsContainer}>
+                {Array.from({ length: dotsCount }).map((_, index) => (
+                    <View
+                        key={index}
+                        style={[
+                            styles.dot,
+                            { backgroundColor: activeDotIndex === index ? 'rgba(255, 255, 255, 0.92)' : 'rgba(255, 255, 255, 0.3)' },
+                        ]}
+                    />
+                ))}
+            </View>
+        );
+    };
+
     const renderSplit = ({ item }) => (
         <View style={styles.splitContainer}>
             <View style={styles.splitHeader}>
@@ -451,8 +498,10 @@ const WorkoutScreen = ({ navigation }) => {
                     )
                 }
                 keyExtractor={(day, index) => `day-${index}`}
+                onSnapToItem={(index) => handleCarouselChange(index, item.splitName)}
                 style={styles.carousel}
             />
+            {renderDots(item.splitName, item)}
             <View style={styles.line} />
         </View>
     );
@@ -461,6 +510,7 @@ const WorkoutScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <FlatList
+                ref={flatListRef}
                 data={workoutData}
                 renderItem={renderSplit}
                 keyExtractor={(item, index) => `split-${index}`}
@@ -477,7 +527,13 @@ const WorkoutScreen = ({ navigation }) => {
                         </TouchableOpacity>
                     </View>
                 )}
+                onScroll={(event) => {
+                    setCurrentOffset(event.nativeEvent.contentOffset.y);
+                }}
             />
+            <TouchableOpacity onPress={scrollDown} style={styles.scrollDownButton}>
+                <Icon name="arrow-down-circle-outline" size={getResponsiveFontSize(36)} color="white" style={styles.scrollDownButton}/>
+            </TouchableOpacity>
 
             <Modal
                 visible={selectedDay !== null}
@@ -643,7 +699,7 @@ const styles = StyleSheet.create({
     },
     splitContainer: {
         marginBottom: 20,
-        alignItems: 'flex-start',
+        alignItems: 'center',
     },
     splitTitle: {
         fontSize: getResponsiveFontSize(24),
@@ -928,5 +984,25 @@ const styles = StyleSheet.create({
     carousel: {
         paddingVertical: 10,
         justifyContent: 'center'
+    },
+    scrollDownButton: {
+        position: 'absolute',
+        bottom: 10,
+        right: 9,
+        padding: 10,
+        borderRadius: 30,
+    },
+    dotsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 15,
+    },
+    dot: {
+        width: getResponsiveFontSize(8),
+        height: getResponsiveFontSize(8),
+        borderRadius: 5,
+        marginHorizontal: 5,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)', // Default inactive dot color
     },
 });

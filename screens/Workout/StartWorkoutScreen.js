@@ -10,14 +10,31 @@ const StartWorkoutScreen = ({ route }) => {
     const [activeSetIndex, setActiveSetIndex] = useState(0);
     const [completed, setCompleted] = useState(false); // State to track workout completion
 
-    useFocusEffect(() => {
-        navigation.setOptions({ headerShown: false });
-        navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
+    useFocusEffect(
+        React.useCallback(() => {
+            navigation.setOptions({ headerShown: false });
+            navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
 
-    });
+            return () => {
+                // Reset options when screen is unfocused
+                navigation.getParent()?.setOptions({ 
+                    headerShown: false,
+                    tabBarActiveTintColor: "white",
+                    tabBarInactiveTintColor: "gray",
+                    tabBarStyle: [
+                      {
+                        display: "flex",
+                        backgroundColor: "#121212",
+                        borderTopWidth: 0,
+                      }
+                    ], 
+                    tabBarShowLabel: false, });
+            };
+        }, [navigation])
+    );
 
     const handleEndWorkout = () => {
-        navigation.navigate('Workout'); // Replace 'Workout' with the actual name of your target screen
+        navigation.navigate('Home'); 
     };
 
     const handleNextSet = () => {
