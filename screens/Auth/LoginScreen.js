@@ -1,102 +1,94 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import { loginUser } from "../../api/auth";
+import { GreetingMsg } from "./Components/GreetingMsg";
+import { Input } from "./Components/Input";
+import { SignInButton } from "./Components/SignInButton";
+import { Footer } from "./Components/Footer";
+
+import { useTheme } from "../ThemeProvider";
+
+
+const { height, width } = Dimensions.get('window');
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errorMessage, setErrorMessage] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);    
+
+    const { theme } = useTheme();
+    const styles = createStyles(theme);
 
     const handleLogin = () => {
         loginUser(email, password, setErrorMessage);
     };
-
+    
     return (
         <View style={styles.container}>
-            <View style={styles.card}>
-                <Text style={styles.greeting}>LiftX Login</Text>
-                <Text style={styles.subGreeting}>Login to your LiftX account</Text>
-
-                <View style={styles.errorMessage}>
-                    {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-                </View>
-
-                <View style={styles.form}>
-                    <View style={styles.inputContainer}>
-                        <TextInput
-                            style={styles.input}
-                            autoCapitalize="none"
-                            onChangeText={setEmail}
-                            value={email}
-                            placeholder="Email"
-                            placeholderTextColor="#8A8F9E"
-                        />
-                    </View>
-
-                    <View style={[styles.inputContainer, { marginTop: 16 }]}>
-                        <TextInput
-                            style={styles.input}
-                            secureTextEntry
-                            autoCapitalize="none"
-                            onChangeText={setPassword}
-                            value={password}
-                            placeholder="Password"
-                            placeholderTextColor="#8A8F9E"
-                        />
-                    </View>
-                </View>
-
-                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                    <Text style={{ color: "black", fontWeight: "600" }}>Log In</Text>
-                </TouchableOpacity>
+            <View style={styles.circle}/>
+            <GreetingMsg msg="Welcome Back"></GreetingMsg>
+            <View style={styles.inputContainer}>
+                <Input 
+                    mode="email" 
+                    backgroundColor={theme.inputBackgroundColor}
+                    onChangeText={setEmail}
+                    value={email}
+                    placeholder="Email"
+                    placeholderTextColor={theme.textColor}
+                />
+                <Input 
+                    mode="password" 
+                    backgroundColor={theme.inputBackgroundColor}
+                    onChangeText={setPassword}
+                    value={password}
+                    placeholder="Password"
+                    placeholderTextColor={theme.textColor}
+                />
             </View>
-
-            <TouchableOpacity style={{ alignSelf: "center", marginTop: 32 }}>
-                <Text style={{ color: "#8A8F9E", fontSize: 13 }}>
-                    New to LiftX?
-                    <Text style={{ fontWeight: "500", color: "white" }} onPress={() => navigation.navigate("Register")}> Sign Up</Text>
-                </Text>
-            </TouchableOpacity>
+            <View style={styles.errorContainer}>
+                {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+            </View>
+            <View style={styles.buttonContainer}>
+                <SignInButton text="Log In" onPress={handleLogin}/>
+            </View>
+            <View style={styles.footerContainer}>
+                <Footer msg="New to LiftX?" button="Sign Up" whenClicked="Register" />
+            </View>
         </View>
     );
 };
 
-
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        justifyContent: "center",
-        backgroundColor: "#121212", // Dark background color
+        backgroundColor: theme.backgroundColor,
         paddingHorizontal: 20,
     },
-    card: {
-        backgroundColor: "black", // Darker card background color
-        borderRadius: 10,
-        padding: 30,
-        marginHorizontal: 10,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.8,
-        shadowRadius: 2,
-        elevation: 5,
+    inputContainer: {
+        alignItems: 'center',
+        marginBottom: height * 0.03,
     },
-    greeting: {
-        fontSize: 24,
-        fontWeight: "bold",
-        textAlign: "center",
-        color: "white", // Light text color
+    errorContainer: {
+        alignItems: 'center',
+        marginBottom: height * 0.03,
     },
-    subGreeting: {
-        fontSize: 14,
-        textAlign: "center",
-        color: "#8A8F9E", // Lighter text color
-        marginTop: 8,
+    buttonContainer: {
+        alignItems: 'center',
+        marginBottom: height * 0.02,
     },
-    errorMessage: {
-        height: 70,
-        alignItems: "center",
-        justifyContent: "center",
-        marginHorizontal: 30,
+    footerContainer: {
+        alignItems: 'center',
+        marginBottom: height * 0.08,
+    },
+    circle: {
+        position: 'absolute',
+        width: width * 1.6, 
+        height: width * 1.6, 
+        borderRadius: (width * 1.6) / 2,
+        backgroundColor: theme.backdropColor,
+        top: -width * 0.75, 
+        left: -width * 0.50,
+        zIndex: -1, 
     },
     error: {
         color: "#E9446A", // Error text color
@@ -104,37 +96,7 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         textAlign: "center"
     },
-    form: {
-        marginBottom: 24,
-    },
-    inputContainer: {
-        marginBottom: 16,
-    },
-    input: {
-        backgroundColor: "#121212", // Darker input background color
-        borderRadius: 12,
-        height: 40,
-        fontSize: 15,
-        color: "white", // Light text color
-        paddingHorizontal: 10,
-    },
-    optionsContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginVertical: 16,
-    },
-    rememberMeContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    loginButton: {
-        backgroundColor: "white", // Button color
-        borderRadius: 12,
-        height: 52,
-        alignItems: "center",
-        justifyContent: "center",
-    }
+    
 });
 
 export default LoginScreen;

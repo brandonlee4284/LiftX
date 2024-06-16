@@ -19,6 +19,8 @@ import StartWorkoutScreen from './screens/Workout/StartWorkoutScreen';
 import ProfileEditScreen from './screens/Profile/ProfileEditScreen';
 import SettingScreen from './screens/Profile/SettingScreen';
 
+import { ThemeProvider } from './screens/ThemeProvider';
+
 import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
 
@@ -166,9 +168,11 @@ function RootNavigator() {
 
 function MainApp() {
   return (
-    <NavigationContainer>
-      <RootNavigator />
-    </NavigationContainer>
+    <ThemeProvider>
+      <NavigationContainer>
+        <RootNavigator />
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }
 
