@@ -13,6 +13,7 @@ export function Header(props) {
     const navigation = useNavigation();
     const { theme } = useTheme();
     const styles = createStyles(theme);
+    
 
     useEffect(() => {
         async function fetchData() {
@@ -26,7 +27,7 @@ export function Header(props) {
     }, []);
 
     const handleAddProfile = () => {
-        navigation.navigate('AddFriend');
+        navigation.navigate('Onboarding');
     };
 
     const handleSettings = () => {

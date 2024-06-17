@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { logoutUser } from "../../api/auth";
+import { logoutUser } from "../api/auth";
+import { useTheme } from "./ThemeProvider";
 
 const SettingScreen = () => {
     const navigation = useNavigation();
-    useEffect(() => {
-        navigation.setOptions({ headerShown: false });
-        
-    }, [navigation]);
+    const { theme } = useTheme();
+    const styles = createStyles(theme);
+
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -22,12 +22,12 @@ const SettingScreen = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: '#121212' // Dark background color
+        backgroundColor: theme.backgroundColor
     },
     scrollContent: {
         minWidth: '100%',

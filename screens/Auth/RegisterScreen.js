@@ -23,7 +23,7 @@ const RegisterScreen = ({ navigation }) => {
 
 
     const handleSignUp = () => {
-        createNewUser(username, email, password, setErrorMessage);
+        createNewUser(username, email, password, setErrorMessage, navigation);
     };
 
     return (

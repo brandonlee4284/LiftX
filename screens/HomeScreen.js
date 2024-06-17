@@ -43,7 +43,7 @@ const createStyles = (theme) => StyleSheet.create({
         flex: 1,
         alignItems: "center",
         paddingTop: 78,
-        backgroundColor: theme.backgroundColor
+        backgroundColor: theme.backgroundColor,
     },
     
 });

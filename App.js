@@ -17,12 +17,14 @@ import RecordScreen from './screens/Record/RecordScreen';
 import WorkoutScreen from './screens/Workout/WorkoutScreen';
 import StartWorkoutScreen from './screens/Workout/StartWorkoutScreen';
 import ProfileEditScreen from './screens/Profile/ProfileEditScreen';
-import SettingScreen from './screens/Profile/SettingScreen';
+import SettingScreen from './screens/SettingScreen';
 
 import { ThemeProvider } from './screens/ThemeProvider';
 
 import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
+import OnboardingScreen from './screens/Onboarding/Onboarding';
+import OnboardingQuestionsScreen from './screens/Onboarding/OnboardingQuestions';
 
 AppRegistry.registerComponent('main', () => MainApp);
 
@@ -78,13 +80,24 @@ function ProfileStack() {
 
 function SettingStack() {
   return (
-    <Stack.Navigator 
-    screenOptions={{
-      headerStyle: { backgroundColor: '#121212' }, // Set the header background color to black
-      headerTintColor: 'white', // Set the header text color to white
-    }}
-    >
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Settings" component={SettingScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function OnboardingStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="OnboardingScreen" component={OnboardingScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function OnboardingQuestionsStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="OnboardingQuestionsScreen" component={OnboardingQuestionsScreen} />
     </Stack.Navigator>
   );
 }
@@ -157,6 +170,8 @@ function RootNavigator() {
         <>
           <RootStack.Screen name="App" component={AppTabNavigator} />
           <RootStack.Screen name="Setting" component={SettingStack} />
+          <RootStack.Screen name="Onboarding" component={OnboardingStack} />
+          <RootStack.Screen name="OnboardingQuestions" component={OnboardingQuestionsStack} />
           {/* ADD DMS????? <-?, FRIENDS TAB */}
         </>
       ) : (
