@@ -177,6 +177,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     buttonContainer: {
         alignItems: 'center',
+        marginTop: 20
     },
     button: {
         width: width * 0.7,

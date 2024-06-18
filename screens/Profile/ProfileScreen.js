@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { fetchPublicUserData, fetchPrivateUserData } from "../../api/userData";
 import { useTheme } from "../ThemeProvider";
 import { Header } from "../Components/Header";
+import NavBar from "../Components/Navbar";
 
 const { height, width } = Dimensions.get('window');
 
@@ -26,7 +27,7 @@ const ProfileScreen = ({ navigation, route }) => {
     return (
         <View style={styles.container}>
             <Header page="Profile" />
-
+            <NavBar activeRoute="ProfileNav"/>
            
         </View>
     );

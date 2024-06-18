@@ -5,11 +5,12 @@ import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
 import { fetchPublicUserData } from '../../api/userData';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import GradientText from './GradientText';
 
 const { height, width } = Dimensions.get('window');
 
 export function Header(props) {
-    const [publicUserData, setPublicUserData] = useState({});
+    const [publicUserData, setPublicUserData] = useState({ username: '' });
     const navigation = useNavigation();
     const { theme } = useTheme();
     const styles = createStyles(theme);
@@ -39,7 +40,14 @@ export function Header(props) {
         <View style={styles.container}>
             <View style={styles.leftContainer}>
                 <Text style={styles.pageText}>{props.page}</Text>
-                <Text style={styles.usernameText}>@{publicUserData.username}</Text >
+                
+                <GradientText
+                    text={`@${publicUserData.username}`}
+                    gradientColors={['#74B3DC', '#E1EDF4']}
+                    style={styles.usernameText}
+                />
+                
+                {/*<Text style={styles.usernameText}>@{publicUserData.username}</Text >*/}
             </View>
             <View style={styles.rightContainer}>
                 <TouchableOpacity onPress={handleAddProfile} style={styles.iconButton}>
@@ -69,14 +77,15 @@ const createStyles = (theme) => StyleSheet.create({
     leftContainer: {
         flex: 1,
         flexDirection: 'column',
+        bottom: width*0.0116
     },
     rightContainer: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     pageText: {
-        fontSize: getResponsiveFontSize(18),
-        fontWeight: 'bold',
+        fontSize: getResponsiveFontSize(14),
+        fontWeight: '500',
         color: theme.textColor,
     },
     usernameText: {
@@ -87,6 +96,7 @@ const createStyles = (theme) => StyleSheet.create({
     iconButton: {
         marginLeft: 15,
     },
+    
     
   
 });

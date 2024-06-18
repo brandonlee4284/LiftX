@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ActivityIndi
 import { Ionicons } from '@expo/vector-icons';
 import { Header } from "../Components/Header";
 import { useTheme } from "../ThemeProvider";
-
+import NavBar from "../Components/Navbar";
 
 const { height, width } = Dimensions.get('window');
 
@@ -14,6 +14,7 @@ const LeaderboardScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <Header page="Leaderboard" />
+            <NavBar activeRoute="LeaderboardNav"/>
         </View>
     );
 };

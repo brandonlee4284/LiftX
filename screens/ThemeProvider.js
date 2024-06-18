@@ -9,10 +9,12 @@ export const ThemeProvider = ({ children }) => {
         primaryColor: "#90BEDF",
         backgroundColor: "#04080B",
         textColor: "#E1EDF4",
+        grayTextColor: "#87969F",
         inputBackgroundColor: "#1E1E1E",
         placeholderTextColor: "#E1EDF4",
         errorColor: "#E9446A",
-        backdropColor: "#0B171E"
+        backdropColor: "#09141B",
+        navbarColor: "#151616"
     });
 
     return (
