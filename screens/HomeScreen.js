@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ScrollView, Dimensions } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, StyleSheet, FlatList, Dimensions, ImageBackground, ScrollView } from 'react-native';
 import { fetchPublicUserData } from '../api/userData';
+import { Header } from "./Components/Header";
+import { useTheme } from "./ThemeProvider";
+import NavBar from "./Components/Navbar";
+import Carousel from 'react-native-reanimated-carousel';
+import DayComponent from './HomeComponents/DayComponent';
+import SplitComponent from './HomeComponents/SplitComponent';
+
 
 const { height, width } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
     const [publicUserData, setPublicUserData] = useState({});
+    const { theme } = useTheme();
+    const styles = createStyles(theme);
+    const days = ['Push', 'Pull', 'Legs']; // placeholder days
+    const other_splits = ['PPL x Arnold', 'Upper/Lower', 'Full Body', 'Full Body', 'Full Body', 'Full Body', 'Full Body', 'Full Body', 'Full Body']; // placeholder splits
+    const other_splits_subtext = ['6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split']; // placeholder subtext
+
 
     useEffect(() => {
         async function fetchData() {
@@ -19,60 +30,59 @@ const HomeScreen = ({ navigation }) => {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        LayoutAnimation.easeInEaseOut();
-    }, []);
-
-    useFocusEffect(
-        React.useCallback(() => {
-            navigation.setOptions({ headerShown: false });
-            navigation.getParent()?.setOptions({
-                tabBarStyle: {
-                    display: 'flex',
-                    backgroundColor: '#121212',
-                    borderTopWidth: 0,
-                },
-                tabBarActiveTintColor: 'white',
-                tabBarInactiveTintColor: 'gray',
-                tabBarShowLabel: false,
-            });
-        }, [navigation])
-    );
-
-    const handleWorkoutButtonPress = () => {
-        navigation.navigate('Workout');
+   
+    // display split cards (2 cards in a row)
+    const renderSplitRows = () => {
+        const rows = [];
+        for (let i = 0; i < other_splits.length; i += 2) {
+            rows.push(
+                <View key={i} style={styles.splitRow}>
+                    <SplitComponent name={other_splits[i]} subtext={other_splits_subtext[i]} />
+                    {i + 1 < other_splits.length && (
+                        <SplitComponent name={other_splits[i + 1]} subtext={other_splits_subtext[i + 1]} />
+                    )}
+                </View>
+            );
+        }
+        return rows;
     };
 
     return (
         <View style={styles.container}>
-            <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
-
-                <View style={styles.topBar}>
-                    <Text style={styles.title}>LiftX</Text>
-                    <View style={styles.iconContainer}>
-                        <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                            <Ionicons name="person-add-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                            <Ionicons name="chatbubble-ellipses-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
-                            <Ionicons name="settings-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
+            <NavBar activeRoute="HomeNav" />
+            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                <Header page="Home" />
                 <View style={styles.body}>
-                    <Text style={styles.welcomeMessage}>Welcome Back, {publicUserData.username}!</Text>
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={styles.button} onPress={handleWorkoutButtonPress}>
-                        <View style={styles.buttonContent}>
-                            <Text style={styles.buttonText}>Start Today's Workout</Text>
-                            <Ionicons name="arrow-forward-circle-outline" size={getResponsiveFontSize(28)} color="black" style={styles.icon} />
+                        {/* Title */}
+                        <Text style={styles.title}>Start Today's Workout!</Text>
+                        {/* Split Carousel */}
+                        <View style={styles.carouselContainer}>
+                            <Carousel
+                                width={width}
+                                height={width*0.7}
+                                data={days}
+                                renderItem={({ item }) => <DayComponent name={item} />}
+                                mode="parallax"
+                                modeConfig={{
+                                    parallaxScrollingScale: 1,
+                                    parallaxScrollingOffset: getResponsiveFontSize(180),
+                                    parallaxAdjacentItemScale: 0.65,
+                                    parallaxAdjacentItemOpacity: 0.8,
+                                }}
+                                snapEnabled={true}
+                                pagingEnabled={true}
+                                loop={false} 
+                            />
                         </View>
-                        </TouchableOpacity>
-                    </View>
+                        {/* Other Splits */}
+                        <View style={styles.otherSplitContainer}>
+                            <Text style={styles.title}>Other Splits</Text>
+                            <View style={styles.splitGrid}>
+                                {renderSplitRows()}
+                            </View>
+                        </View>
                 </View>
-            </ScrollView>
+           </ScrollView>
         </View>
     );
 };
@@ -82,74 +92,45 @@ const getResponsiveFontSize = (baseFontSize) => {
     return Math.round(baseFontSize * scale);
 };
 
-const getResponsiveMargin = (baseMargin) => {
-    const scale = width / 500; 
-    return Math.round(baseMargin * scale);
-};
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        alignItems: "center",
-        paddingTop: 70,
-        backgroundColor: '#121212', // Dark background color
-    },
-    scrollContent: {
-        minWidth: '100%',
-    },
-    topBar: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '100%',
-        paddingHorizontal: 20,
-        marginBottom: 20,
-    },
-    title: {
-        fontSize: getResponsiveFontSize(24),
-        fontWeight: 'bold',
-        color: 'white', // Light text color
+        paddingTop: 78,
+        backgroundColor: theme.backgroundColor,
     },
     body: {
-        marginTop: 50,
+        marginTop: 30,
+        paddingHorizontal: 23
     },
-    iconContainer: {
-        flexDirection: 'row',
+    scrollViewContent: {
+        paddingBottom: 110, 
+        marginTop: 3, 
+    },
+    title: {
+        color: theme.textColor,
+        fontSize: getResponsiveFontSize(25),
+        fontWeight: 'bold'
+    },
+    carouselContainer: {
+        marginTop: 30,
         alignItems: 'center',
+        
     },
-    profileIcon: {
-        marginLeft: 15,
+    otherSplitContainer: {
+        marginTop: 10,
     },
-    welcomeMessage: {
-        fontSize: getResponsiveFontSize(26),
-        marginBottom: 20,
-        color: 'white', // Light text color,
-        marginLeft: 20
+    splitGrid: {
+        flexDirection: 'column',
+        justifyContent: 'center',
+        marginTop: 20,
     },
-    buttonContainer: {
-        alignItems: "center", // Center content horizontally
+    splitRow: {
+        flexDirection: 'row',
+        //justifyContent: 'space-between',
+        marginBottom: 10,
     },
-    button: {
-        backgroundColor: "white",
-        borderRadius: 20,
-        height: height * 0.12,
-        width: width * 0.95,
-        alignItems: "center", // Center button content horizontally
-        justifyContent: "center", // Center button content vertically
-        padding: 20
-    },
-    buttonContent: {
-        flexDirection: 'row', // Align text and icon horizontally
-        alignItems: 'center', // Align text and icon vertically
-    },
-    buttonText: {
-        color: "black",
-        fontSize: getResponsiveFontSize(24),
-        marginRight: getResponsiveMargin(90), // Add space between text and icon
-    },
-    icon: {
-        padding: 10,
-    },
+
 });
 
 export default HomeScreen;

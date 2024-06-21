@@ -1,37 +1,41 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ActivityIndicator, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Header } from "../Components/Header";
+import { useTheme } from "../ThemeProvider";
+import NavBar from "../Components/Navbar";
+import UserContainer from "./LeaderboardComponents/UserContainer";
 
 const { height, width } = Dimensions.get('window');
 
 const LeaderboardScreen = ({ navigation }) => {
-    React.useEffect(() => {
-        LayoutAnimation.easeInEaseOut();
-    }, []);
+    const { theme } = useTheme();
+    const styles = createStyles(theme);
 
     return (
         <View style={styles.container}>
-            <View style={styles.topBar}>
-                <Text style={styles.title}>LiftX</Text>
-                <View style={styles.iconContainer}>
-                    <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                        <Ionicons name="person-add-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => console.log('Messages pressed')}>
-                        <Ionicons name="chatbubble-ellipses-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate('Setting')}>
-                        <Ionicons name="settings-outline" size={getResponsiveFontSize(28)} color="white" style={styles.profileIcon} />
-                    </TouchableOpacity>
-                </View>
-            </View>
-            
-            <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            <NavBar activeRoute="LeaderboardNav"/>
+            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                <Header page="Leaderboard" />
                 <View style={styles.body}>
-                    <Text>Loading...</Text>
-                    <ActivityIndicator />
+                        {/* Title */}
+                        <View style={styles.titleContainer}>
+                            <Text style={styles.title}>Leaderboard</Text>
+                            <Ionicons name="information-circle-outline" size={getResponsiveFontSize(25)} color={theme.textColor} />
+                        </View>
+
+                        {/* Leaderboard */}
+                        <View style={styles.leaderboardContainer}>
+                            {/* example leaderboard */}
+                            <UserContainer rank="1" username="brandon" profilePicture="" score="4.6" />
+                            <UserContainer rank="1" username="brandon" profilePicture="" score="4.6" />
+                            <UserContainer rank="1" username="brandon" profilePicture="" score="4.6" />
+                            <UserContainer rank="1" username="brandon" profilePicture="" score="4.6" />
+                        </View>
+                        
                 </View>
             </ScrollView>
+            
         </View>
     );
 };
@@ -42,44 +46,34 @@ const getResponsiveFontSize = (baseFontSize) => {
 };
 
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        alignItems: "center",
-        paddingTop: 70,
-        backgroundColor: '#121212' // Dark background color
-    },
-    scrollContent: {
-        minWidth: '100%',
-    },
-    topBar: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '100%',
-        paddingHorizontal: 20,
-        marginBottom: 20
-    },
-    title: {
-        fontSize: getResponsiveFontSize(24),
-        fontWeight: 'bold',
-        color: 'white' // Light text color
+        paddingTop: 78,
+        backgroundColor: theme.backgroundColor
     },
     body: {
-        alignItems: "center",
-        marginTop: 50
+        marginTop: 30,
+        paddingHorizontal: 23
     },
-    iconContainer: {
+    scrollViewContent: {
+        paddingBottom: 110, 
+        marginTop: 3, 
+    },
+    title: {
+        color: theme.textColor,
+        fontSize: getResponsiveFontSize(25),
+        fontWeight: 'bold'
+    },
+    titleContainer: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'space-between'
     },
-    profileIcon: {
-        marginLeft: 15
-    },
-    loadingText: {
-        color: 'white', // Light text color
-        marginBottom: 10
+    leaderboardContainer: {
+        marginTop: 20
     }
+    
 });
 
 

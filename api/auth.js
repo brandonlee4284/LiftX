@@ -17,7 +17,7 @@ export const loginUser = async (email, password, setErrorMessage) => {
     ).catch(error => setErrorMessage(error.message));
 };
 
-export const createNewUser = async (gender, weight, username, email, password, setErrorMessage) => {
+export const createNewUser = async (gender, weight, username, email, password, setErrorMessage, navigation) => {
     const auth = FIREBASE_AUTH;
     createUserWithEmailAndPassword(auth, email, password)
         .then(() => {
@@ -145,15 +145,15 @@ export const createNewUser = async (gender, weight, username, email, password, s
                     },
                 }
 
-                // updatePublicUserData(initPublicUserData).then(
-                //     updatePrivateUserData(initPrivateUserData).then(
-                //         updatePrivateUserSplits(initPrivateSplitsData, flat = true).then(() => {
-                //             console.log('User data saved successfully');
-                //             signInWithEmailAndPassword(auth, email, password);
-                //         }
-                //         )
-                //     )
-                // )
+                updatePublicUserData(initPublicUserData).then(
+                    updatePrivateUserData(initPrivateUserData).then(
+                        updatePrivateUserSplits(initPrivateSplitsData, flat = true).then(() => {
+                            console.log('User data saved successfully');
+                            signInWithEmailAndPassword(auth, email, password);
+                        }
+                        )
+                    )
+                )
             } catch (error) {
                 console.error('Error saving user data: ', error);
             }
