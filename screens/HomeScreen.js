@@ -5,7 +5,8 @@ import { Header } from "./Components/Header";
 import { useTheme } from "./ThemeProvider";
 import NavBar from "./Components/Navbar";
 import Carousel from 'react-native-reanimated-carousel';
-
+import DayComponent from './HomeComponents/DayComponent';
+import SplitComponent from './HomeComponents/SplitComponent';
 
 
 const { height, width } = Dimensions.get('window');
@@ -36,15 +37,9 @@ const HomeScreen = ({ navigation }) => {
         for (let i = 0; i < other_splits.length; i += 2) {
             rows.push(
                 <View key={i} style={styles.splitRow}>
-                    <View style={styles.splitCard}>
-                        <Text style={styles.splitCardText}>{other_splits[i]}</Text>
-                        <Text style={styles.splitCardSubText}>{other_splits_subtext[i]}</Text>
-                    </View>
+                    <SplitComponent name={other_splits[i]} subtext={other_splits_subtext[i]} />
                     {i + 1 < other_splits.length && (
-                        <View style={styles.splitCard}>
-                            <Text style={styles.splitCardText}>{other_splits[i + 1]}</Text>
-                            <Text style={styles.splitCardSubText}>{other_splits_subtext[i + 1]}</Text>
-                        </View>
+                        <SplitComponent name={other_splits[i + 1]} subtext={other_splits_subtext[i + 1]} />
                     )}
                 </View>
             );
@@ -66,21 +61,11 @@ const HomeScreen = ({ navigation }) => {
                                 width={width}
                                 height={width*0.7}
                                 data={days}
-                                renderItem={({ item }) => (
-                                    <ImageBackground 
-                                        source={require(`../assets/day_layout.png`)} 
-                                        style={styles.card}
-                                        imageStyle={styles.cardImage}
-                                    >
-                                        <View style={styles.cardTextContainer}>
-                                            <Text style={styles.cardText}>{item}</Text>
-                                        </View>
-                                    </ImageBackground>
-                                )}
+                                renderItem={({ item }) => <DayComponent name={item} />}
                                 mode="parallax"
                                 modeConfig={{
                                     parallaxScrollingScale: 1,
-                                    parallaxScrollingOffset: 180,
+                                    parallaxScrollingOffset: getResponsiveFontSize(180),
                                     parallaxAdjacentItemScale: 0.65,
                                     parallaxAdjacentItemOpacity: 0.8,
                                 }}
@@ -132,38 +117,6 @@ const createStyles = (theme) => StyleSheet.create({
         alignItems: 'center',
         
     },
-    card: {
-        width: width * 0.6,
-        height: width * 0.6,
-        backgroundColor: theme.backdropColor,
-        borderRadius: 38,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: "#E1EDF4",
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.1,
-        shadowRadius: 15,
-        elevation: 5,
-        marginHorizontal: 85,
-        marginVertical: 10,
-        
-    },
-    cardText: {
-        color: theme.textColor,
-        fontSize: getResponsiveFontSize(20),
-        fontWeight: 'bold',
-    },
-    cardImage: {
-        resizeMode: 'contain',
-        width: '100%',
-        height: '100%',
-        borderRadius: 38,
-    },
-    cardTextContainer: {
-        position: 'absolute',
-        top: 40,
-        left: 40,
-    },
     otherSplitContainer: {
         marginTop: 10,
     },
@@ -174,27 +127,8 @@ const createStyles = (theme) => StyleSheet.create({
     },
     splitRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        //justifyContent: 'space-between',
         marginBottom: 10,
-    },
-    splitCard: {
-        width: width * 0.435,
-        height: width * 0.28,
-        backgroundColor: theme.backdropColor,
-        borderRadius: 25,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    splitCardText: {
-        color: theme.textColor,
-        fontSize: getResponsiveFontSize(20),
-        fontWeight: '600',
-    },
-    splitCardSubText: {
-        color: theme.grayTextColor,
-        fontSize: getResponsiveFontSize(16),
-        fontWeight: '300',
-        marginTop: 5
     },
 
 });

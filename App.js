@@ -15,8 +15,8 @@ import ProfileScreen from './screens/Profile/ProfileScreen';
 import RecordScreen from './screens/Record/RecordScreen';
 import WorkoutScreen from './screens/Workout/WorkoutScreen';
 import StartWorkoutScreen from './screens/Workout/StartWorkoutScreen';
-import ProfileEditScreen from './screens/Profile/ProfileEditScreen';
-import SettingScreen from './screens/SettingScreen';
+import SettingScreen from './screens/Settings/SettingScreen';
+import ProfileEditScreen from './screens/Settings/ProfileEditScreen';
 
 import { ThemeProvider } from './screens/ThemeProvider';
 
@@ -67,7 +67,6 @@ function ProfileStack() {
   return (
     <Stack.Navigator >
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Edit Profile" component={ProfileEditScreen} />
     </Stack.Navigator>
   );
 }
@@ -76,6 +75,7 @@ function SettingStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Settings" component={SettingScreen} />
+      <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
