@@ -1,13 +1,12 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { updatePublicUserData, updatePrivateUserData, updatePrivateUserSplits } from "./userData";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Login user with email and password
 export const loginUser = async (email, password, setErrorMessage) => {
     const auth = FIREBASE_AUTH;
     signInWithEmailAndPassword(auth, email, password).then(async () => {
-        // Delete user data from local storage
-        const keys = ['@PublicUser', '@PrivateUserData', '@PrivateUserSplits', '@PrivateUserFriends', '@PrivateUserWorkout']
+        const keys = ['@PublicUserData', '@PrivateUserData', '@PrivateUserSplits']
         try {
             await AsyncStorage.multiRemove(keys)
         } catch (e) {
@@ -22,46 +21,48 @@ export const createNewUser = async (gender, weight, username, email, password, s
     createUserWithEmailAndPassword(auth, email, password)
         .then(() => {
             try {
-                // Initalize schema for new user
-
-                let initPublicUser =
+                let initPublicUserData =
                 {
                     username: username,
                     bio: "This is a sample bio.", // Placeholder bio
                     profilePicture: null, // Placeholder image
                     numFriends: 0,
-                    displayScore: { overall: 1.0, chest: 1.0, back: 1.0, legs: 1.0, shoulders: 1.0, arms: 1.0, core: 1.0 },
+                    friends: {},
+                    displayStats: { bench: "135" },
                     activeSplit: {
                         splitName: "PPL",
-                        days: [
-                            {
+                        day: {
+                            0: {
                                 dayName: "push",
-                                exercises: [
-                                    { name: "bench", sets: 3, reps: 12, weight: 135 },
-                                    { name: "overhead press", sets: 3, reps: 12, weight: 95 },
-                                    { name: "tricep pushdown", sets: 3, reps: 12, weight: 50 },
-                                ]
+                                exercises: {
+                                    0: { name: "bench", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
+                                    1: { name: "overhead press", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
+                                    2: { name: "tricep pushdown", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
+                                    order: [0, 1, 2],
+                                },
                             },
-                            {
+                            1: {
                                 dayName: "pull",
-                                exercises: [
-                                    { name: "deadlift", sets: 3, reps: 12, weight: 135 },
-                                    { name: "pullups", sets: 3, reps: 12, weight: 0 },
-                                    { name: "rows", sets: 3, reps: 12, weight: 95 },
-                                ]
+                                exercises: {
+                                    0: { name: "deadlift", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
+                                    1: { name: "pullups", sets: 3, reps: [12, 12, 12], weight: [0, 0, 0] },
+                                    2: { name: "rows", sets: 3, reps: [12, 12, 12], weight: [95, 95, 95] },
+                                    order: [0, 1, 2],
+                                },
                             },
-                            {
+                            2: {
                                 dayName: "legs",
-                                exercises: [
-                                    { name: "squats", sets: 3, reps: 12, weight: 135 },
-                                    { name: "leg press", sets: 3, reps: 12, weight: 180 },
-                                    { name: "leg curls", sets: 3, reps: 12, weight: 50 },
-                                ]
-                            }
-                        ],
+                                exercises: {
+                                    0: { name: "squats", sets: 3, reps: [12, 12, 12], weight: [135, 135, 135] },
+                                    1: { name: "leg press", sets: 3, reps: [12, 12, 12], weight: [180, 180, 180] },
+                                    2: { name: "leg curls", sets: 3, reps: [12, 12, 12], weight: [50, 50, 50] },
+                                    order: [0, 1, 2],
+                                },
+                            },
+                            order: [0, 1, 2],
+                        },
                     },
-                    privateMode: false, // Controls display stats & active split
-                    autoUpdateWeight: true, // Controls whether to update weight automatically
+                    privateMode: false,
                 }
 
                 let initPrivateUserData =
@@ -69,9 +70,11 @@ export const createNewUser = async (gender, weight, username, email, password, s
                     gender: gender,
                     weight: weight,
                     email: email,
+                    hiddenStats: { bench: 135 },
+                    exerciseHistory: { bench: { "2021-01-01": 135 } },
                 }
 
-                let initPrivateUserSplits =
+                let initPrivateSplitsData =
                 {
                     splits: [
                         {
@@ -128,32 +131,15 @@ export const createNewUser = async (gender, weight, username, email, password, s
                     ],
                 }
 
-                let initPrivateFriendsData = {
-                    friendList: [],
-                    friendRequestsSent: [],
-                    friendRequestsReceived: [],
-                }
-
-                let initPrivateWorkoutData = {
-                    hiddenStats: { // Calculated after ending a workout based on 2-weeks rolling average of 1RM from exercise history
-                        bench: 135,
-                        deadlift: 135
-                    },
-                    exerciseHistory: { // Score calculated using weight and onerep, adj calculated using score and pos/neg feedback
-                        bench: [{ oneRep: 135, score: 30, adj: 1.01 }],
-                        deadlift: [{ oneRep: 135, score: 30, adj: 1.01 },],
-                    },
-                }
-
-                // updatePublicUserData(initPublicUserData).then(
-                //     updatePrivateUserData(initPrivateUserData).then(
-                //         updatePrivateUserSplits(initPrivateSplitsData, flat = true).then(() => {
-                //             console.log('User data saved successfully');
-                //             signInWithEmailAndPassword(auth, email, password);
-                //         }
-                //         )
-                //     )
-                // )
+                updatePublicUserData(initPublicUserData).then(
+                    updatePrivateUserData(initPrivateUserData).then(
+                        updatePrivateUserSplits(initPrivateSplitsData, flat = true).then(() => {
+                            console.log('User data saved successfully');
+                            signInWithEmailAndPassword(auth, email, password);
+                        }
+                        )
+                    )
+                )
             } catch (error) {
                 console.error('Error saving user data: ', error);
             }
@@ -162,8 +148,7 @@ export const createNewUser = async (gender, weight, username, email, password, s
 };
 
 export const logoutUser = async () => {
-    // Delete user data from local storage
-    const keys = ['@PublicUser', '@PrivateUserData', '@PrivateUserSplits', '@PrivateUserFriends', '@PrivateUserWorkout']
+    const keys = ['@PublicUserData', '@PrivateUserData', '@PrivateUserSplits']
     try {
         await AsyncStorage.multiRemove(keys)
     } catch (e) {
