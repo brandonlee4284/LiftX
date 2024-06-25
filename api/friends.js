@@ -1,4 +1,6 @@
-
+import { getDoc, doc, setDoc } from 'firebase/firestore';
+import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // Update the user's friends data in Firestore and local storage
 export const createPrivateFriends = async (data) => {
     const user = FIREBASE_AUTH.currentUser;

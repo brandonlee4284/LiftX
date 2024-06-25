@@ -1,3 +1,6 @@
+import { getDoc, doc, setDoc } from 'firebase/firestore';
+import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Update the user's split data in Firestore and local storage
 export const createPrivateSplits = async (data) => {
