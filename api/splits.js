@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const createPrivateSplits = async (data) => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
-        const privateDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'splits');
+        const privateUserSplitsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'splits');
         try {
             await AsyncStorage.setItem('@PrivateUserSplits', JSON.stringify(data));
         } catch (e) {
@@ -14,7 +14,7 @@ export const createPrivateSplits = async (data) => {
         }
 
         try {
-            await setDoc(privateDataDocRef, data);
+            await setDoc(privateUserSplitsDocRef, data);
         } catch (error) {
             console.error('Error updating private splits: ', error);
         }
