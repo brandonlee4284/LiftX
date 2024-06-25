@@ -22,7 +22,7 @@ export const createPublicUser = async (data) => {
 };
 
 // Update the user's private workout data in Firestore and local storage
-export const createPrivateUserData = async (data) => {
+export const createPrivateUser = async (data) => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
         const privateUserDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'data');

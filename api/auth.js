@@ -1,6 +1,11 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createPublicUser } from './profile';
+import { createPrivateUser } from './userData';
+import { createPrivateSplits } from './splits';
+import { createPrivateFriends } from './friends';
+import { createPrivateWorkout } from './workout';
 
 // Login user with email and password
 export const loginUser = async (email, password, setErrorMessage) => {
@@ -17,7 +22,7 @@ export const loginUser = async (email, password, setErrorMessage) => {
   ).catch(error => setErrorMessage(error.message));
 };
 
-export const createNewUser = async (gender, weight, username, email, password, setErrorMessage, navigation) => {
+export const createNewUser = async (gender="male", weight=135, username, email, password, setErrorMessage, navigation) => {
   const auth = FIREBASE_AUTH;
   createUserWithEmailAndPassword(auth, email, password)
     .then(() => {
@@ -145,12 +150,16 @@ export const createNewUser = async (gender, weight, username, email, password, s
           },
         }
 
-        updatePublicUserData(initPublicUserData).then(
-          updatePrivateUserData(initPrivateUserData).then(
-            updatePrivateUserSplits(initPrivateSplitsData, flat = true).then(() => {
-              console.log('User data saved successfully');
-              signInWithEmailAndPassword(auth, email, password);
-            }
+        createPublicUser(initPublicUser).then(
+          createPrivateUser(initPrivateUserData).then(
+            createPrivateSplits(initPrivateUserSplits).then(
+              createPrivateFriends(initPrivateFriendsData).then(
+                createPrivateWorkout(initPrivateWorkoutData).then(() => {
+                  console.log('User data saved successfully');
+                  signInWithEmailAndPassword(auth, email, password);
+                }
+                )
+              )
             )
           )
         )

@@ -1,6 +1,6 @@
 
 // Update the user's friends data in Firestore and local storage
-export const createFriends = async (data) => {
+export const createPrivateFriends = async (data) => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
         const privateFriendsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends');
