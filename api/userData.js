@@ -121,7 +121,6 @@ const cloudFetchPrivateUserData = async () => {
             console.error('Error fetching private data: ', error);
         }
     }
-    return null;
 };
 
 // Update the user's public data in the cloud (Firestore) and local storage
