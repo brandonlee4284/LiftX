@@ -16,6 +16,9 @@ const RegisterScreen = ({ navigation }) => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [weight, setWeight] = useState("");
+    const [gender, setGender] = useState("");
+    const [displayName, setDisplayName] = useState("");
     const [errorMessage, setErrorMessage] = useState(null);
 
     const { theme } = useTheme();
@@ -23,7 +26,7 @@ const RegisterScreen = ({ navigation }) => {
 
 
     const handleSignUp = () => {
-        createNewUser(username, email, password, setErrorMessage, navigation);
+        createNewUser(gender, weight, displayName, username, email, password, setErrorMessage, navigation);
     };
 
     return (
