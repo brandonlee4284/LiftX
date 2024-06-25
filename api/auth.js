@@ -21,7 +21,7 @@ export const loginUser = async (email, password, setErrorMessage) => {
   ).catch(error => setErrorMessage(error.message));
 };
 
-export const createNewUser = async (gender="male", weight=135, username, email, password, setErrorMessage, navigation) => {
+export const createNewUser = async (gender="male", weight=135, name, username, email, password, setErrorMessage, navigation) => {
   const auth = FIREBASE_AUTH;
   createUserWithEmailAndPassword(auth, email, password)
     .then(() => {
@@ -30,6 +30,7 @@ export const createNewUser = async (gender="male", weight=135, username, email, 
 
         let initPublicUser =
         {
+          displayName: name,
           username: username,
           bio: "This is a sample bio.", // Placeholder bio
           profilePicture: null, // Placeholder image
@@ -171,7 +172,7 @@ export const createNewUser = async (gender="male", weight=135, username, email, 
 
 export const logoutUser = async () => {
   // Delete user data from local storage
-  const keys = ['@PublicUser', '@PrivateUser', '@PrivateUserSplits', '@PrivateUserFriends', '@PrivateUserWorkout']
+  const keys = ['@PublicUser', '@PrivateUserData', '@PrivateUserSplits', '@PrivateUserFriends', '@PrivateUserWorkout']
   try {
     await AsyncStorage.multiRemove(keys)
   } catch (e) {
