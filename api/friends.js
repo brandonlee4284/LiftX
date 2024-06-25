@@ -5,7 +5,7 @@ export const createPrivateFriends = async (data) => {
     if (user) {
         const privateFriendsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends');
         try {
-            await AsyncStorage.setItem('@PrivateFriendsData', JSON.stringify(data));
+            await AsyncStorage.setItem('@PrivateUserFriends', JSON.stringify(data));
         } catch (e) {
             console.log('Error saving private friends to local storage: ', e)
         }
