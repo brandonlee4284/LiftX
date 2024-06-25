@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const createPrivateWorkout = async (data) => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
-        const privateWorkoutDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'workout');
+        const privateWorkoutDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'private', 'workout');
         try {
             await AsyncStorage.setItem('@PrivateUserWorkout', JSON.stringify(data));
         } catch (e) {

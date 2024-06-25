@@ -1,8 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createPublicUser } from './profile';
-import { createPrivateUser } from './userData';
+import { createPublicUser, createPrivateUser } from './profile';
 import { createPrivateSplits } from './splits';
 import { createPrivateFriends } from './friends';
 import { createPrivateWorkout } from './workout';
