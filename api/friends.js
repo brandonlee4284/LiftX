@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const createPrivateFriends = async (data) => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
-        const privateFriendsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends');
+        const privateFriendsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'private', 'friends');
         try {
             await AsyncStorage.setItem('@PrivateUserFriends', JSON.stringify(data));
         } catch (e) {

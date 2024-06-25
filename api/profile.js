@@ -25,7 +25,7 @@ export const createPublicUser = async (data) => {
 export const createPrivateUser = async (data) => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
-        const privateUserDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'data');
+        const privateUserDataDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'private', 'data');
         try {
             await AsyncStorage.setItem('@PrivateUserData', JSON.stringify(data));
         } catch (e) {

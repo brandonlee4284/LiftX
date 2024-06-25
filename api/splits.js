@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const createPrivateSplits = async (data) => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
-        const privateUserSplitsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'splits');
+        const privateUserSplitsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'private', 'splits');
         try {
             await AsyncStorage.setItem('@PrivateUserSplits', JSON.stringify(data));
         } catch (e) {
