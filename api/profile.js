@@ -1,4 +1,4 @@
-import { getDoc, doc, setDoc } from 'firebase/firestore';
+import { getDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -73,4 +73,32 @@ export const fetchPublicUserData = async () => {
 export const getUsername = async () => {
     let publicUserData = await fetchPublicUserData();
     return publicUserData.username;
+};  
+
+// get the active split of user
+export const getActiveSplit = async () => {
+    let publicUserData = await fetchPublicUserData();
+    return publicUserData.activeSplit;
+};  
+
+// sets split to the Active Split
+export const setActiveSplit = async (split) => {
+    const user = FIREBASE_AUTH.currentUser;
+    if (user) {
+        let publicUserData = await fetchPublicUserData();
+
+        // Set the active split
+        publicUserData.activeSplit = split;
+
+        // get doc
+        const publicUserDocRef = getDoc(FIRESTORE_DB, 'users', user.uid, 'public');
+
+        try {
+            // Update Firestore document
+            await updateDoc(publicUserDocRef, { activeSplit: publicUserData.activeSplit });
+        } catch (error) {
+            console.error('Error updating active split: ', error);
+        }
+    }
+    
 };  
