@@ -1,6 +1,7 @@
 import { getDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchAsyncCloud, setAsyncCloud } from './helperFuncs';
 
 // Update the user's split data in Firestore and local storage
 export const createPrivateSplits = async (data) => {
@@ -21,42 +22,20 @@ export const createPrivateSplits = async (data) => {
     }
 };
 
-export const getSplits = async (data) => {
-    const privateUserSplitsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'private', 'splits');
-    try {
-        const data = await AsyncStorage.getItem('@PrivateUserSplits');
-        if (data == null) {
-            console.log('Local storage empty, reverting to cloud backup');
-            data = await getDoc(privateUserSplitsDocRef, data);
-        }
-        return data;
-    } catch (e) {
-        console.log('Error fetching private splits from local storage, reverting to cloud backup: ', e);
-        return await getDoc(privateUserSplitsDocRef, data);
-    }
+export const getSplits = async () => {
+    return await fetchAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits');
 };
 
 export const addSplits = async () => {
-    const user = FIREBASE_AUTH.currentUser;
-    if (user) {
-        const newSplit =
-        { 
-            splitName: "New Split",
-            days: [],
-        }
-        const privateUserSplitsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'private', 'splits');
-        try {
-            const docSplit = await getSplits(privateUserSplitsDocRef);
-            let currentSplits = docSplit.exists() ? docSplit.data().splits : [];
-            currentSplits.push(newSplit)
-            // Save to local storage
-            await AsyncStorage.setItem('@PrivateUserSplits', JSON.stringify(currentSplits));
-            // Update Firestore document
-            await updateDoc(privateUserSplitsDocRef, { splits: currentSplits });
-        } catch (error) {
-            console.error('Error updating private splits: ', error);
-        }
+    const newSplit =
+    {
+        splitName: "New Split",
+        days: [],
     }
+    const docSplit = await getSplits();
+    let currentSplits = docSplit.exists() ? docSplit.data().splits : [];
+    currentSplits.push(newSplit)
+    setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', currentSplits);
 };
 
 export const deleteSplit = async (data) => {
