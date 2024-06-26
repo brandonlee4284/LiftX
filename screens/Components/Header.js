@@ -3,14 +3,14 @@ import { useEffect, useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
-import { fetchPublicUserData } from '../../api/userData';
+import { getUsername } from '../../api/profile';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import GradientText from './GradientText';
 
 const { height, width } = Dimensions.get('window');
 
 export function Header(props) {
-    const [publicUserData, setPublicUserData] = useState({ username: '' });
+    const [username, setUsername] = useState('');
     const navigation = useNavigation();
     const { theme } = useTheme();
     const styles = createStyles(theme);
@@ -18,9 +18,9 @@ export function Header(props) {
 
     useEffect(() => {
         async function fetchData() {
-            const data = await fetchPublicUserData();
+            const data = await getUsername();
             if (data) {
-                setPublicUserData(data);
+                setUsername(data);
             }
         }
 
@@ -42,7 +42,7 @@ export function Header(props) {
                 <Text style={styles.pageText}>{props.page}</Text>
                 
                 <GradientText
-                    text={`@${publicUserData.username}`}
+                    text={`@${username}`}
                     gradientColors={['#74B3DC', '#E1EDF4']}
                     style={styles.usernameText}
                 />
