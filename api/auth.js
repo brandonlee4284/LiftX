@@ -175,7 +175,7 @@ export const logoutUser = async () => {
   try {
     AsyncStorage.getAllKeys()
     .then(keys => AsyncStorage.multiRemove(keys))
-    .then(() => alert('All Keys removed'));
+    .then(() => alert('Logout Successful!'));
   } catch (e) {
     console.log('Error removing user data from local storage: ', e);
   }
