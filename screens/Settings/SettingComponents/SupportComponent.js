@@ -32,15 +32,15 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         fontSize: getResponsiveFontSize(20),
         fontWeight: '800',
-        paddingBottom: 10,
+        paddingBottom: 20,
         marginLeft: 10
     },
     container: {
-        paddingVertical: 10,
+        paddingVertical: 7,
         paddingHorizontal: 16,
         backgroundColor: theme.backdropColor,
         borderRadius: 12,
-        width: width* 0.84
+        width: width* 0.88
         
     },
     row: {

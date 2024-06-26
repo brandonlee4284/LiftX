@@ -2,6 +2,7 @@ import { getDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchAsyncCloud, setAsyncCloud } from './helperFuncs';
+import { getActiveSplit } from './profile';
 
 // Update the user's split data in Firestore and local storage
 export const createPrivateSplits = async (data) => {
@@ -22,10 +23,61 @@ export const createPrivateSplits = async (data) => {
     }
 };
 
+// gets all private user split data
 export const getSplits = async () => {
     return await fetchAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits');
 };
 
+// gets all split names
+export const getSplitNames = async () => {
+    try {
+        // Fetch the splits data using the existing getSplits function
+        const privateUserSplits = await getSplits();
+        // Check if splitsData is valid and contains the expected data structure
+        if (privateUserSplits && Array.isArray(privateUserSplits.splits)) {
+            // Extract the split names from the data
+            const splitNames = privateUserSplits.splits.map(split => split.splitName);
+            // Return the array of split names
+            return splitNames;
+        } else {
+            // Handle the case where the data structure is not as expected
+            console.warn("Splits data is not in the expected format");
+            return [];
+        }
+    } catch (error) {
+        // Handle any errors that occurred during the fetch
+        console.error("Error fetching split names: ", error);
+        return [];
+    }
+};
+
+
+// returns an array of how many days are in each split
+export const getSplitDescriptions = async () => {
+    try {
+        // Fetch the splits data
+        const privateUserSplits = await getSplits();
+        
+        // Log the fetched splits data for debugging
+        
+        // Check if privateUserSplits is valid and contains the splits array
+        if (privateUserSplits && Array.isArray(privateUserSplits.splits)) {
+            // Map over each split and get the number of days in each
+            const splitDescriptions = privateUserSplits.splits.map(split => split.days.length);
+            // Return the array of day counts
+            return splitDescriptions;
+        } else {
+            console.warn('No valid splits found or splits data is not in expected format');
+            return [];
+        }
+    } catch (error) {
+        // Handle any errors that occurred during the fetch
+        console.error('Error fetching splits:', error);
+        return [];
+    }
+};
+
+// adds a empty split w default name "New Split"
 export const addSplits = async () => {
     const newSplit =
     {
@@ -46,6 +98,16 @@ export const deleteSplit = async (data) => {
 };
 
 export const editSplit = async (data) => {
+    const docSnap = await getSplits();
+    let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
+    // remove old split
+    currentSplits = currentSplits.filter(split => split.splitName !== data.splitName);
+    //add updated split
+    currentSplits.push(data);
+    setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', currentSplits);
+};
+
+export const editSplitName = async (data) => {
     const docSnap = await getSplits();
     let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
     // remove old split
@@ -124,4 +186,8 @@ export const editExercise = async (splitName, dayName, updatedExercise) => {
         return;
     }
     setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', currentSplits);
+};
+
+export const editExerciseName = async (splitName, dayName, oldExerciseName, updatedExerciseName) => {
+    
 };

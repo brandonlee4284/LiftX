@@ -35,7 +35,7 @@ export const createNewUser = async (gender="male", weight=135, name, username, e
           bio: "This is a sample bio.", // Placeholder bio
           profilePicture: null, // Placeholder image
           numFriends: 0,
-          displayScore: { overall: 1.0, chest: 1.0, back: 1.0, legs: 1.0, shoulders: 1.0, arms: 1.0, core: 1.0 },
+          displayScore: { overall: 1.0, chest: 1.0, back: 1.0, legs: 1.0, shoulders: 1.0, arms: 1.0 },
           activeSplit: {
             splitName: "PPL",
             days: [
@@ -156,7 +156,10 @@ export const createNewUser = async (gender="male", weight=135, name, username, e
               createPrivateFriends(initPrivateFriendsData).then(
                 createPrivateWorkout(initPrivateWorkoutData).then(() => {
                   console.log('User data saved successfully');
-                  signInWithEmailAndPassword(auth, email, password);
+                  signInWithEmailAndPassword(auth, email, password)
+                  .then(() => {
+                    navigation.navigate('Onboarding');
+                  });
                 }
                 )
               )

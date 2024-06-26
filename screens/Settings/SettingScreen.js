@@ -59,7 +59,8 @@ const createStyles = (theme) => StyleSheet.create({
     header: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(26),
-        fontWeight: '800'
+        fontWeight: '800',
+        left: -0.0347*width
     },
     body: {
         alignItems: "center",

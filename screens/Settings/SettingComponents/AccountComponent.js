@@ -62,11 +62,11 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         fontSize: getResponsiveFontSize(20),
         fontWeight: '800',
-        paddingBottom: 10,
+        paddingBottom: 20,
         marginLeft: 10
     },
     container: {
-        padding: 16,
+        padding: 26,
         backgroundColor: theme.backdropColor,
         borderRadius: 12,
     },

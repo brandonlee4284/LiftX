@@ -1,45 +1,58 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, Dimensions, ImageBackground, ScrollView } from 'react-native';
-import { fetchPublicUserData } from '../api/userData';
 import { Header } from "./Components/Header";
 import { useTheme } from "./ThemeProvider";
 import NavBar from "./Components/Navbar";
 import Carousel from 'react-native-reanimated-carousel';
 import DayComponent from './HomeComponents/DayComponent';
 import SplitComponent from './HomeComponents/SplitComponent';
+import { getSplitDescriptions, getSplitNames } from "../api/splits";
+import { getActiveSplitDayNames } from "../api/profile";
 
 
 const { height, width } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
-    const [publicUserData, setPublicUserData] = useState({});
+    const [splits, setSplits] = useState([]);
+    const [activeSplitDays, setActiveSplitDays] = useState([]);
+    const [splitDescription, setSplitDescription] = useState([]);
+
     const { theme } = useTheme();
     const styles = createStyles(theme);
-    const days = ['Push', 'Pull', 'Legs']; // placeholder days
-    const other_splits = ['PPL x Arnold', 'Upper/Lower', 'Full Body', 'Full Body', 'Full Body', 'Full Body', 'Full Body', 'Full Body', 'Full Body']; // placeholder splits
-    const other_splits_subtext = ['6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split']; // placeholder subtext
-
 
     useEffect(() => {
-        async function fetchData() {
-            const data = await fetchPublicUserData();
-            if (data) {
-                setPublicUserData(data);
+        const fetchData = async () => {
+            try {
+                // Fetch splits
+                const fetchedSplits = await getSplitNames();
+                setSplits(fetchedSplits);
+    
+                // Fetch active split day names
+                const fetchedSplitDayNames = await getActiveSplitDayNames();
+                setActiveSplitDays(fetchedSplitDayNames);
+    
+                // Fetch split descriptions
+                const fetchedSplitDescriptions = await getSplitDescriptions();
+                setSplitDescription(fetchedSplitDescriptions);
+            } catch (error) {
+                console.error('Error fetching data:', error);
             }
-        }
+        };
+    
         fetchData();
     }, []);
+
 
    
     // display split cards (2 cards in a row)
     const renderSplitRows = () => {
         const rows = [];
-        for (let i = 0; i < other_splits.length; i += 2) {
+        for (let i = 0; i < splits.length; i += 2) {
             rows.push(
                 <View key={i} style={styles.splitRow}>
-                    <SplitComponent name={other_splits[i]} subtext={other_splits_subtext[i]} />
-                    {i + 1 < other_splits.length && (
-                        <SplitComponent name={other_splits[i + 1]} subtext={other_splits_subtext[i + 1]} />
+                    <SplitComponent name={splits[i]} subtext={splitDescription[i]} />
+                    {i + 1 < splits.length && (
+                        <SplitComponent name={splits[i + 1]} subtext={splitDescription[i + 1]} />
                     )}
                 </View>
             );
@@ -60,7 +73,7 @@ const HomeScreen = ({ navigation }) => {
                             <Carousel
                                 width={width}
                                 height={width*0.7}
-                                data={days}
+                                data={activeSplitDays}
                                 renderItem={({ item }) => <DayComponent name={item} />}
                                 mode="parallax"
                                 modeConfig={{

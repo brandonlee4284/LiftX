@@ -18,7 +18,7 @@ const RegisterScreen = ({ navigation }) => {
     const [password, setPassword] = useState("");
     const [weight, setWeight] = useState("");
     const [gender, setGender] = useState("");
-    const [displayName, setDisplayName] = useState("placeholder");
+    const [displayName, setDisplayName] = useState("");
     const [errorMessage, setErrorMessage] = useState(null);
 
     const { theme } = useTheme();
@@ -38,6 +38,14 @@ const RegisterScreen = ({ navigation }) => {
                 </View>
 
                 <View style={styles.inputContainer}>
+                    <Input
+                        mode="displayName"
+                        onChangeText={setDisplayName}
+                        value={displayName}
+                        backgroundColor="#2C3033"
+                        placeholderTextColor={theme.textColor}
+                    />
+
                     <Input
                         mode="username"
                         onChangeText={setUsername}
@@ -84,11 +92,11 @@ const createStyles = (theme) => StyleSheet.create({
     },
     circle: {
         position: 'absolute',
-        width: width * 1.6, 
-        height: width * 1.6, 
-        borderRadius: (width * 1.6) / 2,
+        width: width * 1.7, 
+        height: width * 1.7, 
+        borderRadius: (width * 1.7) / 2,
         backgroundColor: theme.backdropColor,
-        bottom: -width * 0.35,  
+        bottom: -width * 0.25,  
         right: -width * 0.40,  
         zIndex: -1,
     },

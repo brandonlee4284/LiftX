@@ -12,7 +12,7 @@ const SplitComponent = ({ name, subtext }) => {
     return (
         <View style={styles.splitCard}>
             <Text style={styles.splitCardText}>{name}</Text>
-            <Text style={styles.splitCardSubText}>{subtext}</Text>
+            <Text style={styles.splitCardSubText}>{subtext}-day split</Text>
         </View>
     );
 };
