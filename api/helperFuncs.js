@@ -1,3 +1,7 @@
+import { getDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // Async/Cloud function helper for fetching data
 export const fetchAsyncCloud = async (docRef, asyncTag) => {
     try {
@@ -8,13 +12,14 @@ export const fetchAsyncCloud = async (docRef, asyncTag) => {
             throw new Error('No public user data in local storage');
         }
     } catch (e) {
-        console.error("Reverting to cloud backup for ", asyncTag, "; Error: ", e);
+        console.log("Reverting to cloud backup for ", asyncTag, "; Error: ", e);
         const user = FIREBASE_AUTH.currentUser;
         if (user) {
             try {
                 const docData = await getDoc(docRef);
                 if (docData.exists()) {
                     await AsyncStorage.setItem(asyncTag, JSON.stringify(docData.data()));
+                    console.log('asdf', docData.data())
                     return docData.data();
                 } else {
                     console.log('No such document!');
