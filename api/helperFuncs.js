@@ -19,7 +19,6 @@ export const fetchAsyncCloud = async (docRef, asyncTag) => {
                 const docData = await getDoc(docRef);
                 if (docData.exists()) {
                     await AsyncStorage.setItem(asyncTag, JSON.stringify(docData.data()));
-                    console.log('asdf', docData.data())
                     return docData.data();
                 } else {
                     console.log('No such document!');

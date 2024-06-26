@@ -2,29 +2,16 @@ import { getDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchAsyncCloud, setAsyncCloud } from './helperFuncs';
+import { set } from 'firebase/database';
 
 // Create the user's public data in the cloud (Firestore), store it in local storage
 export const createPublicUser = async (data) => {
-    const user = FIREBASE_AUTH.currentUser;
-    if (user) {
-        const publicUserDocRef = doc(FIRESTORE_DB, 'users', user.uid);
-        try {
-            await AsyncStorage.setItem('@PublicUserData', JSON.stringify(data));
-        } catch (e) {
-            console.log('Error saving public data to local storage: ', e)
-        }
-
-        try {
-            await setDoc(publicUserDocRef, data);
-        } catch (error) {
-            console.error('Error updating public data: ', error);
-        }
-    }
+    await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', data);
 };
 
 // Create the user's private workout data in Firestore, store it in local storage
 export const createPrivateUser = async (data) => {
-    await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.user.uid, 'private', 'data'), '@PrivateUserData', data);
+    await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'data'), '@PrivateUserData', data);
 };
 
 // Fetch the user's public data from either local storage or cloud db (Firestore)
@@ -46,22 +33,8 @@ export const getActiveSplit = async () => {
 
 // sets split to the Active Split
 export const setActiveSplit = async (split) => {
-    const user = FIREBASE_AUTH.currentUser;
-    if (user) {
-        let publicUserData = await fetchPublicUserData();
+    let publicUserData = await fetchPublicUserData();
+    publicUserData.activeSplit = split;
 
-        // Set the active split
-        publicUserData.activeSplit = split;
-
-        // get doc
-        const publicUserDocRef = getDoc(FIRESTORE_DB, 'users', user.uid, 'public');
-
-        try {
-            // Update Firestore document
-            await updateDoc(publicUserDocRef, { activeSplit: publicUserData.activeSplit });
-        } catch (error) {
-            console.error('Error updating active split: ', error);
-        }
-    }
-    
+    setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
 };  

@@ -172,9 +172,10 @@ export const createNewUser = async (gender="male", weight=135, name, username, e
 
 export const logoutUser = async () => {
   // Delete user data from local storage
-  const keys = ['@PublicUser', '@PrivateUserData', '@PrivateUserSplits', '@PrivateUserFriends', '@PrivateUserWorkout']
   try {
-    await AsyncStorage.multiRemove(keys)
+    AsyncStorage.getAllKeys()
+    .then(keys => AsyncStorage.multiRemove(keys))
+    .then(() => alert('All Keys removed'));
   } catch (e) {
     console.log('Error removing user data from local storage: ', e);
   }
