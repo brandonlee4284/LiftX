@@ -2,56 +2,6 @@ import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const convertSplitsTo3DArray = (splits) => {
-    return splits.order.map(splitIndex => {
-        const split = splits[splitIndex];
-        return {
-            splitName: split.splitName,
-            days: split.day.order.map(dayIndex => {
-                const day = split.day[dayIndex];
-                return {
-                    dayName: day.dayName,
-                    exercises: day.exercises.order.map(exerciseIndex => {
-                        return day.exercises[exerciseIndex];
-                    })
-                };
-            })
-        };
-    });
-};
-
-export const convert3DArrayToSplits = (array) => {
-    const splits = {};
-    const splitOrder = [];
-
-    array.forEach((split, splitIndex) => {
-        splitOrder.push(splitIndex);
-        splits[splitIndex] = {
-            splitName: split.splitName,
-            day: {
-                order: []
-            }
-        };
-
-        split.days.forEach((day, dayIndex) => {
-            splits[splitIndex].day.order.push(dayIndex);
-            splits[splitIndex].day[dayIndex] = {
-                dayName: day.dayName,
-                exercises: {
-                    order: []
-                }
-            };
-
-            day.exercises.forEach((exercise, exerciseIndex) => {
-                splits[splitIndex].day[dayIndex].exercises.order.push(exerciseIndex);
-                splits[splitIndex].day[dayIndex].exercises[exerciseIndex] = exercise;
-            });
-        });
-    });
-
-    splits.order = splitOrder;
-    return splits;
-};
 
 // Fetch the user's public data from cloud db (Firestore) 
 export const cloudFetchPublicUserData = async () => {
