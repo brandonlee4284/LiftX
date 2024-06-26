@@ -57,7 +57,7 @@ const ProfileScreen = ({ navigation, route }) => {
                     <View style={styles.userInfoContainer}>
                         <UserInformation
                             profilePicture={publicUserData.profilePicture}
-                            displayName="Brandon Lee" // {publicUserData.displayName} (create displayName)
+                            displayName={publicUserData.displayName}
                             username={publicUserData.username}
                             friendCount={publicUserData.numFriends}
                             bio={publicUserData.bio}

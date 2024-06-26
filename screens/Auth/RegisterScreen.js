@@ -18,7 +18,7 @@ const RegisterScreen = ({ navigation }) => {
     const [password, setPassword] = useState("");
     const [weight, setWeight] = useState("");
     const [gender, setGender] = useState("");
-    const [displayName, setDisplayName] = useState("");
+    const [displayName, setDisplayName] = useState("placeholder");
     const [errorMessage, setErrorMessage] = useState(null);
 
     const { theme } = useTheme();
