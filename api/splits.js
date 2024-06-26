@@ -32,160 +32,96 @@ export const addSplits = async () => {
         splitName: "New Split",
         days: [],
     }
-    const docSplit = await getSplits();
-    let currentSplits = docSplit.exists() ? docSplit.data().splits : [];
+    const docSnap = await getSplits();
+    let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
     currentSplits.push(newSplit)
     setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', currentSplits);
 };
 
 export const deleteSplit = async (data) => {
-    const user = FIREBASE_AUTH.currentUser;
-    if (user) {
-        const privateUserSplitsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'private', 'splits');
-        try {
-            const docSplit = await getSplits(privateUserSplitsDocRef);
-            let currentSplits = docSplit.exists() ? docSplit.data().splits : [];
-
-            currentSplits = currentSplits.filter(split => split.splitName !== data.splitName);
-
-            // Save to local storage
-            await AsyncStorage.setItem('@PrivateUserSplits', JSON.stringify(currentSplits));
-            // Update Firestore document
-            await updateDoc(privateUserSplitsDocRef, { splits: currentSplits });
-        } catch (error) {
-            console.error('Error updating private splits: ', error);
-        }
-    }
+    const docSnap = await getSplits();
+    let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
+    currentSplits = currentSplits.filter(split => split.splitName !== data.splitName);
+    setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', currentSplits);
 };
 
 export const editSplit = async (data) => {
-    const user = FIREBASE_AUTH.currentUser;
-    if (user) {
-        const privateUserSplitsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'private', 'splits');
-        try {
-            const docSplit = await getSplits(privateUserSplitsDocRef);
-            let currentSplits = docSplit.exists() ? docSplit.data().splits : [];
-            // remove old split
-            currentSplits = currentSplits.filter(split => split.splitName !== data.splitName);
-            //add updated split
-            currentSplits.push(data);
-            // Save to local storage
-            await AsyncStorage.setItem('@PrivateUserSplits', JSON.stringify(currentSplits));
-            // Update Firestore document
-            await updateDoc(privateUserSplitsDocRef, { splits: currentSplits });
-        } catch (error) {
-            console.error('Error updating private splits: ', error);
-        }
-    }
+    const docSnap = await getSplits();
+    let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
+    // remove old split
+    currentSplits = currentSplits.filter(split => split.splitName !== data.splitName);
+    //add updated split
+    currentSplits.push(data);
+    setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', currentSplits);
 };
 
 export const addExercise = async (splitName, dayName, exercise) => {
-    const user = FIREBASE_AUTH.currentUser;
-    if (user) {
-        const privateUserSplitsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'private', 'splits');
-        try {
-            const docSplit = await getSplits(privateUserSplitsDocRef);
-            let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
-
-            // Find the specified split
-            const splitIndex = currentSplits.findIndex(split => split.splitName === splitName);
-            if (splitIndex !== -1) {
-                // Find the specified day in the split
-                const dayIndex = currentSplits[splitIndex].days.findIndex(day => day.dayName === dayName);
-                if (dayIndex !== -1) {
-                    // Add the exercise to the day's exercises
-                    currentSplits[splitIndex].days[dayIndex].exercises.push(exercise);
-                } else {
-                    console.error('Day not found: ', dayName);
-                }
-            } else {
-                console.error('Split not found: ', splitName);
-            }
-
-            // Save to local storage
-            await AsyncStorage.setItem('@PrivateUserSplits', JSON.stringify(currentSplits));
-            // Update Firestore document
-            await updateDoc(privateUserSplitsDocRef, { splits: currentSplits });
-        } catch (error) {
-            console.error('Error updating private splits: ', error);
+    const docSnap = await getSplits();
+    let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
+    // Find the specified split
+    const splitIndex = currentSplits.findIndex(split => split.splitName === splitName);
+    if (splitIndex !== -1) {
+        // Find the specified day in the split
+        const dayIndex = currentSplits[splitIndex].days.findIndex(day => day.dayName === dayName);
+        if (dayIndex !== -1) {
+            // Add the exercise to the day's exercises
+            currentSplits[splitIndex].days[dayIndex].exercises.push(exercise);
+        } else {
+            console.error('Day not found: ', dayName);
         }
+    } else {
+        console.error('Split not found: ', splitName);
     }
+    setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', currentSplits);
 };
 
 export const deleteExercise = async (splitName, dayName, exerciseName) => {
-    const user = FIREBASE_AUTH.currentUser;
-    if (user) {
-        const privateUserSplitsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'private', 'splits');
-        try {
-            // Fetch the current splits
-            const docSnap = await getDoc(privateUserSplitsDocRef);
-            let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
-
-            // Find the specified split
-            const splitIndex = currentSplits.findIndex(split => split.splitName === splitName);
-            if (splitIndex !== -1) {
-                // Find the specified day in the split
-                const dayIndex = currentSplits[splitIndex].days.findIndex(day => day.dayName === dayName);
-                if (dayIndex !== -1) {
-                    // Remove the exercise from the day's exercises
-                    currentSplits[splitIndex].days[dayIndex].exercises = currentSplits[splitIndex].days[dayIndex].exercises.filter(exercise => exercise.exerciseName !== exerciseName);
-                } else {
-                    console.error('Day not found');
-                    return;
-                }
-            } else {
-                console.error('Split not found');
-                return;
-            }
-
-            // Save to local storage
-            await AsyncStorage.setItem('@PrivateUserSplits', JSON.stringify(currentSplits));
-            // Update Firestore document
-            await updateDoc(privateUserSplitsDocRef, { splits: currentSplits });
-        } catch (error) {
-            console.error('Error updating private splits: ', error);
+    const docSnap = await getSplits();
+    let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
+    // Find the specified split
+    const splitIndex = currentSplits.findIndex(split => split.splitName === splitName);
+    if (splitIndex !== -1) {
+        // Find the specified day in the split
+        const dayIndex = currentSplits[splitIndex].days.findIndex(day => day.dayName === dayName);
+        if (dayIndex !== -1) {
+            // Remove the exercise from the day's exercises
+            currentSplits[splitIndex].days[dayIndex].exercises = currentSplits[splitIndex].days[dayIndex].exercises.filter(exercise => exercise.exerciseName !== exerciseName);
+        } else {
+            console.error('Day not found');
+            return;
         }
+    } else {
+        console.error('Split not found');
+        return;
     }
+    setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', currentSplits);
 };
 
 export const editExercise = async (splitName, dayName, updatedExercise) => {
-    const user = FIREBASE_AUTH.currentUser;
-    if (user) {
-        const privateUserSplitsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'private', 'splits');
-        try {
-            // Fetch the current splits
-            const docSnap = await getDoc(privateUserSplitsDocRef);
-            let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
-
-            // Find the specified split
-            const splitIndex = currentSplits.findIndex(split => split.splitName === splitName);
-            if (splitIndex !== -1) {
-                // Find the specified day in the split
-                const dayIndex = currentSplits[splitIndex].days.findIndex(day => day.dayName === dayName);
-                if (dayIndex !== -1) {
-                    // Find the specified exercise in the day's exercises
-                    const exerciseIndex = currentSplits[splitIndex].days[dayIndex].exercises.findIndex(exercise => exercise.exerciseName === updatedExercise.exerciseName);
-                    if (exerciseIndex !== -1) {
-                        // Update the exercise
-                        currentSplits[splitIndex].days[dayIndex].exercises[exerciseIndex] = updatedExercise;
-                    } else {
-                        console.error('Exercise not found');
-                        return;
-                    }
-                } else {
-                    console.error('Day not found');
-                    return;
-                }
+    const docSnap = await getSplits();
+    let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
+    // Find the specified split
+    const splitIndex = currentSplits.findIndex(split => split.splitName === splitName);
+    if (splitIndex !== -1) {
+        // Find the specified day in the split
+        const dayIndex = currentSplits[splitIndex].days.findIndex(day => day.dayName === dayName);
+        if (dayIndex !== -1) {
+            // Find the specified exercise in the day's exercises
+            const exerciseIndex = currentSplits[splitIndex].days[dayIndex].exercises.findIndex(exercise => exercise.exerciseName === updatedExercise.exerciseName);
+            if (exerciseIndex !== -1) {
+                // Update the exercise
+                currentSplits[splitIndex].days[dayIndex].exercises[exerciseIndex] = updatedExercise;
             } else {
-                console.error('Split not found');
+                console.error('Exercise not found');
                 return;
             }
-            // Save to local storage
-            await AsyncStorage.setItem('@PrivateUserSplits', JSON.stringify(currentSplits));
-            // Update Firestore document
-            await updateDoc(privateUserSplitsDocRef, { splits: currentSplits });
-        } catch (error) {
-            console.error('Error updating private splits: ', error);
+        } else {
+            console.error('Day not found');
+            return;
         }
+    } else {
+        console.error('Split not found');
+        return;
     }
+    setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', currentSplits);
 };
