@@ -28,29 +28,6 @@ export const getSplits = async () => {
     return await fetchAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits');
 };
 
-// gets all split names
-export const getSplitNames = async () => {
-    try {
-        // Fetch the splits data using the existing getSplits function
-        const privateUserSplits = await getSplits();
-        // Check if splitsData is valid and contains the expected data structure
-        if (privateUserSplits && Array.isArray(privateUserSplits.splits)) {
-            // Extract the split names from the data
-            const splitNames = privateUserSplits.splits.map(split => split.splitName);
-            // Return the array of split names
-            return splitNames;
-        } else {
-            // Handle the case where the data structure is not as expected
-            console.warn("Splits data is not in the expected format");
-            return [];
-        }
-    } catch (error) {
-        // Handle any errors that occurred during the fetch
-        console.error("Error fetching split names: ", error);
-        return [];
-    }
-};
-
 
 // returns an array of how many days are in each split
 export const getSplitDescriptions = async () => {

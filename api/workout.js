@@ -19,3 +19,21 @@ export const createPrivateWorkout = async (data) => {
         }
     }
 };
+
+// given a dayName and a split, returns the day in that split
+export const getWorkoutDay = async (dayName, split) => {
+    try {
+        // Find the day in the split by dayName
+        const day = split.days.find(day => day.dayName === dayName);
+        
+        // If the day is found, return it
+        if (day) {
+            return day;
+        } else {
+            throw new Error(`Day with name ${dayName} not found in split ${split.splitName}`);
+        }
+    } catch (error) {
+        console.error('Error getting workout day:', error);
+        throw error;
+    }
+};

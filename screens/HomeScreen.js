@@ -6,8 +6,10 @@ import NavBar from "./Components/Navbar";
 import Carousel from 'react-native-reanimated-carousel';
 import DayComponent from './HomeComponents/DayComponent';
 import SplitComponent from './HomeComponents/SplitComponent';
-import { getSplitDescriptions, getSplitNames } from "../api/splits";
-import { getActiveSplitDayNames } from "../api/profile";
+import { getSplitDescriptions, getSplits } from "../api/splits";
+import { getActiveSplit, setActiveSplit } from "../api/profile";
+import { getWorkoutDay } from "../api/workout";
+
 
 
 const { height, width } = Dimensions.get('window');
@@ -16,6 +18,7 @@ const HomeScreen = ({ navigation }) => {
     const [splits, setSplits] = useState([]);
     const [activeSplitDays, setActiveSplitDays] = useState([]);
     const [splitDescription, setSplitDescription] = useState([]);
+    const [activeSplit, setActiveSplitState] = useState(null);
 
     const { theme } = useTheme();
     const styles = createStyles(theme);
@@ -24,16 +27,24 @@ const HomeScreen = ({ navigation }) => {
         const fetchData = async () => {
             try {
                 // Fetch splits
-                const fetchedSplits = await getSplitNames();
-                setSplits(fetchedSplits);
-    
-                // Fetch active split day names
-                const fetchedSplitDayNames = await getActiveSplitDayNames();
-                setActiveSplitDays(fetchedSplitDayNames);
-    
+                const fetchedSplits = await getSplits();
+                if(fetchedSplits){
+                    setSplits(fetchedSplits);
+                }
+                
+                // Fetch active split day
+                const fetchedActiveSplit = await getActiveSplit();
+                if(fetchedActiveSplit){
+                    setActiveSplitDays(fetchedActiveSplit.days);
+                    setActiveSplitState(fetchedActiveSplit);   
+                }
+                             
                 // Fetch split descriptions
                 const fetchedSplitDescriptions = await getSplitDescriptions();
-                setSplitDescription(fetchedSplitDescriptions);
+                if(fetchedSplitDescriptions){
+                    setSplitDescription(fetchedSplitDescriptions);  
+                }
+                
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -42,24 +53,54 @@ const HomeScreen = ({ navigation }) => {
         fetchData();
     }, []);
 
+    // handles setting a split active
+    const handleSetSplitActive = async (split) => {
+        setActiveSplitDays(split.days);
+        setActiveSplitState(split);
+        await setActiveSplit(split); // set the active split in backend
+        
+    };
 
-   
-    // display split cards (2 cards in a row)
+    // handles selecting a day to preview a workout
+    const handleSelectDay = async (dayName, activeSplit) => {
+        try {
+            const workoutDay = await getWorkoutDay(dayName, activeSplit);
+            navigation.navigate('PreviewWorkout', { workoutDay });
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    // display split cards (2 cards in a row) 
     const renderSplitRows = () => {
+        if (splits.length === 0) {
+            return [];
+        }
+    
         const rows = [];
-        for (let i = 0; i < splits.length; i += 2) {
+        for (let i = 0; i < splits.splits.length; i += 2) {
             rows.push(
                 <View key={i} style={styles.splitRow}>
-                    <SplitComponent name={splits[i]} subtext={splitDescription[i]} />
-                    {i + 1 < splits.length && (
-                        <SplitComponent name={splits[i + 1]} subtext={splitDescription[i + 1]} />
+                    <SplitComponent
+                        name={splits.splits[i].splitName}
+                        subtext={splitDescription[i]}
+                        isActive={activeSplit && activeSplit.splitName === splits.splits[i].splitName}
+                        onPress={() => handleSetSplitActive(splits.splits[i])}
+                    />
+                    {i + 1 < splits.splits.length && (
+                        <SplitComponent
+                            name={splits.splits[i+1].splitName}
+                            subtext={splitDescription[i + 1]}
+                            isActive={activeSplit && activeSplit.splitName === splits.splits[i+1].splitName}
+                            onPress={() => handleSetSplitActive(splits.splits[i+1])}
+                        />
                     )}
                 </View>
             );
         }
         return rows;
     };
-
+  
     return (
         <View style={styles.container}>
             <NavBar activeRoute="HomeNav" />
@@ -73,8 +114,8 @@ const HomeScreen = ({ navigation }) => {
                             <Carousel
                                 width={width}
                                 height={width*0.7}
-                                data={activeSplitDays}
-                                renderItem={({ item }) => <DayComponent name={item} />}
+                                data={activeSplitDays.map(day => day.dayName)}
+                                renderItem={({ item }) => <DayComponent name={item} onPress={() => handleSelectDay(item, activeSplit)} />}
                                 mode="parallax"
                                 modeConfig={{
                                     parallaxScrollingScale: 1,
@@ -84,12 +125,12 @@ const HomeScreen = ({ navigation }) => {
                                 }}
                                 snapEnabled={true}
                                 pagingEnabled={true}
-                                loop={false} 
+                                loop={false}
                             />
                         </View>
                         {/* Other Splits */}
                         <View style={styles.otherSplitContainer}>
-                            <Text style={styles.title}>Other Splits</Text>
+                            <Text style={styles.title}>Select a Split</Text>
                             <View style={styles.splitGrid}>
                                 {renderSplitRows()}
                             </View>
@@ -109,7 +150,7 @@ const getResponsiveFontSize = (baseFontSize) => {
 const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        paddingTop: 78,
+        paddingTop: 58,
         backgroundColor: theme.backgroundColor,
     },
     body: {
@@ -118,7 +159,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     scrollViewContent: {
         paddingBottom: 110, 
-        marginTop: 3, 
+        marginTop: 23, 
     },
     title: {
         color: theme.textColor,

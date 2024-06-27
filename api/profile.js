@@ -42,35 +42,20 @@ export const getActiveSplit = async () => {
     return publicUserData.activeSplit;
 };
 
-// gets active split day names
-export const getActiveSplitDayNames = async () => {
-    try {
-        // Fetch the active split data
-        const activeSplit = await getActiveSplit();
-                
-        // Check if activeSplit and days are valid
-        if (activeSplit && Array.isArray(activeSplit.days)) {
-            // Extract the day names
-            const dayNames = activeSplit.days.map(day => day.dayName);
-            
-            // Return the list of day names
-            return dayNames;
-        } else {
-            console.warn('No valid days found in the active split');
-            return [];
-        }
-    } catch (error) {
-        // Handle any errors that occurred during the fetch
-        console.error('Error fetching active split:', error);
-        return [];
-    }
-};
 
-// sets split to the Active Split
+// sets split to the Active Split and moves split to front of the array in private splits
 export const setActiveSplit = async (split) => {
-    let publicUserData = await fetchPublicUserData();
-    publicUserData.activeSplit = split;
-    await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
+    try {
+        // Fetch public user data
+        let publicUserData = await fetchPublicUserData();
+        publicUserData.activeSplit = split;
+
+        // Update public user data with active split
+        await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
+
+    } catch (error) {
+        console.error("Error setting active split: ", error);
+    }
 };  
 
 // gets scores as an array in the order: [overall, chest, back, shoulders, arms, legs]

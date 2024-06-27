@@ -49,7 +49,7 @@ const getResponsiveFontSize = (baseFontSize) => {
 const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        paddingTop: 78,
+        paddingTop: 58,
         backgroundColor: theme.backgroundColor
     },
     body: {
@@ -58,7 +58,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     scrollViewContent: {
         paddingBottom: 110, 
-        marginTop: 3, 
+        marginTop: 23, 
     },
     title: {
         color: theme.textColor,

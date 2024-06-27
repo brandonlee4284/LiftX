@@ -1,19 +1,19 @@
 // SplitComponent.js
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 const { width } = Dimensions.get('window');
 
-const SplitComponent = ({ name, subtext }) => {
+const SplitComponent = ({ name, subtext, isActive, onPress }) => {
     const { theme } = useTheme();
-    const styles = createStyles(theme);
+    const styles = createStyles(theme, isActive);
 
     return (
-        <View style={styles.splitCard}>
+        <TouchableOpacity style={styles.splitCard} onPress={onPress}>
             <Text style={styles.splitCardText}>{name}</Text>
             <Text style={styles.splitCardSubText}>{subtext}-day split</Text>
-        </View>
+        </TouchableOpacity>
     );
 };
 
@@ -22,7 +22,7 @@ const getResponsiveFontSize = (baseFontSize) => {
     return Math.round(baseFontSize * scale);
 };
 
-const createStyles = (theme) => StyleSheet.create({
+const createStyles = (theme, isActive) => StyleSheet.create({
     splitCard: {
         width: width * 0.435,
         height: width * 0.28,
@@ -30,7 +30,9 @@ const createStyles = (theme) => StyleSheet.create({
         borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 10
+        marginRight: 10,
+        borderWidth: isActive ? 1.5 : 0,
+        borderColor: isActive ? theme.textColor : 'transparent',
     },
     splitCardText: {
         color: theme.textColor,

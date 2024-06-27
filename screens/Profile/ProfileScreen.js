@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions, ImageBackground  } from 'react-native';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { fetchPublicUserData, getActiveSplitDayNames, getUserScores } from "../../api/profile";
+import { fetchPublicUserData, getActiveSplit, getUserScores } from "../../api/profile";
 import { useTheme } from "../ThemeProvider";
 import { Header } from "../Components/Header";
 import NavBar from "../Components/Navbar";
@@ -24,7 +24,6 @@ const ProfileScreen = ({ navigation, route }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
-    const scores = [4.2, 4.5, 4.1, 3.9, 4.1, 4.3]; // placeholder scores
     const stats = [82.2, 93.3, 84.4, 80.2, 85.3, 74.1]; // placeholder stats
     
 
@@ -38,12 +37,17 @@ const ProfileScreen = ({ navigation, route }) => {
                 }
     
                 // Fetch active split day names
-                const fetchedSplitDayNames = await getActiveSplitDayNames();
-                setActiveSplitDays(fetchedSplitDayNames);
+                const fetchedActiveSplit = await getActiveSplit();
+                if (fetchedActiveSplit) {
+                    setActiveSplitDays(fetchedActiveSplit.days);
+                }
     
                 // Fetch user scores
                 const fetchedUserScores = await getUserScores();
-                setUserScores(fetchedUserScores);
+                if (fetchedUserScores){
+                    setUserScores(fetchedUserScores);
+                }
+                
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -90,7 +94,7 @@ const ProfileScreen = ({ navigation, route }) => {
                         <Carousel
                             width={width}
                             height={width*0.5}
-                            data={activeSplitDays}
+                            data={activeSplitDays.map(day => day.dayName)}
                             renderItem={({ item }) => <DayCard name={item} />}
                             mode="parallax"
                             modeConfig={{
@@ -129,7 +133,7 @@ const getResponsiveFontSize = (baseFontSize) => {
 const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        paddingTop: 78,
+        paddingTop: 58,
         backgroundColor: theme.backgroundColor
     },
     backgroundImage: {
@@ -148,7 +152,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     scrollViewContent: {
         paddingBottom: 110, 
-        marginTop: 3, 
+        marginTop: 23, 
     },
     userInfoContainer: {
         marginTop: 40
