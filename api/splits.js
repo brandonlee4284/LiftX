@@ -84,14 +84,10 @@ export const editSplit = async (data) => {
     setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', currentSplits);
 };
 
-export const editSplitName = async (data) => {
+// edits split name
+export const editSplitName = async (oldSplitName, newSplitName) => {
     const docSnap = await getSplits();
-    let currentSplits = docSnap.exists() ? docSnap.data().splits : [];
-    // remove old split
-    currentSplits = currentSplits.filter(split => split.splitName !== data.splitName);
-    //add updated split
-    currentSplits.push(data);
-    setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', currentSplits);
+    
 };
 
 export const addExercise = async (splitName, dayName, exercise) => {

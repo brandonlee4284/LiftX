@@ -141,8 +141,8 @@ const createStyles = (theme) => StyleSheet.create({
         width: '120%',
         height: '120%',
         transform: [
-            { translateX: -90 }, 
-            { translateY: -590 }, 
+            { translateX: -width*0.24 }, 
+            { translateY: -width*1.366 }, 
         ],
         zIndex: -1,
     },

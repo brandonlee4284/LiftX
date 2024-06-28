@@ -45,8 +45,6 @@ const createStyles = (theme) => StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
         backgroundColor: theme.backgroundColor,
-        borderBottomWidth: 1,
-        borderBottomColor: theme.borderColor,
     },
     wrapContainer: {
         flexWrap: 'wrap',
@@ -59,9 +57,13 @@ const createStyles = (theme) => StyleSheet.create({
         flex: 1,
         alignItems: 'flex-end',
     },
+    wrapText: {
+        
+    },
     setsReps: {
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
+        textAlign: 'right',
     },
     exerciseName: {
         fontSize: getResponsiveFontSize(18),

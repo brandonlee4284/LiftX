@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, Dimensions, ImageBackground, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Dimensions, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import WorkoutButtonComponent from "./WorkoutComponents/WorkoutButtonComponent";
+import { Octicons, Feather } from '@expo/vector-icons';
 
 
 const { height, width } = Dimensions.get('window');
@@ -10,16 +11,94 @@ const WorkoutScreen = ({ navigation, route }) => {
     const { workoutDay } = route.params;
     const { theme } = useTheme();
     const styles = createStyles(theme);
-  
+    const flattenedSets = workoutDay.exercises.reduce((acc, exercise, index) => {
+        acc.push(...Array.from({ length: exercise.sets }, () => exercise));
+        return acc;
+    }, []);
+
+    const [activeSet, setActiveSet] = useState(workoutDay.exercises.length > 0 ? workoutDay.exercises[0] : null);
+    const [currentNote, setCurrentNote] = useState(activeSet ? activeSet.notes : "");
+    const [upNextSets, setUpNextSets] = useState(() => {
+        const remainingSets = activeSet ? flattenedSets.slice(1) : flattenedSets;
+        return remainingSets.slice(0, Math.min(remainingSets.length, 6));
+    });
+    const [restOfSets, setRestOfSets] = useState(() => {
+        const remainingSets = activeSet ? flattenedSets.slice(1) : flattenedSets;
+        return remainingSets.slice(upNextSets.length);
+    });
+    const handleEndWorkout = () => {
+        // save workout to workout history
+        navigation.navigate('Home');
+    };
+
+    useEffect(() => {
+        setCurrentNote(activeSet ? activeSet.notes : "");
+    }, [activeSet]);
+
+    // Function to handle feedback buttons
+    const handleFeedback = () => {
+        if (upNextSets.length > 0) {
+            const nextActiveSet = upNextSets[0] || null;
+            let newUpNextSets = [...upNextSets];
+            if (restOfSets.length > 0) {
+                newUpNextSets.push(restOfSets[0]);
+                setRestOfSets(restOfSets.slice(1));
+            }
+            const updatedUpNext = [...newUpNextSets.slice(1)];
+            setUpNextSets(updatedUpNext);
+            setActiveSet(nextActiveSet);
+        } else {
+            setActiveSet(null);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
                 <Text style={styles.header}>{workoutDay.dayName}</Text>
             </View>
             <View style={styles.contentContainer}>
-              
-                <View style={styles.buttonContainer}>
-                    <WorkoutButtonComponent text="End Workout" />
+                <View style={styles.notesContainer}>
+                    <Text style={styles.notes}>{currentNote}</Text>
+                </View>
+                <View style={styles.exerciseContainer}>
+                    {activeSet && (
+                        <View style={styles.exerciseRow}>
+                            <Text style={styles.exerciseName}>{activeSet.name}</Text>
+                            <Text style={styles.exerciseDetails}>
+                                {activeSet.reps} reps @ {activeSet.weight} lbs
+                            </Text>
+                        </View>
+                    )}
+                </View>
+                <View style={styles.upNextTextContainer}>
+                    <Text style={styles.upNextText}>Up Next</Text>
+                </View>
+                <View style={styles.upNextContainer}>
+                    {upNextSets.map((exercise, index) => (
+                        <View key={index} style={styles.exerciseRow}>
+                            <Text style={styles.exerciseNameUpNext}>{exercise.name}</Text>
+                            <Text style={styles.exerciseDetailsUpNext}>
+                                {exercise.reps} reps @ {exercise.weight} lbs
+                            </Text>
+                        </View>
+                    ))}
+                </View>
+                <View style={styles.bottomContainer}>
+                    <View style={styles.feedbackButtonContainer}>
+                        <TouchableOpacity style={styles.smallButton} onPress={handleFeedback}>
+                            <Octicons name="thumbsdown" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.largeButton} onPress={handleFeedback}>
+                            <Feather name="skip-forward" size={getResponsiveFontSize(30)} color={theme.backgroundColor} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.smallButton} onPress={handleFeedback}>
+                            <Octicons name="thumbsup" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.buttonContainer}>
+                        <WorkoutButtonComponent text="End Workout" onPress={handleEndWorkout} />
+                    </View>
                 </View>
             </View>
         </View>
@@ -51,12 +130,101 @@ const createStyles = (theme) => StyleSheet.create({
     },
     contentContainer: {
         flex: 1,
+        marginTop: 75
+    },
+    notesContainer: {
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+    notes: {
+        color: theme.textColor,
+        fontSize: getResponsiveFontSize(16),
+        opacity: 0.7,
+    },
+    exerciseContainer: {
+        marginBottom: 60,
+        paddingHorizontal: 35,
+    },
+    exerciseRow: {
+        flexDirection: 'row',
         justifyContent: 'space-between',
+        paddingVertical: 10,
+        alignItems: 'center',
+    },
+    exerciseName: {
+        fontSize: getResponsiveFontSize(26),
+        color: theme.textColor,
+        fontWeight: 'bold',
+    },
+    exerciseDetails: {
+        fontSize: getResponsiveFontSize(16),
+        color: theme.textColor,
+    },
+    upNextContainer: {
+        paddingHorizontal: 65,
+    },
+    upNextTextContainer: {
+        alignItems: 'center',
+        marginVertical: 20,
+    },
+    upNextText: {
+        fontSize: getResponsiveFontSize(26),
+        color: theme.textColor,
+        marginBottom: 10,
+    },
+    exerciseNameUpNext: {
+        fontSize: getResponsiveFontSize(20),
+        color: theme.grayTextColor,
+    },
+    exerciseDetailsUpNext: {
+        fontSize: getResponsiveFontSize(16),
+        color: theme.grayTextColor,
     },
     buttonContainer: {
         alignItems: 'center',
-        marginBottom: 20, // Adds space between button and bottom of ScrollView
+        marginBottom: 20,
     },
+    feedbackButtonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginVertical: 30,
+    },
+    smallButton: {
+        width: width * 0.1,
+        height: width * 0.1,
+        borderRadius: (width * 0.1) / 2,
+        backgroundColor: theme.textColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 20,
+        shadowColor: theme.textColor,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 1,
+        shadowRadius: 5,
+    },
+    largeButton: {
+        width: width * 0.15,
+        height: width * 0.15,
+        borderRadius: (width * 0.15) / 2,
+        backgroundColor: theme.textColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 20,
+        shadowColor: theme.textColor,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 1,
+        shadowRadius: 5,
+    },
+    bottomContainer: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        backgroundColor: theme.backgroundColor,
+        paddingBottom: 20,
+        paddingTop: 10,
+        alignItems: 'center',
+    }
 
 });
 
