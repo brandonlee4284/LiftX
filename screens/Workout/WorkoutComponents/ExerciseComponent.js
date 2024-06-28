@@ -4,7 +4,7 @@ import { useTheme } from "../../ThemeProvider";
 
 const { width } = Dimensions.get('window');
 
-const ExerciseComponent = ({ exerciseName, numSets, numReps, weight, notes }) => {
+const ExerciseComponent = ({ exerciseName, numSets, numReps, notes }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
@@ -12,7 +12,7 @@ const ExerciseComponent = ({ exerciseName, numSets, numReps, weight, notes }) =>
     // A simple measurement of text width can be done via estimated character count,
     // but for more precise measurement, you might need Text measurement tools
     const leftContent = `${exerciseName} ${notes ? notes : ''}`;
-    const rightContent = `${numSets} sets, ${numReps} reps @ ${weight}lb`;
+    const rightContent = `${numSets} sets, ${numReps} reps`;
     
     const estimatedLeftWidth = leftContent.length * getResponsiveFontSize(10) * 0.5; // Rough estimate
     const estimatedRightWidth = rightContent.length * getResponsiveFontSize(10) * 0.5; // Rough estimate
@@ -27,7 +27,7 @@ const ExerciseComponent = ({ exerciseName, numSets, numReps, weight, notes }) =>
                 {notes ? <Text style={styles.notes}>{notes}</Text> : null}
             </View>
             <View style={styles.rightContainer}>
-                <Text style={styles.setsReps}>{numSets} sets, {numReps} reps @ {weight}lb</Text>
+                <Text style={styles.setsReps}>{numSets} sets, {numReps} reps</Text>
             </View>
         </View>
     );

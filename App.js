@@ -25,6 +25,7 @@ import { FIREBASE_AUTH } from './FirebaseConfig';
 import OnboardingScreen from './screens/Onboarding/Onboarding';
 import OnboardingQuestionsScreen from './screens/Onboarding/OnboardingQuestions';
 import NavBar from './screens/Components/Navbar';
+import EditWorkoutScreen from './screens/Workout/EditWorkoutScreen';
 
 AppRegistry.registerComponent('main', () => MainApp);
 
@@ -42,7 +43,8 @@ function HomeStack() {
     <Stack.Navigator>
       <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Stack.Screen name="PreviewWorkout" component={PreviewWorkoutScreen} options={{ headerShown: false }}/>
-      <Stack.Screen name="Workout" component={WorkoutScreen} options={{ headerShown: false }}/>
+      <Stack.Screen name="EditWorkout" component={EditWorkoutScreen} options={{ headerShown: false, animationEnabled: false }}/>
+      <Stack.Screen name="Workout" component={WorkoutScreen} options={{ headerShown: false, animationEnabled: false }}/>
     </Stack.Navigator>
   );
 }

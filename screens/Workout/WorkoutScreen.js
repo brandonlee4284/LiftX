@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, Dimensions, ImageBackground, ScrollVi
 import { useTheme } from "../ThemeProvider";
 import WorkoutButtonComponent from "./WorkoutComponents/WorkoutButtonComponent";
 import { Octicons, Feather } from '@expo/vector-icons';
+import EndWorkoutModal from "./WorkoutComponents/EndWorkoutModal";
 
 
 const { height, width } = Dimensions.get('window');
@@ -26,10 +27,16 @@ const WorkoutScreen = ({ navigation, route }) => {
         const remainingSets = activeSet ? flattenedSets.slice(1) : flattenedSets;
         return remainingSets.slice(upNextSets.length);
     });
+
+    const [setsCompleted, setSetsCompleted] = useState(1);
     const handleEndWorkout = () => {
         // save workout to workout history
-        navigation.navigate('Home');
-    };
+        if (activeSet === null) {
+            navigation.navigate('Home', { completedWorkout: true, stopwatch: secondsElapsed, setsCompleted, dayName: workoutDay.dayName });
+        } else {
+            setShowEndWorkoutModal(true);
+        }
+    }
 
     useEffect(() => {
         setCurrentNote(activeSet ? activeSet.notes : "");
@@ -47,10 +54,40 @@ const WorkoutScreen = ({ navigation, route }) => {
             const updatedUpNext = [...newUpNextSets.slice(1)];
             setUpNextSets(updatedUpNext);
             setActiveSet(nextActiveSet);
+            setSetsCompleted(prevCompleted => prevCompleted + 1);
         } else {
             setActiveSet(null);
+            
         }
     };
+
+    // modal that pops up if a user is trying to end a workout early
+    const [showEndWorkoutModal, setShowEndWorkoutModal] = useState(false);
+
+    const handleEnd = () => {
+        navigation.navigate('Home', { completedWorkout: false });
+        setShowEndWorkoutModal(false);
+    };
+
+    const handleResume = () => {
+        setShowEndWorkoutModal(false);
+    };
+
+    // Stopwatch functionality
+    const [secondsElapsed, setSecondsElapsed] = useState(0);
+    const [stopwatchInterval, setStopwatchInterval] = useState(null);
+
+    useEffect(() => {
+        // Start the stopwatch interval
+        const interval = setInterval(() => {
+            setSecondsElapsed(prevSeconds => prevSeconds + 1);
+        }, 1000);
+
+        setStopwatchInterval(interval);
+
+        // Clean up interval on component unmount
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -58,6 +95,9 @@ const WorkoutScreen = ({ navigation, route }) => {
                 <Text style={styles.header}>{workoutDay.dayName}</Text>
             </View>
             <View style={styles.contentContainer}>
+                <View style={styles.stopwatchContainer}>
+                    <Text style={styles.stopwatchText}>{formatTime(secondsElapsed)}</Text>
+                </View>
                 <View style={styles.notesContainer}>
                     <Text style={styles.notes}>{currentNote}</Text>
                 </View>
@@ -101,8 +141,21 @@ const WorkoutScreen = ({ navigation, route }) => {
                     </View>
                 </View>
             </View>
+            <EndWorkoutModal
+                visible={showEndWorkoutModal}
+                onEndWorkout={handleEnd}
+                onResume={handleResume}
+            />
         </View>
     );
+};
+
+const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    
+    return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
 };
 
 const getResponsiveFontSize = (baseFontSize) => {
@@ -130,7 +183,15 @@ const createStyles = (theme) => StyleSheet.create({
     },
     contentContainer: {
         flex: 1,
-        marginTop: 75
+        marginTop: 35
+    },
+    stopwatchContainer: {
+        alignItems: 'center',
+        marginBottom: 15,
+    },
+    stopwatchText: {
+        color: theme.textColor,
+        fontSize: getResponsiveFontSize(25),
     },
     notesContainer: {
         alignItems: 'center',

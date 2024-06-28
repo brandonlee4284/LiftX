@@ -2,22 +2,17 @@ import React from "react";
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import ExerciseComponent from "./WorkoutComponents/ExerciseComponent";
-import WorkoutButtonComponent from "./WorkoutComponents/WorkoutButtonComponent";
+
 
 const { width } = Dimensions.get('window');
 
-const PreviewWorkoutScreen = ({ navigation, route }) => {
+const EditWorkoutScreen = ({ navigation, route }) => {
     const { workoutDay } = route.params;
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
-    const handleWorkout = (workoutDay) => {
-        navigation.navigate('Workout', { workoutDay });
-    };
-
-    const handleEditWorkoutDay = (workoutDay) => {
-        navigation.navigate('EditWorkout', { workoutDay });
+    const handleSaveWorkout = () => {
+        // save workout and navigate back
     };
 
     return (
@@ -26,22 +21,11 @@ const PreviewWorkoutScreen = ({ navigation, route }) => {
                 <View style={styles.headerContainer}>
                     <Ionicons name="arrow-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
                     <Text style={styles.header}>{workoutDay.dayName}</Text>
-                    <Feather name="edit" onPress={() => handleEditWorkoutDay(workoutDay)} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.editIcon}/>
+                    <Feather name="check-square" onPress={handleSaveWorkout} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.saveIcon}/>
                 </View>
                 <View style={styles.contentContainer}>
                     <View style={styles.exerciseContainer}>
-                        {workoutDay.exercises.map((exercise, index) => (
-                            <ExerciseComponent
-                                key={index}
-                                exerciseName={exercise.name}
-                                numSets={exercise.sets}
-                                numReps={exercise.reps}
-                                notes={exercise.notes}
-                            />
-                        ))}
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <WorkoutButtonComponent text="Start Workout" onPress={() => handleWorkout(workoutDay)}/>
+                        
                     </View>
                 </View>
             </ScrollView>
@@ -76,7 +60,7 @@ const createStyles = (theme) => StyleSheet.create({
         position: 'absolute',
         left: width*0.07,
     },
-    editIcon: {
+    saveIcon: {
         position: 'absolute',
         left: width*0.85,
     },
@@ -99,4 +83,4 @@ const createStyles = (theme) => StyleSheet.create({
     },
 });
 
-export default PreviewWorkoutScreen;
+export default EditWorkoutScreen;

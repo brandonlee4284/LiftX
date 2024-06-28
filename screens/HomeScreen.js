@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, Dimensions, ImageBackground, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Modal, ScrollView } from 'react-native';
 import { Header } from "./Components/Header";
 import { useTheme } from "./ThemeProvider";
 import NavBar from "./Components/Navbar";
@@ -9,19 +9,34 @@ import SplitComponent from './HomeComponents/SplitComponent';
 import { getSplitDescriptions, getSplits } from "../api/splits";
 import { getActiveSplit, setActiveSplit } from "../api/profile";
 import { getWorkoutDay } from "../api/workout";
-
+import CompleteWorkoutModal from "./HomeComponents/CompletedWorkoutModal";
 
 
 const { height, width } = Dimensions.get('window');
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation, route }) => {
     const [splits, setSplits] = useState([]);
     const [activeSplitDays, setActiveSplitDays] = useState([]);
     const [splitDescription, setSplitDescription] = useState([]);
     const [activeSplit, setActiveSplitState] = useState(null);
-
+    const [modalVisible, setModalVisible] = useState(false);
     const { theme } = useTheme();
     const styles = createStyles(theme);
+
+    const {
+        completedWorkout = false,
+        stopwatch = '00:00:00',
+        setsCompleted = 0,
+        dayName = 'Unknown'
+    } = route.params || {};
+    useEffect(() => {
+        if (route.params?.completedWorkout) {
+            setModalVisible(true);
+            navigation.setParams({ completedWorkout: false });
+        }
+    }, [route.params?.completedWorkout]);
+
+  
 
     useEffect(() => {
         const fetchData = async () => {
@@ -52,6 +67,11 @@ const HomeScreen = ({ navigation }) => {
     
         fetchData();
     }, []);
+
+    // resets modal visibility to false
+    const handleCloseModal = () => {
+        setModalVisible(false);
+    };
 
     // handles setting a split active
     const handleSetSplitActive = async (split) => {
@@ -137,6 +157,7 @@ const HomeScreen = ({ navigation }) => {
                         </View>
                 </View>
            </ScrollView>
+            <CompleteWorkoutModal visible={modalVisible} onClose={handleCloseModal} dayName={dayName} time={formatTime(stopwatch)} setsCompleted={setsCompleted} />
         </View>
     );
 };
@@ -144,6 +165,13 @@ const HomeScreen = ({ navigation }) => {
 const getResponsiveFontSize = (baseFontSize) => {
     const scale = width / 425; 
     return Math.round(baseFontSize * scale);
+};
+const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    
+    return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
 };
 
 
@@ -184,7 +212,6 @@ const createStyles = (theme) => StyleSheet.create({
         //justifyContent: 'space-between',
         marginBottom: 10,
     },
-
 });
 
 export default HomeScreen;
