@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Modal, ScrollView } from 'react-native';
 import { Header } from "./Components/Header";
 import { useTheme } from "./ThemeProvider";
@@ -10,6 +10,8 @@ import { getSplitDescriptions, getSplits } from "../api/splits";
 import { getActiveSplit, setActiveSplit } from "../api/profile";
 import { getWorkoutDay } from "../api/workout";
 import CompleteWorkoutModal from "./HomeComponents/CompletedWorkoutModal";
+import { useFocusEffect } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
 
 
 const { height, width } = Dimensions.get('window');
@@ -29,6 +31,7 @@ const HomeScreen = ({ navigation, route }) => {
         setsCompleted = 0,
         dayName = 'Unknown'
     } = route.params || {};
+
     useEffect(() => {
         if (route.params?.completedWorkout) {
             setModalVisible(true);
@@ -38,35 +41,37 @@ const HomeScreen = ({ navigation, route }) => {
 
   
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Fetch splits
-                const fetchedSplits = await getSplits();
-                if(fetchedSplits){
-                    setSplits(fetchedSplits);
+    useFocusEffect(
+        useCallback(() => {
+            const fetchData = async () => {
+                try {
+                    // Fetch splits
+                    const fetchedSplits = await getSplits();
+                    if(fetchedSplits){
+                        setSplits(fetchedSplits);
+                    }
+                    
+                    // Fetch active split day
+                    const fetchedActiveSplit = await getActiveSplit();
+                    if(fetchedActiveSplit){
+                        setActiveSplitDays(fetchedActiveSplit.days);
+                        setActiveSplitState(fetchedActiveSplit);   
+                    }
+                                
+                    // Fetch split descriptions
+                    const fetchedSplitDescriptions = await getSplitDescriptions();
+                    if(fetchedSplitDescriptions){
+                        setSplitDescription(fetchedSplitDescriptions);  
+                    }
+                    
+                } catch (error) {
+                    console.error('Error fetching data:', error);
                 }
-                
-                // Fetch active split day
-                const fetchedActiveSplit = await getActiveSplit();
-                if(fetchedActiveSplit){
-                    setActiveSplitDays(fetchedActiveSplit.days);
-                    setActiveSplitState(fetchedActiveSplit);   
-                }
-                             
-                // Fetch split descriptions
-                const fetchedSplitDescriptions = await getSplitDescriptions();
-                if(fetchedSplitDescriptions){
-                    setSplitDescription(fetchedSplitDescriptions);  
-                }
-                
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-    
-        fetchData();
-    }, []);
+            };
+
+            fetchData();
+        }, [])
+    );
 
     // resets modal visibility to false
     const handleCloseModal = () => {
@@ -75,6 +80,7 @@ const HomeScreen = ({ navigation, route }) => {
 
     // handles setting a split active
     const handleSetSplitActive = async (split) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setActiveSplitDays(split.days);
         setActiveSplitState(split);
         await setActiveSplit(split); // set the active split in backend
@@ -83,15 +89,20 @@ const HomeScreen = ({ navigation, route }) => {
 
     // handles selecting a day to preview a workout
     const handleSelectDay = async (dayName, activeSplit) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         try {
             const workoutDay = await getWorkoutDay(dayName, activeSplit);
-            navigation.navigate('PreviewWorkout', { workoutDay });
+            navigation.navigate('PreviewWorkout', { workoutDay, splitName: activeSplit.splitName });
         } catch (error) {
             console.error(error);
         }
     };
 
-    // display split cards (2 cards in a row) 
+    const handleSnapToItem = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    };
+
+    // display split cards (2 cards in a row)
     const renderSplitRows = () => {
         if (splits.length === 0) {
             return [];
@@ -146,6 +157,7 @@ const HomeScreen = ({ navigation, route }) => {
                                 snapEnabled={true}
                                 pagingEnabled={true}
                                 loop={false}
+                                onSnapToItem={handleSnapToItem}
                             />
                         </View>
                         {/* Other Splits */}

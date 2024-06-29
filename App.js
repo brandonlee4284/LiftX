@@ -17,7 +17,7 @@ import WorkoutScreen from './screens/Workout/WorkoutScreen';
 import PreviewWorkoutScreen from './screens/Workout/PreviewWorkoutScreen';
 import SettingScreen from './screens/Settings/SettingScreen';
 import ProfileEditScreen from './screens/Settings/ProfileEditScreen';
-
+import PreviewProfileWorkoutScreen from './screens/Profile/PreviewProfileWorkoutScreen';
 import { ThemeProvider } from './screens/ThemeProvider';
 
 import { onAuthStateChanged } from 'firebase/auth';
@@ -69,6 +69,7 @@ function ProfileStack() {
   return (
     <Stack.Navigator >
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PreviewProfileWorkout" component={PreviewProfileWorkoutScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

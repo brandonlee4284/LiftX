@@ -6,6 +6,7 @@ import { useTheme } from "../ThemeProvider";
 import { getUsername } from '../../api/profile';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import GradientText from './GradientText';
+import * as Haptics from 'expo-haptics';
 
 const { height, width } = Dimensions.get('window');
 
@@ -28,10 +29,12 @@ export function Header(props) {
     }, []);
 
     const handleAddProfile = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         navigation.navigate('Onboarding');
     };
 
     const handleSettings = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         navigation.navigate('Setting');
     };
     

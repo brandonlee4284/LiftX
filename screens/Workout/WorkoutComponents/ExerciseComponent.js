@@ -4,7 +4,7 @@ import { useTheme } from "../../ThemeProvider";
 
 const { width } = Dimensions.get('window');
 
-const ExerciseComponent = ({ exerciseName, numSets, numReps, notes }) => {
+const ExerciseComponent = ({ exerciseName, numSets, numReps, weight, notes }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
@@ -27,7 +27,7 @@ const ExerciseComponent = ({ exerciseName, numSets, numReps, notes }) => {
                 {notes ? <Text style={styles.notes}>{notes}</Text> : null}
             </View>
             <View style={styles.rightContainer}>
-                <Text style={styles.setsReps}>{numSets} sets, {numReps} reps</Text>
+                <Text style={styles.setsReps}>{numSets} sets, {numReps} reps @ {weight}lb</Text>
             </View>
         </View>
     );
@@ -56,9 +56,7 @@ const createStyles = (theme) => StyleSheet.create({
     rightContainer: {
         flex: 1,
         alignItems: 'flex-end',
-    },
-    wrapText: {
-        
+        top: width*0.0046
     },
     setsReps: {
         fontSize: getResponsiveFontSize(16),

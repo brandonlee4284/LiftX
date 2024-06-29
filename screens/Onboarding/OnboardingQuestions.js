@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import { getDisplayName, setUserWeight, setUserGender } from '../../api/profile';
+import * as Haptics from 'expo-haptics';
 
 
 const { height, width } = Dimensions.get('window');
@@ -29,10 +30,12 @@ const OnboardingQuestionsScreen = () => {
     }, []);
 
     const toggleGender = (selectedGender) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setGender(selectedGender);
     };
 
     const handleHome = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         try {
             await setUserGender(gender);
             await setUserWeight(weight);

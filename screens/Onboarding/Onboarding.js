@@ -4,6 +4,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
 import Carousel from 'react-native-reanimated-carousel';
 import { Slide1, Slide2, Slide3 } from "./SlideComponents";
+import * as Haptics from 'expo-haptics';
 
 const { height, width } = Dimensions.get('window');
 
@@ -23,6 +24,7 @@ const OnboardingScreen = () => {
     ];
     // continue to next slide handling
     const onNextSlide = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         if (currentSlide < slides.length - 1) {
             setCurrentSlide(currentSlide + 1);
             carouselRef.current?.scrollTo({ index: currentSlide + 1, animated: true });

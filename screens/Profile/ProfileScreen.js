@@ -11,6 +11,8 @@ import DayCard from "./ProfileComponents/DayCard";
 import Carousel from 'react-native-reanimated-carousel';
 import DayComponent from "../HomeComponents/DayComponent";
 import ScoreCard from "./ProfileComponents/ScoreCard";
+import * as Haptics from 'expo-haptics';
+import { getWorkoutDay } from "../../api/workout";
 
 
 const { height, width } = Dimensions.get('window');
@@ -20,7 +22,7 @@ const ProfileScreen = ({ navigation, route }) => {
     const [activeSplitDays, setActiveSplitDays] = useState([]);
     const [userScores, setUserScores] = useState([]);
     const categories = ["Overall", "Chest", "Back", "Shoulders", "Arms", "Legs"];
-
+    const [activeSplit, setActiveSplitState] = useState(null);
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
@@ -40,6 +42,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 const fetchedActiveSplit = await getActiveSplit();
                 if (fetchedActiveSplit) {
                     setActiveSplitDays(fetchedActiveSplit.days);
+                    setActiveSplitState(fetchedActiveSplit); 
                 }
     
                 // Fetch user scores
@@ -65,6 +68,20 @@ const ProfileScreen = ({ navigation, route }) => {
                 stat={stats[index]}
             />
         ));
+    };
+
+    const handleSnap = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    };
+
+    const handleSelectDay = async (dayName, activeSplit) => { 
+        try {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            const workoutDay = await getWorkoutDay(dayName, activeSplit);
+            navigation.navigate('PreviewProfileWorkout', { workoutDay, splitName: activeSplit.splitName });
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
@@ -95,7 +112,8 @@ const ProfileScreen = ({ navigation, route }) => {
                             width={width}
                             height={width*0.5}
                             data={activeSplitDays.map(day => day.dayName)}
-                            renderItem={({ item }) => <DayCard name={item} />}
+                            //renderItem={({ item }) => <DayCard name={item} />}
+                            renderItem={({ item }) => <DayCard name={item} onPress={() => handleSelectDay(item, activeSplit)} />}
                             mode="parallax"
                             modeConfig={{
                                 parallaxScrollingScale: 1,
@@ -105,7 +123,8 @@ const ProfileScreen = ({ navigation, route }) => {
                             }}
                             snapEnabled={true}
                             pagingEnabled={true}
-                            loop={false} 
+                            loop={false}
+                            onSnapToItem={handleSnap}
                         />
                     </View>
                     {/* Scores */}

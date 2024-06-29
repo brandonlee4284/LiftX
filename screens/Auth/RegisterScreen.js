@@ -6,6 +6,7 @@ import { Input } from "./Components/Input";
 import { SignInButton } from "./Components/SignInButton";
 import { useTheme } from "../ThemeProvider";
 import { Footer } from "./Components/Footer";
+import * as Haptics from 'expo-haptics';
 
 
 const { height, width } = Dimensions.get('window');
@@ -26,6 +27,7 @@ const RegisterScreen = ({ navigation }) => {
 
 
     const handleSignUp = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         createNewUser(gender, weight, displayName, username, email, password, setErrorMessage, navigation);
     };
 

@@ -1,31 +1,113 @@
-import React from "react";
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import { Ionicons, Feather } from "@expo/vector-icons";
-
+import EditExerciseComponent from "./WorkoutComponents/EditExerciseComponent";
+import { deleteDayActive, deleteDayPrivate, editActiveSplitDayName, editDayName, updateActiveSplitExercises, updateExercises } from "../../api/splits";
+import * as Haptics from 'expo-haptics';
 
 const { width } = Dimensions.get('window');
 
 const EditWorkoutScreen = ({ navigation, route }) => {
-    const { workoutDay } = route.params;
+    const { workoutDay, splitName } = route.params;
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
-    const handleSaveWorkout = () => {
-        // save workout and navigate back
+    const [oldDayName, setOldDayName] = useState(workoutDay.dayName);
+    const [updatedDayName, setUpdatedDayName] = useState(workoutDay.dayName);
+    const [exercises, setExercises] = useState(workoutDay.exercises);
+
+    const handleSaveWorkout = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        // update dayName for active split
+        await editActiveSplitDayName(oldDayName, updatedDayName);
+        // update dayName for private split
+        await editDayName(splitName, oldDayName, updatedDayName);
+        
+        // update exercise active split
+        updateActiveSplitExercises(updatedDayName, exercises);
+        // update exercises private splits
+        updateExercises(splitName, updatedDayName, exercises);
+     
+        // update workoutDay and pass to previous screen
+        const newWorkoutDay = {
+            dayName: updatedDayName,
+            exercises: exercises
+        };
+        navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName });
+    };
+
+    const handleDeleteWorkout = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        await deleteDayActive(updatedDayName);
+        await deleteDayPrivate(splitName, updatedDayName);
+        navigation.navigate("Home");
+    };
+
+    const goBack = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        navigation.goBack()
+    };
+
+    const addExerciseBoxes = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        const newExercise = { name: "", sets: "", reps: "", weight: "", notes: "" };
+        setExercises([...exercises, newExercise]);
+    };
+
+    const updateExercise = (index, updatedExercise) => {
+        const updatedExercises = exercises.map((exercise, i) => (i === index ? updatedExercise : exercise));
+        setExercises(updatedExercises);
+    };
+
+    const removeExercise = (index) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        const updatedExercises = exercises.filter((_, i) => i !== index);
+        setExercises(updatedExercises);
     };
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.headerContainer}>
-                    <Ionicons name="arrow-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
-                    <Text style={styles.header}>{workoutDay.dayName}</Text>
+                    <Ionicons name="arrow-back" onPress={() => goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
+                    <TextInput 
+                        style={styles.header}
+                        keyboardType="default"
+                        value={updatedDayName}
+                        onChangeText={setUpdatedDayName}
+                    />
                     <Feather name="check-square" onPress={handleSaveWorkout} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.saveIcon}/>
                 </View>
                 <View style={styles.contentContainer}>
                     <View style={styles.exerciseContainer}>
-                        
+                        {exercises.map((exercise, index) => (
+                            <EditExerciseComponent
+                                key={index}
+                                exerciseName={exercise.name}
+                                numSets={exercise.sets}
+                                numReps={exercise.reps}
+                                weight={exercise.weight}
+                                notes={exercise.notes}
+                                onExerciseNameChange={(name) => updateExercise(index, { ...exercise, name })}
+                                onSetsChange={(sets) => updateExercise(index, { ...exercise, sets })}
+                                onRepsChange={(reps) => updateExercise(index, { ...exercise, reps })}
+                                onWeightChange={(weight) => updateExercise(index, { ...exercise, weight })}
+                                onNotesChange={(notes) => updateExercise(index, { ...exercise, notes })}
+                                removeExercise={() => removeExercise(index)}
+                            />
+                        ))}
+                        <View style={styles.addbuttonContainer}>
+                            <TouchableOpacity style={styles.addButton} onPress={addExerciseBoxes}>
+                                <Text style={styles.addButtonText}>+</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.button} onPress={handleDeleteWorkout}>
+                            <Text style={styles.buttonText}>Delete Workout</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </ScrollView>
@@ -68,6 +150,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         fontSize: getResponsiveFontSize(42),
         fontWeight: '600',
+        textDecorationLine: 'underline'
     },
     contentContainer: {
         flex: 1,
@@ -77,9 +160,39 @@ const createStyles = (theme) => StyleSheet.create({
         marginTop: 40,
         paddingHorizontal: 20,
     },
+    addbuttonContainer: {
+        alignItems: 'center',
+        marginTop: 20
+    },
     buttonContainer: {
         alignItems: 'center',
         marginBottom: 20, // Adds space between button and bottom of ScrollView
+    },
+    button: {
+        width: width * 0.5,
+        height: getResponsiveFontSize(57),
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: theme.primaryColor,
+        borderRadius: 20,
+        marginTop: 20
+    },
+    buttonText: {
+        color: theme.backgroundColor,
+        fontSize: getResponsiveFontSize(18),
+        fontWeight: 'bold',
+    },
+    addButton: {
+        borderRadius: 10,
+        backgroundColor: theme.navbarColor,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: width*0.69,
+        height: width*0.116,
+    },
+    addButtonText: {
+        color: theme.textColor,
+        fontSize: getResponsiveFontSize(30),
     },
 });
 

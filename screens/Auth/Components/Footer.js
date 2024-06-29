@@ -2,20 +2,22 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "../../ThemeProvider";
+import * as Haptics from 'expo-haptics';
 
 
 const { height, width } = Dimensions.get('window');
 
 export function Footer(props) {
-  const navigation = useNavigation();
-  const { theme } = useTheme();
-  const styles = createStyles(theme);
+    const navigation = useNavigation();
+    const { theme } = useTheme();
+    const styles = createStyles(theme);
 
-  const handlePress = () => {
-      navigation.navigate(props.whenClicked);
-  };
+    const handlePress = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        navigation.navigate(props.whenClicked);
+    };
 
-  return (
+    return (
     <View style={styles.container}>
         <Text style={styles.msg}>
             {props.msg}
@@ -24,7 +26,7 @@ export function Footer(props) {
             <Text style={styles.buttonText}>{props.button}</Text>
         </TouchableOpacity>
     </View>
-  );
+    );
 }
 
 

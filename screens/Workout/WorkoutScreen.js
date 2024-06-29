@@ -4,6 +4,7 @@ import { useTheme } from "../ThemeProvider";
 import WorkoutButtonComponent from "./WorkoutComponents/WorkoutButtonComponent";
 import { Octicons, Feather } from '@expo/vector-icons';
 import EndWorkoutModal from "./WorkoutComponents/EndWorkoutModal";
+import * as Haptics from 'expo-haptics';
 
 
 const { height, width } = Dimensions.get('window');
@@ -31,6 +32,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     const [setsCompleted, setSetsCompleted] = useState(1);
     const handleEndWorkout = () => {
         // save workout to workout history
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         if (activeSet === null) {
             navigation.navigate('Home', { completedWorkout: true, stopwatch: secondsElapsed, setsCompleted, dayName: workoutDay.dayName });
         } else {
@@ -44,6 +46,7 @@ const WorkoutScreen = ({ navigation, route }) => {
 
     // Function to handle feedback buttons
     const handleFeedback = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         if (upNextSets.length > 0) {
             const nextActiveSet = upNextSets[0] || null;
             let newUpNextSets = [...upNextSets];
@@ -169,6 +172,9 @@ const createStyles = (theme) => StyleSheet.create({
         flex: 1,
         paddingTop: 78,
         backgroundColor: theme.backgroundColor,
+    },
+    wrapContainer: {
+        flexWrap: 'wrap',
     },
     headerContainer: {
         width: '100%',

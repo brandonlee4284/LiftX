@@ -3,55 +3,18 @@ import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import { Ionicons, Feather } from "@expo/vector-icons";
-import ExerciseComponent from "./WorkoutComponents/ExerciseComponent";
-import WorkoutButtonComponent from "./WorkoutComponents/WorkoutButtonComponent";
-import { getActiveSplit } from "../../api/profile";
-import { getWorkoutDay } from "../../api/workout";
+import ExerciseComponent from "../Workout/WorkoutComponents/ExerciseComponent";
+import WorkoutButtonComponent from "../Workout/WorkoutComponents/WorkoutButtonComponent";
 import * as Haptics from 'expo-haptics';
 
 const { width } = Dimensions.get('window');
 
-const PreviewWorkoutScreen = ({ navigation, route }) => {
+const PreviewProfileWorkoutScreen = ({ navigation, route }) => {
     const { workoutDay, splitName, updatedWorkoutDay } = route.params;
     const { theme } = useTheme();
     const styles = createStyles(theme); 
     const currentWorkoutDay = updatedWorkoutDay ? updatedWorkoutDay : workoutDay;
     
-    /*
-    const [activeSplit, setActiveSplitState] = useState(null);
-    useFocusEffect(
-        useCallback(() => {
-            const fetchData = async () => {
-                try {
-                    // Fetch active split day
-                    const fetchedActiveSplit = await getActiveSplit();
-                    if (fetchedActiveSplit) {
-                        setActiveSplitState(fetchedActiveSplit);
-                        if (currentWorkoutDay?.dayName) {
-                            const updatedWorkoutDay = await getWorkoutDay(currentWorkoutDay.dayName, fetchedActiveSplit);
-                            setCurrentWorkoutDay(updatedWorkoutDay);
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
-            };
-
-            fetchData();
-        }, [currentWorkoutDay])
-    );
-    */
-
-    const handleWorkout = (workoutDay) => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        navigation.navigate('Workout', { workoutDay });
-    };
-
-    const handleEditWorkoutDay = (workoutDay) => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        navigation.navigate('EditWorkout', { workoutDay, splitName });
-    };
-
     const goBack = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         navigation.goBack();
@@ -63,7 +26,6 @@ const PreviewWorkoutScreen = ({ navigation, route }) => {
                 <View style={styles.headerContainer}>
                     <Ionicons name="arrow-back" onPress={() => goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
                     <Text style={styles.header}>{currentWorkoutDay.dayName}</Text>
-                    <Feather name="edit" onPress={() => handleEditWorkoutDay(currentWorkoutDay)} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.editIcon}/>
                 </View>
                 <View style={styles.contentContainer}>
                     <View style={styles.exerciseContainer}>
@@ -77,9 +39,6 @@ const PreviewWorkoutScreen = ({ navigation, route }) => {
                                 notes={exercise.notes}
                             />
                         ))}
-                    </View>
-                    <View style={styles.buttonContainer}>
-                        <WorkoutButtonComponent text="Start Workout" onPress={() => handleWorkout(currentWorkoutDay)}/>
                     </View>
                 </View>
             </ScrollView>
@@ -114,10 +73,6 @@ const createStyles = (theme) => StyleSheet.create({
         position: 'absolute',
         left: width*0.07,
     },
-    editIcon: {
-        position: 'absolute',
-        left: width*0.85,
-    },
     header: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(42),
@@ -131,10 +86,6 @@ const createStyles = (theme) => StyleSheet.create({
         marginTop: 40,
         paddingHorizontal: 20,
     },
-    buttonContainer: {
-        alignItems: 'center',
-        marginBottom: 20, // Adds space between button and bottom of ScrollView
-    },
 });
 
-export default PreviewWorkoutScreen;
+export default PreviewProfileWorkoutScreen;
