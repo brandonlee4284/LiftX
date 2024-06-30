@@ -6,12 +6,13 @@ import NavBar from "./Components/Navbar";
 import Carousel from 'react-native-reanimated-carousel';
 import DayComponent from './HomeComponents/DayComponent';
 import SplitComponent from './HomeComponents/SplitComponent';
-import { getSplitDescriptions, getSplits } from "../api/splits";
+import { addSplitPrivate, getSplitDescriptions, getSplits, removeSplit, splitNameExist } from "../api/splits";
 import { getActiveSplit, setActiveSplit } from "../api/profile";
-import { getWorkoutDay } from "../api/workout";
+import { getWorkoutDay, newWorkoutDay } from "../api/workout";
 import CompleteWorkoutModal from "./HomeComponents/CompletedWorkoutModal";
 import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
+import AddSplitComponent from "./HomeComponents/AddSplitComponent";
 
 
 const { height, width } = Dimensions.get('window');
@@ -102,6 +103,75 @@ const HomeScreen = ({ navigation, route }) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     };
 
+    const handleAddSplit = async () => {
+        // Implement the logic for adding a new split
+        try {
+            // Implement the logic for adding a new split
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            let newSplitName = "New Split";
+            let count = 1;
+            
+            // Check if the initial split name already exists
+            while (await splitNameExist(newSplitName)) {
+                newSplitName = `New Split (${count})`;
+                count++;
+            }
+            
+            // Add the new split with the modified name
+            await addSplitPrivate(newSplitName);
+            
+            // Fetch updated splits after adding the new split
+            const fetchedSplits = await getSplits();
+            if (fetchedSplits) {
+                setSplits(fetchedSplits);
+            }
+
+            // Fetch split descriptions
+            const fetchedSplitDescriptions = await getSplitDescriptions();
+            if(fetchedSplitDescriptions){
+                setSplitDescription(fetchedSplitDescriptions);  
+            }
+        } catch (error) {
+            console.error('Error adding new split:', error);
+        }
+        
+    };
+
+    const handleDeleteSplit = async (splitName) => {
+        // Implement the logic for deleting a split
+        try {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            if (activeSplit && activeSplit.splitName === splitName) {
+                console.log("Cannot delete the active split.");
+                alert("Cannot delete the active split. Please set another split as active before deleting.");
+                return;
+            }
+            await removeSplit(splitName);
+            
+            // Fetch updated splits after removing the split
+            const fetchedSplits = await getSplits();
+            if (fetchedSplits) {
+                setSplits(fetchedSplits);
+            }
+    
+            const fetchedSplitDescriptions = await getSplitDescriptions();
+            if (fetchedSplitDescriptions) {
+                setSplitDescription(fetchedSplitDescriptions);
+            }
+        } catch (error) {
+            console.error('Error deleting split:', error);
+        }
+    };
+    
+
+    const handleAddDay = () => {
+        // Implement the logic for adding a new day
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        const workoutDay = newWorkoutDay();
+        navigation.navigate('PreviewWorkout', { workoutDay, splitName: activeSplit.splitName });
+
+    };
+
     // display split cards (2 cards in a row)
     const renderSplitRows = () => {
         if (splits.length === 0) {
@@ -109,22 +179,35 @@ const HomeScreen = ({ navigation, route }) => {
         }
     
         const rows = [];
-        for (let i = 0; i < splits.splits.length; i += 2) {
+        // Ensure splits.splits always has an extra item for the '+' card
+        const splitsWithExtra = [...splits.splits, { splitName: '+' }];
+    
+        for (let i = 0; i < splitsWithExtra.length; i += 2) {
             rows.push(
                 <View key={i} style={styles.splitRow}>
-                    <SplitComponent
-                        name={splits.splits[i].splitName}
-                        subtext={splitDescription[i]}
-                        isActive={activeSplit && activeSplit.splitName === splits.splits[i].splitName}
-                        onPress={() => handleSetSplitActive(splits.splits[i])}
-                    />
-                    {i + 1 < splits.splits.length && (
+                    {splitsWithExtra[i].splitName === '+' ? (
+                        <AddSplitComponent onPress={handleAddSplit} />
+                    ) : (
                         <SplitComponent
-                            name={splits.splits[i+1].splitName}
-                            subtext={splitDescription[i + 1]}
-                            isActive={activeSplit && activeSplit.splitName === splits.splits[i+1].splitName}
-                            onPress={() => handleSetSplitActive(splits.splits[i+1])}
+                            name={splitsWithExtra[i].splitName}
+                            subtext={i < splits.splits.length ? splitDescription[i] : ''}
+                            isActive={activeSplit && activeSplit.splitName === splitsWithExtra[i].splitName}
+                            onPress={() => handleSetSplitActive(splits.splits[i])}
+                            onRemove={handleDeleteSplit}
                         />
+                    )}
+                    {i + 1 < splitsWithExtra.length && (
+                        splitsWithExtra[i + 1].splitName === '+' ? (
+                            <AddSplitComponent onPress={handleAddSplit} />
+                        ) : (
+                            <SplitComponent
+                                name={splitsWithExtra[i + 1].splitName}
+                                subtext={i < splits.splits.length ? splitDescription[i + 1] : ''}
+                                isActive={activeSplit && activeSplit.splitName === splitsWithExtra[i + 1].splitName}
+                                onPress={() => handleSetSplitActive(splits.splits[i + 1])}
+                                onRemove={handleDeleteSplit}
+                            />
+                        )
                     )}
                 </View>
             );
@@ -145,8 +228,23 @@ const HomeScreen = ({ navigation, route }) => {
                             <Carousel
                                 width={width}
                                 height={width*0.7}
-                                data={activeSplitDays.map(day => day.dayName)}
-                                renderItem={({ item }) => <DayComponent name={item} onPress={() => handleSelectDay(item, activeSplit)} />}
+                                data={[...activeSplitDays.map(day => day.dayName), 'Add Day']}
+                                renderItem={({ item }) => {
+                                    if (item === 'Add Day') {
+                                        return (
+                                            <TouchableOpacity style={styles.addDayCard} onPress={handleAddDay}>
+                                                <Text style={styles.addDayText}>+</Text>
+                                            </TouchableOpacity>
+                                        );
+                                    } else {
+                                        return (
+                                            <DayComponent
+                                                name={item}
+                                                onPress={() => handleSelectDay(item, activeSplit)}
+                                            />
+                                        );
+                                    }
+                                }}
                                 mode="parallax"
                                 modeConfig={{
                                     parallaxScrollingScale: 1,
@@ -198,7 +296,7 @@ const createStyles = (theme) => StyleSheet.create({
         paddingHorizontal: 23
     },
     scrollViewContent: {
-        paddingBottom: 110, 
+        paddingBottom: 120, 
         marginTop: 23, 
     },
     title: {
@@ -223,6 +321,21 @@ const createStyles = (theme) => StyleSheet.create({
         flexDirection: 'row',
         //justifyContent: 'space-between',
         marginBottom: 10,
+    },
+    addDayCard: {
+        width: width * 0.6,
+        height: width * 0.6,
+        backgroundColor: 'rgba(9, 20, 27, 0.85)',
+        borderRadius: 38,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 85,
+        marginVertical: 10,
+    },
+    addDayText: {
+        color: theme.textColor,
+        fontSize: getResponsiveFontSize(50),
+        fontWeight: '300',
     },
 });
 

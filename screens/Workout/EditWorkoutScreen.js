@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextI
 import { useTheme } from "../ThemeProvider";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import EditExerciseComponent from "./WorkoutComponents/EditExerciseComponent";
-import { deleteDayActive, deleteDayPrivate, editActiveSplitDayName, editDayName, updateActiveSplitExercises, updateExercises } from "../../api/splits";
+import { addDayNameActive, addDayNamePrivate, dayExist, deleteDayActive, deleteDayPrivate, editActiveSplitDayName, editDayName, updateActiveSplitExercises, updateExercises } from "../../api/splits";
 import * as Haptics from 'expo-haptics';
 
 const { width } = Dimensions.get('window');
@@ -19,16 +19,26 @@ const EditWorkoutScreen = ({ navigation, route }) => {
 
     const handleSaveWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        // update dayName for active split
-        await editActiveSplitDayName(oldDayName, updatedDayName);
-        // update dayName for private split
-        await editDayName(splitName, oldDayName, updatedDayName);
+        // checks if the day already exists
+        if(await dayExist(splitName, oldDayName)){
+            // update day
+            // update dayName for active split
+            await editActiveSplitDayName(oldDayName, updatedDayName);
+            // update dayName for private split
+            await editDayName(splitName, oldDayName, updatedDayName);
+            
+           
+        } else {
+            // create new day (add updatedDayName to split)
+            await addDayNameActive(updatedDayName);
+            await addDayNamePrivate(splitName, updatedDayName);
+        }
         
         // update exercise active split
         updateActiveSplitExercises(updatedDayName, exercises);
         // update exercises private splits
         updateExercises(splitName, updatedDayName, exercises);
-     
+
         // update workoutDay and pass to previous screen
         const newWorkoutDay = {
             dayName: updatedDayName,

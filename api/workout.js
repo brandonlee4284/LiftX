@@ -37,3 +37,18 @@ export const getWorkoutDay = async (dayName, split) => {
         throw error;
     }
 };
+
+export const newWorkoutDay = () => {
+    try {
+        const emptyDay = {
+            dayName: "New Day",
+            exercises: [
+               
+            ]
+        };
+        return emptyDay;
+    } catch (error) {
+        console.error('Error creating new workout day:', error);
+        throw error;
+    }
+};

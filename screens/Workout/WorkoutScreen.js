@@ -5,6 +5,8 @@ import WorkoutButtonComponent from "./WorkoutComponents/WorkoutButtonComponent";
 import { Octicons, Feather } from '@expo/vector-icons';
 import EndWorkoutModal from "./WorkoutComponents/EndWorkoutModal";
 import * as Haptics from 'expo-haptics';
+import ActiveExerciseComponent from "./WorkoutComponents/ActiveExerciseComponent";
+import UpNextActiveExerciseComponent from "./WorkoutComponents/UpNextExerciseComponent";
 
 
 const { height, width } = Dimensions.get('window');
@@ -106,12 +108,11 @@ const WorkoutScreen = ({ navigation, route }) => {
                 </View>
                 <View style={styles.exerciseContainer}>
                     {activeSet && (
-                        <View style={styles.exerciseRow}>
-                            <Text style={styles.exerciseName}>{activeSet.name}</Text>
-                            <Text style={styles.exerciseDetails}>
-                                {activeSet.reps} reps @ {activeSet.weight} lbs
-                            </Text>
-                        </View>
+                        <ActiveExerciseComponent
+                            exerciseName={activeSet.name}
+                            numReps={activeSet.reps}
+                            weight={activeSet.weight}
+                        />
                     )}
                 </View>
                 <View style={styles.upNextTextContainer}>
@@ -119,12 +120,13 @@ const WorkoutScreen = ({ navigation, route }) => {
                 </View>
                 <View style={styles.upNextContainer}>
                     {upNextSets.map((exercise, index) => (
-                        <View key={index} style={styles.exerciseRow}>
-                            <Text style={styles.exerciseNameUpNext}>{exercise.name}</Text>
-                            <Text style={styles.exerciseDetailsUpNext}>
-                                {exercise.reps} reps @ {exercise.weight} lbs
-                            </Text>
-                        </View>
+                        <UpNextActiveExerciseComponent
+                            key={index}
+                            exerciseName={exercise.name}
+                            numReps={exercise.reps}
+                            weight={exercise.weight}
+                        />
+                     
                     ))}
                 </View>
                 <View style={styles.bottomContainer}>
@@ -212,40 +214,17 @@ const createStyles = (theme) => StyleSheet.create({
         marginBottom: 60,
         paddingHorizontal: 35,
     },
-    exerciseRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingVertical: 10,
-        alignItems: 'center',
-    },
-    exerciseName: {
-        fontSize: getResponsiveFontSize(26),
-        color: theme.textColor,
-        fontWeight: 'bold',
-    },
-    exerciseDetails: {
-        fontSize: getResponsiveFontSize(16),
-        color: theme.textColor,
-    },
     upNextContainer: {
-        paddingHorizontal: 65,
+        paddingHorizontal: 55,
     },
     upNextTextContainer: {
         alignItems: 'center',
-        marginVertical: 20,
+        marginVertical: 10,
     },
     upNextText: {
         fontSize: getResponsiveFontSize(26),
         color: theme.textColor,
         marginBottom: 10,
-    },
-    exerciseNameUpNext: {
-        fontSize: getResponsiveFontSize(20),
-        color: theme.grayTextColor,
-    },
-    exerciseDetailsUpNext: {
-        fontSize: getResponsiveFontSize(16),
-        color: theme.grayTextColor,
     },
     buttonContainer: {
         alignItems: 'center',
@@ -289,7 +268,7 @@ const createStyles = (theme) => StyleSheet.create({
         width: '100%',
         backgroundColor: theme.backgroundColor,
         paddingBottom: 20,
-        paddingTop: 10,
+        marginTop: 10,
         alignItems: 'center',
     }
 

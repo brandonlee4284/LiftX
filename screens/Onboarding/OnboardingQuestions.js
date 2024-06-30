@@ -176,6 +176,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontWeight: 'bold',
         width: width * 0.25,
         marginRight: 10,
+        textAlign: 'center'
     },
     weightUnit: {
         fontSize: getResponsiveFontSize(30),

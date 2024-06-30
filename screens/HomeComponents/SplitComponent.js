@@ -2,15 +2,22 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { useTheme } from '../ThemeProvider';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const { width } = Dimensions.get('window');
 
-const SplitComponent = ({ name, subtext, isActive, onPress }) => {
+const SplitComponent = ({ name, subtext, isActive, onPress, onRemove }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme, isActive);
 
     return (
         <TouchableOpacity style={styles.splitCard} onPress={onPress}>
+            {!isActive && (
+                <TouchableOpacity style={styles.removeIcon} onPress={() => onRemove(name)}>
+                    <Ionicons name="remove-circle" size={getResponsiveFontSize(20)} color={theme.grayTextColor} />
+                </TouchableOpacity>
+            )}
+            
             <Text style={styles.splitCardText}>{name}</Text>
             <Text style={styles.splitCardSubText}>{subtext}-day split</Text>
         </TouchableOpacity>
@@ -32,7 +39,7 @@ const createStyles = (theme, isActive) => StyleSheet.create({
         alignItems: 'center',
         marginRight: 10,
         borderWidth: isActive ? 1.5 : 0,
-        borderColor: isActive ? theme.textColor : 'transparent',
+        borderColor: isActive ? theme.primaryColor : 'transparent',
     },
     splitCardText: {
         color: theme.textColor,
@@ -45,6 +52,11 @@ const createStyles = (theme, isActive) => StyleSheet.create({
         fontWeight: '300',
         marginTop: 5
     },
+    removeIcon: {
+        position: 'absolute',
+        top: 15, // Adjust as needed
+        right: 15, // Adjust as needed
+    }
 });
 
 export default SplitComponent;

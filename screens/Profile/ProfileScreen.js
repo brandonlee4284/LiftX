@@ -170,7 +170,7 @@ const createStyles = (theme) => StyleSheet.create({
         paddingHorizontal: 23
     },
     scrollViewContent: {
-        paddingBottom: 110, 
+        paddingBottom: 120, 
         marginTop: 23, 
     },
     userInfoContainer: {
