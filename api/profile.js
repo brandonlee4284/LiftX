@@ -36,6 +36,18 @@ export const getDisplayName = async () => {
     return publicUserData.displayName;
 };  
 
+// Get the currently logged in users bio
+export const getBio = async () => {
+    let publicUserData = await fetchPublicUserData();
+    return publicUserData.bio;
+};  
+
+// Get the currently logged in users pfp
+export const getProfilePicture = async () => {
+    let publicUserData = await fetchPublicUserData();
+    return publicUserData.profilePicture;
+};  
+
 // get the active split of user
 export const getActiveSplit = async () => {
     let publicUserData = await fetchPublicUserData();
@@ -102,4 +114,9 @@ export const setUserGender = async (newGender) => {
     let privateUserData = await fetchPrivateUserData();
     privateUserData.gender = newGender;
     await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'data'), '@PrivateUserData', privateUserData);
+}; 
+
+// updates user profile
+export const updateProfile = async (newPFP, newDisplayName, newUsername) => {
+    
 }; 

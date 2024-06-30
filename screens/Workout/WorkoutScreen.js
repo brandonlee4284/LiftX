@@ -208,11 +208,13 @@ const createStyles = (theme) => StyleSheet.create({
     notesContainer: {
         alignItems: 'center',
         marginBottom: 15,
+        paddingHorizontal: 70,
     },
     notes: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(16),
         opacity: 0.7,
+        textAlign: 'center'
     },
     exerciseContainer: {
         marginBottom: 60,

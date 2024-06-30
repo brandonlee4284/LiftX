@@ -70,10 +70,6 @@ const ProfileScreen = ({ navigation, route }) => {
         ));
     };
 
-    const handleSnap = () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    };
-
     const handleSelectDay = async (dayName, activeSplit) => { 
         try {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -124,7 +120,6 @@ const ProfileScreen = ({ navigation, route }) => {
                                 snapEnabled={true}
                                 pagingEnabled={true}
                                 loop={false}
-                                onSnapToItem={handleSnap}
                             />
                         ) : (
                             <Text style={styles.noWorkoutsText}>
