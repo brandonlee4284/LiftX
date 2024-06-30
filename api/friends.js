@@ -1,4 +1,4 @@
-import { getDoc, doc, setDoc } from 'firebase/firestore';
+import { getDoc, doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // Update the user's friends data in Firestore and local storage
@@ -154,5 +154,24 @@ const denyFriendRequest = async (senderUid) => {
         console.log('Friend request denied');
     } catch (error) {
         console.error('Error denying friend request:', error);
+    }
+};
+
+export const getUserUIDByUsername = async (username) => {
+    try {
+        const usersRef = collection(FIRESTORE_DB, 'users');
+        const q = query(usersRef, where('username', '==', username));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            // Assuming usernames are unique, we'll take the first matching document
+            const userDoc = querySnapshot.docs[0];
+            return userDoc.id; // The document ID is the UID
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching user UID: ', error);
+        throw error;
     }
 };
