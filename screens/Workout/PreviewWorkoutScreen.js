@@ -101,7 +101,7 @@ const getResponsiveFontSize = (baseFontSize) => {
 const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 58,
+        paddingTop: 40,
         backgroundColor: theme.backgroundColor,
     },
     scrollContainer: {

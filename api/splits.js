@@ -316,12 +316,29 @@ export const removeSplit = async (splitName) => {
 };
 
 
-// edits split name private
 export const editSplitNamePrivate = async (oldSplitName, newSplitName) => {
-    
-};
+    try {
+        // Get all splits
+        let currentSplits = await getSplits();
+        currentSplits = currentSplits.splits;
 
-// edits split name active 
-export const editSplitNameActive = async (oldSplitName, newSplitName) => {
-    
+        // Find the split with the oldSplitName
+        const splitIndex = currentSplits.findIndex(split => split.splitName === oldSplitName);
+
+        if (splitIndex === -1) {
+            console.error(`Split with name "${oldSplitName}" not found.`);
+            return;
+        }
+
+        // Update the split's name
+        currentSplits[splitIndex].splitName = newSplitName;
+
+        // Save the updated splits
+        const updatedSplits = { splits: currentSplits };
+        await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', updatedSplits);
+
+        console.log(`Split name updated from "${oldSplitName}" to "${newSplitName}" successfully.`);
+    } catch (error) {
+        console.error('Failed to edit split name:', error);
+    }
 };

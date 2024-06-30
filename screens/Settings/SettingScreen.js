@@ -47,7 +47,7 @@ const createStyles = (theme) => StyleSheet.create({
         backgroundColor: theme.backgroundColor,
     },
     headerContainer: {
-        marginTop: 78,
+        marginTop: 60,
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',

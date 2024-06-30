@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeProvider";
+import * as Haptics from 'expo-haptics';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const { height, width } = Dimensions.get('window');
 
@@ -10,12 +12,18 @@ const AccountComponent = () => {
     const [showScores, setShowScores] = useState(false);
     const { theme } = useTheme();
     const styles = createStyles(theme);
+    const navigation = useNavigation();
+
+    const handleProfileEdit = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        navigation.navigate("ProfileEdit")
+    };
 
     return (
         <View>
             <Text style={styles.header}>Account</Text>
             <View style={styles.container}>
-                <TouchableOpacity style={styles.row}>
+                <TouchableOpacity style={styles.row} onPress={handleProfileEdit}>
                     <MaterialCommunityIcons name="account-edit-outline" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Edit Profile</Text>
                 </TouchableOpacity>
@@ -70,7 +78,8 @@ const createStyles = (theme) => StyleSheet.create({
         marginLeft: 10
     },
     container: {
-        padding: 26,
+        paddingHorizontal: 26,
+        paddingVertical: 16,
         backgroundColor: theme.backdropColor,
         borderRadius: 12,
     },

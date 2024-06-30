@@ -1,6 +1,7 @@
 import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { dayExist } from './splits';
 
 export const createPrivateWorkout = async (data) => {
     const user = FIREBASE_AUTH.currentUser;
@@ -38,13 +39,20 @@ export const getWorkoutDay = async (dayName, split) => {
     }
 };
 
-export const newWorkoutDay = () => {
+export const newWorkoutDay = async (splitName) => {
     try {
+        let dayName = "Day 1";
+        let counter = 1;
+
+        // Check if the dayName exists and increment the counter until a unique name is found
+        while (await dayExist(splitName, dayName)) {
+            counter++;
+            dayName = `Day ${counter}`;
+        }
+
         const emptyDay = {
-            dayName: "New Day",
-            exercises: [
-               
-            ]
+            dayName,
+            exercises: []
         };
         return emptyDay;
     } catch (error) {

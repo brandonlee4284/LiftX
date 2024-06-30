@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback  } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Modal, ScrollView } from 'react-native';
 import { Header } from "./Components/Header";
 import { useTheme } from "./ThemeProvider";
@@ -13,7 +13,14 @@ import CompleteWorkoutModal from "./HomeComponents/CompletedWorkoutModal";
 import { useFocusEffect } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import AddSplitComponent from "./HomeComponents/AddSplitComponent";
+import DeleteWorkoutModal from "./Workout/WorkoutComponents/DeleteWorkoutModal";
+import WarningModal from "./Components/WarningModal";
 
+/*
+To-Do list
+- Change split name (done)
+- catch duplicate split names (done)
+*/
 
 const { height, width } = Dimensions.get('window');
 
@@ -23,6 +30,10 @@ const HomeScreen = ({ navigation, route }) => {
     const [splitDescription, setSplitDescription] = useState([]);
     const [activeSplit, setActiveSplitState] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
+    // modal that pops up if a user is trying to delete a split
+    const [showEndWorkoutModal, setShowEndWorkoutModal] = useState(false);
+    const [showSameSplitWarningModal, setShowSameSplitNameWarningModal] = useState(false);
+    const [deleteSplitName, setDeleteSplitName] = useState("");
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
@@ -86,6 +97,7 @@ const HomeScreen = ({ navigation, route }) => {
         setActiveSplitState(split);
         await setActiveSplit(split); // set the active split in backend
         
+        
     };
 
     // handles selecting a day to preview a workout
@@ -108,12 +120,12 @@ const HomeScreen = ({ navigation, route }) => {
         try {
             // Implement the logic for adding a new split
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-            let newSplitName = "New Split";
+            let newSplitName = "Split 1";
             let count = 1;
             
             // Check if the initial split name already exists
             while (await splitNameExist(newSplitName)) {
-                newSplitName = `New Split (${count})`;
+                newSplitName = `Split ${count}`;
                 count++;
             }
             
@@ -148,6 +160,7 @@ const HomeScreen = ({ navigation, route }) => {
             }
             await removeSplit(splitName);
             
+            
             // Fetch updated splits after removing the split
             const fetchedSplits = await getSplits();
             if (fetchedSplits) {
@@ -158,18 +171,26 @@ const HomeScreen = ({ navigation, route }) => {
             if (fetchedSplitDescriptions) {
                 setSplitDescription(fetchedSplitDescriptions);
             }
+            setShowEndWorkoutModal(false);
         } catch (error) {
             console.error('Error deleting split:', error);
         }
     };
     
 
-    const handleAddDay = () => {
+    const handleAddDay = async () => {
         // Implement the logic for adding a new day
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        const workoutDay = newWorkoutDay();
+        const workoutDay = await newWorkoutDay(activeSplit.splitName);
         navigation.navigate('PreviewWorkout', { workoutDay, splitName: activeSplit.splitName });
 
+    };
+
+    const handleSplitNameChange = async () => {
+        const fetchedSplits = await getSplits();
+        if(fetchedSplits){
+            setSplits(fetchedSplits);
+        }
     };
 
     // display split cards (2 cards in a row)
@@ -193,7 +214,9 @@ const HomeScreen = ({ navigation, route }) => {
                             subtext={i < splits.splits.length ? splitDescription[i] : ''}
                             isActive={activeSplit && activeSplit.splitName === splitsWithExtra[i].splitName}
                             onPress={() => handleSetSplitActive(splits.splits[i])}
-                            onRemove={handleDeleteSplit}
+                            onRemove={deleteWarning}
+                            onNameChange={handleSplitNameChange}
+                            showSameNameModal={sameSplitNameWarning}
                         />
                     )}
                     {i + 1 < splitsWithExtra.length && (
@@ -205,7 +228,9 @@ const HomeScreen = ({ navigation, route }) => {
                                 subtext={i < splits.splits.length ? splitDescription[i + 1] : ''}
                                 isActive={activeSplit && activeSplit.splitName === splitsWithExtra[i + 1].splitName}
                                 onPress={() => handleSetSplitActive(splits.splits[i + 1])}
-                                onRemove={handleDeleteSplit}
+                                onRemove={deleteWarning}
+                                onNameChange={handleSplitNameChange}
+                                showSameNameModal={sameSplitNameWarning}
                             />
                         )
                     )}
@@ -214,6 +239,28 @@ const HomeScreen = ({ navigation, route }) => {
         }
         return rows;
     };
+
+    const handleCancel = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowEndWorkoutModal(false);
+    };
+
+    const deleteWarning = (splitName) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setDeleteSplitName(splitName);
+        setShowEndWorkoutModal(true);
+    }
+
+    const sameSplitNameWarning = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowSameSplitNameWarningModal(true);
+    }
+
+    const handleClose = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowSameSplitNameWarningModal(false);
+    }
+
   
     return (
         <View style={styles.container}>
@@ -268,6 +315,18 @@ const HomeScreen = ({ navigation, route }) => {
                 </View>
            </ScrollView>
             <CompleteWorkoutModal visible={modalVisible} onClose={handleCloseModal} dayName={dayName} time={formatTime(stopwatch)} setsCompleted={setsCompleted} />
+            <DeleteWorkoutModal
+                visible={showEndWorkoutModal}
+                cancel={handleCancel}
+                del={() => handleDeleteSplit(deleteSplitName)}
+                workoutName={deleteSplitName}
+            />
+            <WarningModal
+                visible={showSameSplitWarningModal}
+                msg={"Split Already Exists or Invalid"}
+                subMsg={"Try a different name"}
+                close={handleClose}
+            />
         </View>
     );
 };
@@ -288,7 +347,7 @@ const formatTime = (seconds) => {
 const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        paddingTop: 58,
+        paddingTop: 40,
         backgroundColor: theme.backgroundColor,
     },
     body: {

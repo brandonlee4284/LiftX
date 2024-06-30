@@ -47,7 +47,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     cardText: {
         color: theme.textColor,
-        fontSize: getResponsiveFontSize(18),
+        fontSize: getResponsiveFontSize(14),
         fontWeight: 'bold',
     },
     cardImage: {
@@ -58,8 +58,8 @@ const createStyles = (theme) => StyleSheet.create({
     },
     cardTextContainer: {
         position: 'absolute',
-        top: 20,
-        left: 20,
+        top: width*0.058,
+        left: width*0.046,
     },
 });
 

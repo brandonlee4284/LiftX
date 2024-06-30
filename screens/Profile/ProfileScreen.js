@@ -78,7 +78,7 @@ const ProfileScreen = ({ navigation, route }) => {
         try {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
             const workoutDay = await getWorkoutDay(dayName, activeSplit);
-            navigation.navigate('PreviewProfileWorkout', { workoutDay, splitName: activeSplit.splitName });
+            navigation.navigate('PreviewProfileWorkout', { workoutDay, splitName: activeSplit.splitName, user: publicUserData.displayName });
         } catch (error) {
             console.error(error);
         }
@@ -108,24 +108,29 @@ const ProfileScreen = ({ navigation, route }) => {
                         <MaterialIcons name="save-alt" size={getResponsiveFontSize(25)} color={theme.textColor} />
                     </View>
                     <View style={styles.carouselContainer}>
-                        <Carousel
-                            width={width}
-                            height={width*0.5}
-                            data={activeSplitDays.map(day => day.dayName)}
-                            //renderItem={({ item }) => <DayCard name={item} />}
-                            renderItem={({ item }) => <DayCard name={item} onPress={() => handleSelectDay(item, activeSplit)} />}
-                            mode="parallax"
-                            modeConfig={{
-                                parallaxScrollingScale: 1,
-                                parallaxScrollingOffset: getResponsiveFontSize(250),
-                                parallaxAdjacentItemScale: 0.65,
-                                parallaxAdjacentItemOpacity: 0.8,
-                            }}
-                            snapEnabled={true}
-                            pagingEnabled={true}
-                            loop={false}
-                            onSnapToItem={handleSnap}
-                        />
+                        {activeSplitDays.length > 0 ? (
+                            <Carousel
+                                width={width}
+                                height={width * 0.5}
+                                data={activeSplitDays.map(day => day.dayName)}
+                                renderItem={({ item }) => <DayCard name={item} onPress={() => handleSelectDay(item, activeSplit)} />}
+                                mode="parallax"
+                                modeConfig={{
+                                    parallaxScrollingScale: 1,
+                                    parallaxScrollingOffset: getResponsiveFontSize(250),
+                                    parallaxAdjacentItemScale: 0.65,
+                                    parallaxAdjacentItemOpacity: 0.8,
+                                }}
+                                snapEnabled={true}
+                                pagingEnabled={true}
+                                loop={false}
+                                onSnapToItem={handleSnap}
+                            />
+                        ) : (
+                            <Text style={styles.noWorkoutsText}>
+                                {publicUserData.displayName} has no workouts in their active split
+                            </Text>
+                        )}
                     </View>
                     {/* Scores */}
                     <View style={styles.scoresContainer}>
@@ -152,7 +157,7 @@ const getResponsiveFontSize = (baseFontSize) => {
 const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        paddingTop: 58,
+        paddingTop: 40,
         backgroundColor: theme.backgroundColor
     },
     backgroundImage: {
@@ -205,7 +210,14 @@ const createStyles = (theme) => StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-    }
+    },
+    noWorkoutsText: {
+        color: theme.grayTextColor,
+        fontSize: getResponsiveFontSize(18),
+        textAlign: 'center',
+        paddingHorizontal: 40,
+        marginVertical: 90,
+    },
    
 });
 

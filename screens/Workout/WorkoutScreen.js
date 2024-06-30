@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, Dimensions, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import WorkoutButtonComponent from "./WorkoutComponents/WorkoutButtonComponent";
-import { Octicons, Feather } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import EndWorkoutModal from "./WorkoutComponents/EndWorkoutModal";
 import * as Haptics from 'expo-haptics';
 import ActiveExerciseComponent from "./WorkoutComponents/ActiveExerciseComponent";
@@ -131,15 +131,19 @@ const WorkoutScreen = ({ navigation, route }) => {
                 </View>
                 <View style={styles.bottomContainer}>
                     <View style={styles.feedbackButtonContainer}>
+                        {/* 
                         <TouchableOpacity style={styles.smallButton} onPress={handleFeedback}>
-                            <Octicons name="thumbsdown" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
+                            <MaterialCommunityIcons name="reload" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
                         </TouchableOpacity>
+                        */}
                         <TouchableOpacity style={styles.largeButton} onPress={handleFeedback}>
                             <Feather name="skip-forward" size={getResponsiveFontSize(30)} color={theme.backgroundColor} />
                         </TouchableOpacity>
+                        {/*
                         <TouchableOpacity style={styles.smallButton} onPress={handleFeedback}>
-                            <Octicons name="thumbsup" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
+                            <Feather name="award" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
                         </TouchableOpacity>
+                        */}
                     </View>
                     <View style={styles.buttonContainer}>
                         <WorkoutButtonComponent text="End Workout" onPress={handleEndWorkout} />

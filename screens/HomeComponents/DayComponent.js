@@ -37,7 +37,8 @@ const createStyles = (theme) => StyleSheet.create({
         borderRadius: 38,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: "#E1EDF4",
+        shadowColor: 'rgba(225, 237, 244, 1)',
+        //shadowColor: "#E1EDF4",
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.1,
         shadowRadius: 15,
@@ -58,8 +59,8 @@ const createStyles = (theme) => StyleSheet.create({
     },
     cardTextContainer: {
         position: 'absolute',
-        top: 40,
-        left: 40,
+        top: width*0.093,
+        left: width*0.069,
     },
 });
 

@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 const { width } = Dimensions.get('window');
 
 const PreviewProfileWorkoutScreen = ({ navigation, route }) => {
-    const { workoutDay, splitName, updatedWorkoutDay } = route.params;
+    const { workoutDay, splitName, updatedWorkoutDay, user } = route.params;
     const { theme } = useTheme();
     const styles = createStyles(theme); 
     const currentWorkoutDay = updatedWorkoutDay ? updatedWorkoutDay : workoutDay;
@@ -29,16 +29,20 @@ const PreviewProfileWorkoutScreen = ({ navigation, route }) => {
                 </View>
                 <View style={styles.contentContainer}>
                     <View style={styles.exerciseContainer}>
-                        {currentWorkoutDay.exercises.map((exercise, index) => (
-                            <ExerciseComponent
-                                key={index}
-                                exerciseName={exercise.name}
-                                numSets={exercise.sets}
-                                numReps={exercise.reps}
-                                weight={exercise.weight}
-                                notes={exercise.notes}
-                            />
-                        ))}
+                        {currentWorkoutDay.exercises.length > 0 ? (
+                            currentWorkoutDay.exercises.map((exercise, index) => (
+                                <ExerciseComponent
+                                    key={index}
+                                    exerciseName={exercise.name}
+                                    numSets={exercise.sets}
+                                    numReps={exercise.reps}
+                                    weight={exercise.weight}
+                                    notes={exercise.notes}
+                                />
+                            ))
+                        ) : (
+                            <Text style={styles.noExerciseText}>{user} has not added any exercises in this workout yet</Text>
+                        )}
                     </View>
                 </View>
             </ScrollView>
@@ -54,7 +58,7 @@ const getResponsiveFontSize = (baseFontSize) => {
 const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 58,
+        paddingTop: 40,
         backgroundColor: theme.backgroundColor,
     },
     scrollContainer: {
@@ -85,6 +89,14 @@ const createStyles = (theme) => StyleSheet.create({
     exerciseContainer: {
         marginTop: 40,
         paddingHorizontal: 20,
+    },
+    noExerciseText: {
+        color: theme.grayTextColor,
+        fontSize: getResponsiveFontSize(18),
+        fontWeight: '400',
+        textAlign: 'center',
+        marginTop: 20,
+        paddingHorizontal: 20
     },
 });
 

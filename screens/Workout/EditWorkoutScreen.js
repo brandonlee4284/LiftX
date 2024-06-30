@@ -1,10 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import EditExerciseComponent from "./WorkoutComponents/EditExerciseComponent";
 import { addDayNameActive, addDayNamePrivate, dayExist, deleteDayActive, deleteDayPrivate, editActiveSplitDayName, editDayName, updateActiveSplitExercises, updateExercises } from "../../api/splits";
 import * as Haptics from 'expo-haptics';
+import DeleteWorkoutModal from "./WorkoutComponents/DeleteWorkoutModal";
+import WarningModal from "../Components/WarningModal";
+
+/*
+To-Do list
+- catch duplicate day names (done)
+- catch empty exercises (done)
+*/
 
 const { width } = Dimensions.get('window');
 
@@ -16,18 +24,37 @@ const EditWorkoutScreen = ({ navigation, route }) => {
     const [oldDayName, setOldDayName] = useState(workoutDay.dayName);
     const [updatedDayName, setUpdatedDayName] = useState(workoutDay.dayName);
     const [exercises, setExercises] = useState(workoutDay.exercises);
+    // modal that pops up if a user is trying to delete a workout
+    const [showEndWorkoutModal, setShowEndWorkoutModal] = useState(false);
+    const [showWarningModal, setShowWarningModal] = useState(false);
+    const [showIncompleteExerciseWarningModal, setShowIncompleteExerciseWarningModal] = useState(false);
 
     const handleSaveWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        // check if there are any empty exercises inputs (name, sets, reps, weight)
+        for (let exercise of exercises) {
+            if (
+                !exercise.name || 
+                exercise.sets === '' || 
+                exercise.reps === '' || 
+                exercise.weight === ''
+            ) {
+                handleIncompleteExerciseWarningModal();
+                return;
+            }
+        }
+
         // checks if the day already exists
-        if(await dayExist(splitName, oldDayName)){
+        if(await dayExist(splitName, updatedDayName) && updatedDayName != oldDayName) {
+            // do not allow duplicate daynames
+            handleWarningModal();
+            return;
+        } else if(await dayExist(splitName, oldDayName)){
             // update day
             // update dayName for active split
             await editActiveSplitDayName(oldDayName, updatedDayName);
             // update dayName for private split
             await editDayName(splitName, oldDayName, updatedDayName);
-            
-           
         } else {
             // create new day (add updatedDayName to split)
             await addDayNameActive(updatedDayName);
@@ -49,9 +76,12 @@ const EditWorkoutScreen = ({ navigation, route }) => {
 
     const handleDeleteWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        await deleteDayActive(updatedDayName);
-        await deleteDayPrivate(splitName, updatedDayName);
+        if(await dayExist(splitName, oldDayName)){
+            await deleteDayActive(updatedDayName);
+            await deleteDayPrivate(splitName, updatedDayName);
+        }
         navigation.navigate("Home");
+        setShowEndWorkoutModal(false);
     };
 
     const goBack = () => {
@@ -76,8 +106,38 @@ const EditWorkoutScreen = ({ navigation, route }) => {
         setExercises(updatedExercises);
     };
 
+    const handleCancel = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowEndWorkoutModal(false);
+    };
+
+    const deleteWarning = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowEndWorkoutModal(true);
+    }
+
+    const handleClose = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowWarningModal(false);
+        setShowIncompleteExerciseWarningModal(false);
+    };
+
+    const handleWarningModal = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowWarningModal(true);
+    }
+
+    const handleIncompleteExerciseWarningModal = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowIncompleteExerciseWarningModal(true);
+    }
+
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // Adjust this offset as needed
+        >
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.headerContainer}>
                     <Ionicons name="arrow-back" onPress={() => goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
@@ -86,6 +146,7 @@ const EditWorkoutScreen = ({ navigation, route }) => {
                         keyboardType="default"
                         value={updatedDayName}
                         onChangeText={setUpdatedDayName}
+                        maxLength={8}
                     />
                     <Feather name="check-square" onPress={handleSaveWorkout} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.saveIcon}/>
                 </View>
@@ -115,13 +176,31 @@ const EditWorkoutScreen = ({ navigation, route }) => {
                     </View>
                     
                     <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={styles.button} onPress={handleDeleteWorkout}>
+                        <TouchableOpacity style={styles.button} onPress={deleteWarning}>
                             <Text style={styles.buttonText}>Delete Workout</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </ScrollView>
-        </View>
+            <DeleteWorkoutModal
+                visible={showEndWorkoutModal}
+                cancel={handleCancel}
+                del={handleDeleteWorkout}
+                workoutName={updatedDayName}
+            />
+            <WarningModal
+                visible={showWarningModal}
+                msg={`${updatedDayName} already exists in this split`}
+                subMsg={"Please choose another name."}
+                close={handleClose}
+            />
+            <WarningModal
+                visible={showIncompleteExerciseWarningModal}
+                msg={"Incomplete exercises"}
+                subMsg={"Make sure each exercise has a name, set count, rep count, and weight."}
+                close={handleClose}
+            />
+        </KeyboardAvoidingView>
     );
 };
 
@@ -133,7 +212,7 @@ const getResponsiveFontSize = (baseFontSize) => {
 const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 58,
+        paddingTop: 40,
         backgroundColor: theme.backgroundColor,
     },
     scrollContainer: {
