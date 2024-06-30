@@ -37,32 +37,32 @@ export const createNewUser = async (gender = "male", weight = 135, name, usernam
           bio: "This is a sample bio.", // Placeholder bio
           profilePicture: null, // Placeholder image
           numFriends: 0,
-          displayScore: { overall: 1.0, chest: 1.0, back: 1.0, legs: 1.0, shoulders: 1.0, arms: 1.0, core: 1.0 },
+          displayScore: { overall: 1.0, chest: 1.0, back: 1.0, legs: 1.0, shoulders: 1.0, arms: 1.0 },
           activeSplit: {
             splitName: "PPL",
             days: [
               {
                 dayName: "push",
                 exercises: [
-                  { name: "bench", sets: 3, reps: 12, weight: 135 },
-                  { name: "overhead press", sets: 3, reps: 12, weight: 95 },
-                  { name: "tricep pushdown", sets: 3, reps: 12, weight: 50 },
+                  { name: "bench", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
+                  { name: "overhead press", sets: 3, reps: 12, weight: 95, notes: "on cables" },
+                  { name: "tricep pushdown", sets: 3, reps: 12, weight: 50, notes: "on cables" },
                 ]
               },
               {
                 dayName: "pull",
                 exercises: [
-                  { name: "deadlift", sets: 3, reps: 12, weight: 135 },
-                  { name: "pullups", sets: 3, reps: 12, weight: 0 },
-                  { name: "rows", sets: 3, reps: 12, weight: 95 },
+                  { name: "deadlift", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
+                  { name: "pullups", sets: 3, reps: 12, weight: 0, notes: "on bar" },
+                  { name: "rows", sets: 3, reps: 12, weight: 95, notes: "use barbells" },
                 ]
               },
               {
                 dayName: "legs",
                 exercises: [
-                  { name: "squats", sets: 3, reps: 12, weight: 135 },
-                  { name: "leg press", sets: 3, reps: 12, weight: 180 },
-                  { name: "leg curls", sets: 3, reps: 12, weight: 50 },
+                  { name: "squats", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
+                  { name: "leg press", sets: 3, reps: 12, weight: 180, notes: "on machine"  },
+                  { name: "leg curls", sets: 3, reps: 12, weight: 50, notes: "on machine"  },
                 ]
               }
             ],
@@ -87,25 +87,25 @@ export const createNewUser = async (gender = "male", weight = 135, name, usernam
                 {
                   dayName: "push",
                   exercises: [
-                    { name: "bench", sets: 3, reps: 12, weight: 135 },
-                    { name: "overhead press", sets: 3, reps: 12, weight: 95 },
-                    { name: "tricep pushdown", sets: 3, reps: 12, weight: 50 },
+                    { name: "bench", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
+                    { name: "overhead press", sets: 3, reps: 12, weight: 95, notes: "on cables" },
+                    { name: "tricep pushdown", sets: 3, reps: 12, weight: 50, notes: "on cables" },
                   ]
                 },
                 {
                   dayName: "pull",
                   exercises: [
-                    { name: "deadlift", sets: 3, reps: 12, weight: 135 },
-                    { name: "pullups", sets: 3, reps: 12, weight: 0 },
-                    { name: "rows", sets: 3, reps: 12, weight: 95 },
+                    { name: "deadlift", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
+                    { name: "pullups", sets: 3, reps: 12, weight: 0, notes: "on bar" },
+                    { name: "rows", sets: 3, reps: 12, weight: 95, notes: "using barbell" },
                   ]
                 },
                 {
                   dayName: "legs",
                   exercises: [
-                    { name: "squats", sets: 3, reps: 12, weight: 135 },
-                    { name: "leg press", sets: 3, reps: 12, weight: 180 },
-                    { name: "leg curls", sets: 3, reps: 12, weight: 50 },
+                    { name: "squats", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
+                    { name: "leg press", sets: 3, reps: 12, weight: 180, notes: "on machine" },
+                    { name: "leg curls", sets: 3, reps: 12, weight: 50, notes: "on machine" },
                   ]
                 }
               ],
@@ -117,17 +117,17 @@ export const createNewUser = async (gender = "male", weight = 135, name, usernam
                 {
                   dayName: "upper",
                   exercises: [
-                    { name: "bench", sets: 3, reps: 12, weight: 135 },
-                    { name: "overhead press", sets: 3, reps: 12, weight: 95 },
-                    { name: "tricep pushdown", sets: 3, reps: 12, weight: 50 },
+                    { name: "bench", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
+                    { name: "overhead press", sets: 3, reps: 12, weight: 95, notes: "on cable" },
+                    { name: "tricep pushdown", sets: 3, reps: 12, weight: 50, notes: "on cable" },
                   ]
                 },
                 {
                   dayName: "lower",
                   exercises: [
-                    { name: "deadlift", sets: 3, reps: 12, weight: 135 },
-                    { name: "pullups", sets: 3, reps: 12, weight: 0 },
-                    { name: "rows", sets: 3, reps: 12, weight: 95 },
+                    { name: "deadlift", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
+                    { name: "pullups", sets: 3, reps: 12, weight: 0, notes: "on bar" },
+                    { name: "rows", sets: 3, reps: 12, weight: 95, notes: "using barbell" },
                   ]
                 },
               ],
@@ -158,7 +158,10 @@ export const createNewUser = async (gender = "male", weight = 135, name, usernam
               createPrivateFriends(initPrivateFriendsData).then(
                 createPrivateWorkout(initPrivateWorkoutData).then(() => {
                   console.log('User data saved successfully');
-                  signInWithEmailAndPassword(auth, email, password);
+                  signInWithEmailAndPassword(auth, email, password)
+                  .then(() => {
+                    navigation.navigate('Onboarding');
+                  });
                 }
                 )
               )

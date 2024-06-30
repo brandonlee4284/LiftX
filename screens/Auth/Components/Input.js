@@ -33,6 +33,14 @@ export function Input(props) {
           secureTextEntry: false,
           autoCapitalize: 'none'
         };
+      case 'displayName':
+        return {
+          placeholder: 'Display Name',
+          onChangeText: props.onChangeText,
+          value: props.value,
+          secureTextEntry: false,
+          autoCapitalize: 'none'
+        };
       default:
         return {};
     }

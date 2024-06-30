@@ -47,7 +47,7 @@ const createStyles = (theme) => StyleSheet.create({
         backgroundColor: theme.backgroundColor,
     },
     headerContainer: {
-        marginTop: 78,
+        marginTop: 60,
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
@@ -59,7 +59,8 @@ const createStyles = (theme) => StyleSheet.create({
     header: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(26),
-        fontWeight: '800'
+        fontWeight: '800',
+        left: -0.0347*width
     },
     body: {
         alignItems: "center",

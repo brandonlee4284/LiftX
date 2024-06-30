@@ -1,24 +1,26 @@
 // DayComponent.js
 import React from 'react';
-import { View, Text, ImageBackground, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, ImageBackground, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 
 const { width } = Dimensions.get('window');
 
-const DayComponent = ({ name }) => {
+const DayComponent = ({ name, onPress }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
     return (
-        <ImageBackground 
-            source={require(`../../assets/day_layout.png`)} 
-            style={styles.card}
-            imageStyle={styles.cardImage}
-        >
-            <View style={styles.cardTextContainer}>
-                <Text style={styles.cardText}>{name}</Text>
-            </View>
-        </ImageBackground>
+        <TouchableOpacity onPress={onPress}>
+            <ImageBackground 
+                source={require(`../../assets/day_layout.png`)} 
+                style={styles.card}
+                imageStyle={styles.cardImage}
+            >
+                <View style={styles.cardTextContainer}>
+                    <Text style={styles.cardText}>{name}</Text>
+                </View>
+            </ImageBackground>
+        </TouchableOpacity>
     );
 };
 
@@ -35,7 +37,8 @@ const createStyles = (theme) => StyleSheet.create({
         borderRadius: 38,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: "#E1EDF4",
+        shadowColor: 'rgba(225, 237, 244, 1)',
+        //shadowColor: "#E1EDF4",
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.1,
         shadowRadius: 15,
@@ -56,8 +59,8 @@ const createStyles = (theme) => StyleSheet.create({
     },
     cardTextContainer: {
         position: 'absolute',
-        top: 40,
-        left: 40,
+        top: width*0.093,
+        left: width*0.069,
     },
 });
 

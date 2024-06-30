@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
-import { fetchPublicUserData } from "../../api/userData";
 import Fontisto from 'react-native-vector-icons/Fontisto';
-
+import { getDisplayName, setUserWeight, setUserGender } from '../../api/profile';
+import * as Haptics from 'expo-haptics';
 
 
 const { height, width } = Dimensions.get('window');
@@ -13,28 +13,36 @@ const OnboardingQuestionsScreen = () => {
     const navigation = useNavigation();
     const { theme } = useTheme();
     const styles = createStyles(theme);
-    const [publicUserData, setPublicUserData] = useState({});
+    const [displayName, setDisplayName] = useState('');
    // gender and weight var
    const [gender, setGender] = useState(null);
    const [weight, setWeight] = useState('');
 
-    // get user data
-    useEffect(() => {
+   useEffect(() => {
         async function fetchData() {
-            const data = await fetchPublicUserData();
+            const data = await getDisplayName();
             if (data) {
-                setPublicUserData(data);
+                setDisplayName(data);
             }
         }
+
         fetchData();
     }, []);
 
     const toggleGender = (selectedGender) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setGender(selectedGender);
     };
 
-    const handleHome = () => {
-        navigation.navigate('Home');
+    const handleHome = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        try {
+            await setUserGender(gender);
+            await setUserWeight(weight);
+            navigation.navigate('Home');
+        } catch (error) {
+            console.error('Error in handleHome: ', error);
+        }
     };
     
 
@@ -43,7 +51,7 @@ const OnboardingQuestionsScreen = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.container}>
                 <View style={styles.circle} />
-                <Text style={styles.greetingText}>Hello {publicUserData.username}!</Text>
+                <Text style={styles.greetingText}>Hello {displayName}!</Text>
                 <Text style={styles.subText}>Tell us more about you..</Text>
                 <View style={styles.body}>
                     <Text style={styles.title}>Select your gender</Text>
@@ -168,6 +176,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontWeight: 'bold',
         width: width * 0.25,
         marginRight: 10,
+        textAlign: 'center'
     },
     weightUnit: {
         fontSize: getResponsiveFontSize(30),

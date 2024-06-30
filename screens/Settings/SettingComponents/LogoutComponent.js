@@ -37,11 +37,11 @@ const createStyles = (theme) => StyleSheet.create({
         marginLeft: 10
     },
     container: {
-        paddingVertical: 10,
+        paddingVertical: 7,
         paddingHorizontal: 16,
         backgroundColor: theme.backdropColor,
         borderRadius: 12,
-        width: width* 0.84
+        width: width* 0.88
         
     },
     row: {

@@ -1,45 +1,238 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, Dimensions, ImageBackground, ScrollView } from 'react-native';
-import { fetchPublicUserData } from '../api/userData';
+import React, { useState, useEffect, useCallback  } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Modal, ScrollView } from 'react-native';
 import { Header } from "./Components/Header";
 import { useTheme } from "./ThemeProvider";
 import NavBar from "./Components/Navbar";
 import Carousel from 'react-native-reanimated-carousel';
 import DayComponent from './HomeComponents/DayComponent';
 import SplitComponent from './HomeComponents/SplitComponent';
+import { addSplitPrivate, getSplitDescriptions, getSplits, removeSplit, splitNameExist } from "../api/splits";
+import { getActiveSplit, setActiveSplit } from "../api/profile";
+import { getWorkoutDay, newWorkoutDay } from "../api/workout";
+import CompleteWorkoutModal from "./HomeComponents/CompletedWorkoutModal";
+import { useFocusEffect } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
+import AddSplitComponent from "./HomeComponents/AddSplitComponent";
+import DeleteWorkoutModal from "./Workout/WorkoutComponents/DeleteWorkoutModal";
+import WarningModal from "./Components/WarningModal";
 
+/*
+To-Do list
+- Change split name (done)
+- catch duplicate split names (done)
+*/
 
 const { height, width } = Dimensions.get('window');
 
-const HomeScreen = ({ navigation }) => {
-    const [publicUserData, setPublicUserData] = useState({});
+const HomeScreen = ({ navigation, route }) => {
+    const [splits, setSplits] = useState([]);
+    const [activeSplitDays, setActiveSplitDays] = useState([]);
+    const [splitDescription, setSplitDescription] = useState([]);
+    const [activeSplit, setActiveSplitState] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    // modal that pops up if a user is trying to delete a split
+    const [showEndWorkoutModal, setShowEndWorkoutModal] = useState(false);
+    const [showSameSplitWarningModal, setShowSameSplitNameWarningModal] = useState(false);
+    const [deleteSplitName, setDeleteSplitName] = useState("");
     const { theme } = useTheme();
     const styles = createStyles(theme);
-    const days = ['Push', 'Pull', 'Legs']; // placeholder days
-    const other_splits = ['PPL x Arnold', 'Upper/Lower', 'Full Body', 'Full Body', 'Full Body', 'Full Body', 'Full Body', 'Full Body', 'Full Body']; // placeholder splits
-    const other_splits_subtext = ['6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split', '6-day split']; // placeholder subtext
 
+    const {
+        completedWorkout = false,
+        stopwatch = '00:00:00',
+        setsCompleted = 0,
+        dayName = 'Unknown'
+    } = route.params || {};
 
     useEffect(() => {
-        async function fetchData() {
-            const data = await fetchPublicUserData();
-            if (data) {
-                setPublicUserData(data);
-            }
+        if (route.params?.completedWorkout) {
+            setModalVisible(true);
+            navigation.setParams({ completedWorkout: false });
         }
-        fetchData();
-    }, []);
+    }, [route.params?.completedWorkout]);
 
-   
+  
+
+    useFocusEffect(
+        useCallback(() => {
+            const fetchData = async () => {
+                try {
+                    // Fetch splits
+                    const fetchedSplits = await getSplits();
+                    if(fetchedSplits){
+                        setSplits(fetchedSplits);
+                    }
+                    
+                    // Fetch active split day
+                    const fetchedActiveSplit = await getActiveSplit();
+                    if(fetchedActiveSplit){
+                        setActiveSplitDays(fetchedActiveSplit.days);
+                        setActiveSplitState(fetchedActiveSplit);   
+                    }
+                                
+                    // Fetch split descriptions
+                    const fetchedSplitDescriptions = await getSplitDescriptions();
+                    if(fetchedSplitDescriptions){
+                        setSplitDescription(fetchedSplitDescriptions);  
+                    }
+                    
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            };
+
+            fetchData();
+        }, [])
+    );
+
+    // resets modal visibility to false
+    const handleCloseModal = () => {
+        setModalVisible(false);
+    };
+
+    // handles setting a split active
+    const handleSetSplitActive = async (split) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setActiveSplitDays(split.days);
+        setActiveSplitState(split);
+        await setActiveSplit(split); // set the active split in backend
+        
+        
+    };
+
+    // handles selecting a day to preview a workout
+    const handleSelectDay = async (dayName, activeSplit) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        try {
+            const workoutDay = await getWorkoutDay(dayName, activeSplit);
+            navigation.navigate('PreviewWorkout', { workoutDay, splitName: activeSplit.splitName });
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleSnapToItem = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    };
+
+    const handleAddSplit = async () => {
+        // Implement the logic for adding a new split
+        try {
+            // Implement the logic for adding a new split
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            let newSplitName = "Split 1";
+            let count = 1;
+            
+            // Check if the initial split name already exists
+            while (await splitNameExist(newSplitName)) {
+                newSplitName = `Split ${count}`;
+                count++;
+            }
+            
+            // Add the new split with the modified name
+            await addSplitPrivate(newSplitName);
+            
+            // Fetch updated splits after adding the new split
+            const fetchedSplits = await getSplits();
+            if (fetchedSplits) {
+                setSplits(fetchedSplits);
+            }
+
+            // Fetch split descriptions
+            const fetchedSplitDescriptions = await getSplitDescriptions();
+            if(fetchedSplitDescriptions){
+                setSplitDescription(fetchedSplitDescriptions);  
+            }
+        } catch (error) {
+            console.error('Error adding new split:', error);
+        }
+        
+    };
+
+    const handleDeleteSplit = async (splitName) => {
+        // Implement the logic for deleting a split
+        try {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            if (activeSplit && activeSplit.splitName === splitName) {
+                console.log("Cannot delete the active split.");
+                alert("Cannot delete the active split. Please set another split as active before deleting.");
+                return;
+            }
+            await removeSplit(splitName);
+            
+            
+            // Fetch updated splits after removing the split
+            const fetchedSplits = await getSplits();
+            if (fetchedSplits) {
+                setSplits(fetchedSplits);
+            }
+    
+            const fetchedSplitDescriptions = await getSplitDescriptions();
+            if (fetchedSplitDescriptions) {
+                setSplitDescription(fetchedSplitDescriptions);
+            }
+            setShowEndWorkoutModal(false);
+        } catch (error) {
+            console.error('Error deleting split:', error);
+        }
+    };
+    
+
+    const handleAddDay = async () => {
+        // Implement the logic for adding a new day
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        const workoutDay = await newWorkoutDay(activeSplit.splitName);
+        navigation.navigate('PreviewWorkout', { workoutDay, splitName: activeSplit.splitName });
+
+    };
+
+    const handleSplitNameChange = async () => {
+        const fetchedSplits = await getSplits();
+        if(fetchedSplits){
+            setSplits(fetchedSplits);
+        }
+    };
+
     // display split cards (2 cards in a row)
     const renderSplitRows = () => {
+        if (splits.length === 0) {
+            return [];
+        }
+    
         const rows = [];
-        for (let i = 0; i < other_splits.length; i += 2) {
+        // Ensure splits.splits always has an extra item for the '+' card
+        const splitsWithExtra = [...splits.splits, { splitName: '+' }];
+    
+        for (let i = 0; i < splitsWithExtra.length; i += 2) {
             rows.push(
                 <View key={i} style={styles.splitRow}>
-                    <SplitComponent name={other_splits[i]} subtext={other_splits_subtext[i]} />
-                    {i + 1 < other_splits.length && (
-                        <SplitComponent name={other_splits[i + 1]} subtext={other_splits_subtext[i + 1]} />
+                    {splitsWithExtra[i].splitName === '+' ? (
+                        <AddSplitComponent onPress={handleAddSplit} />
+                    ) : (
+                        <SplitComponent
+                            name={splitsWithExtra[i].splitName}
+                            subtext={i < splits.splits.length ? splitDescription[i] : ''}
+                            isActive={activeSplit && activeSplit.splitName === splitsWithExtra[i].splitName}
+                            onPress={() => handleSetSplitActive(splits.splits[i])}
+                            onRemove={deleteWarning}
+                            onNameChange={handleSplitNameChange}
+                            showSameNameModal={sameSplitNameWarning}
+                        />
+                    )}
+                    {i + 1 < splitsWithExtra.length && (
+                        splitsWithExtra[i + 1].splitName === '+' ? (
+                            <AddSplitComponent onPress={handleAddSplit} />
+                        ) : (
+                            <SplitComponent
+                                name={splitsWithExtra[i + 1].splitName}
+                                subtext={i < splits.splits.length ? splitDescription[i + 1] : ''}
+                                isActive={activeSplit && activeSplit.splitName === splitsWithExtra[i + 1].splitName}
+                                onPress={() => handleSetSplitActive(splits.splits[i + 1])}
+                                onRemove={deleteWarning}
+                                onNameChange={handleSplitNameChange}
+                                showSameNameModal={sameSplitNameWarning}
+                            />
+                        )
                     )}
                 </View>
             );
@@ -47,6 +240,28 @@ const HomeScreen = ({ navigation }) => {
         return rows;
     };
 
+    const handleCancel = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowEndWorkoutModal(false);
+    };
+
+    const deleteWarning = (splitName) => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setDeleteSplitName(splitName);
+        setShowEndWorkoutModal(true);
+    }
+
+    const sameSplitNameWarning = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowSameSplitNameWarningModal(true);
+    }
+
+    const handleClose = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setShowSameSplitNameWarningModal(false);
+    }
+
+  
     return (
         <View style={styles.container}>
             <NavBar activeRoute="HomeNav" />
@@ -60,8 +275,23 @@ const HomeScreen = ({ navigation }) => {
                             <Carousel
                                 width={width}
                                 height={width*0.7}
-                                data={days}
-                                renderItem={({ item }) => <DayComponent name={item} />}
+                                data={[...activeSplitDays.map(day => day.dayName), 'Add Day']}
+                                renderItem={({ item }) => {
+                                    if (item === 'Add Day') {
+                                        return (
+                                            <TouchableOpacity style={styles.addDayCard} onPress={handleAddDay}>
+                                                <Text style={styles.addDayText}>+</Text>
+                                            </TouchableOpacity>
+                                        );
+                                    } else {
+                                        return (
+                                            <DayComponent
+                                                name={item}
+                                                onPress={() => handleSelectDay(item, activeSplit)}
+                                            />
+                                        );
+                                    }
+                                }}
                                 mode="parallax"
                                 modeConfig={{
                                     parallaxScrollingScale: 1,
@@ -71,18 +301,32 @@ const HomeScreen = ({ navigation }) => {
                                 }}
                                 snapEnabled={true}
                                 pagingEnabled={true}
-                                loop={false} 
+                                loop={false}
+                                onSnapToItem={handleSnapToItem}
                             />
                         </View>
                         {/* Other Splits */}
                         <View style={styles.otherSplitContainer}>
-                            <Text style={styles.title}>Other Splits</Text>
+                            <Text style={styles.title}>Select a Split</Text>
                             <View style={styles.splitGrid}>
                                 {renderSplitRows()}
                             </View>
                         </View>
                 </View>
            </ScrollView>
+            <CompleteWorkoutModal visible={modalVisible} onClose={handleCloseModal} dayName={dayName} time={formatTime(stopwatch)} setsCompleted={setsCompleted} />
+            <DeleteWorkoutModal
+                visible={showEndWorkoutModal}
+                cancel={handleCancel}
+                del={() => handleDeleteSplit(deleteSplitName)}
+                workoutName={deleteSplitName}
+            />
+            <WarningModal
+                visible={showSameSplitWarningModal}
+                msg={"Split Already Exists or Invalid"}
+                subMsg={"Try a different name"}
+                close={handleClose}
+            />
         </View>
     );
 };
@@ -91,12 +335,19 @@ const getResponsiveFontSize = (baseFontSize) => {
     const scale = width / 425; 
     return Math.round(baseFontSize * scale);
 };
+const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    
+    return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
+};
 
 
 const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        paddingTop: 78,
+        paddingTop: 40,
         backgroundColor: theme.backgroundColor,
     },
     body: {
@@ -104,8 +355,8 @@ const createStyles = (theme) => StyleSheet.create({
         paddingHorizontal: 23
     },
     scrollViewContent: {
-        paddingBottom: 110, 
-        marginTop: 3, 
+        paddingBottom: 120, 
+        marginTop: 23, 
     },
     title: {
         color: theme.textColor,
@@ -130,7 +381,21 @@ const createStyles = (theme) => StyleSheet.create({
         //justifyContent: 'space-between',
         marginBottom: 10,
     },
-
+    addDayCard: {
+        width: width * 0.6,
+        height: width * 0.6,
+        backgroundColor: 'rgba(9, 20, 27, 0.85)',
+        borderRadius: 38,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal: 85,
+        marginVertical: 10,
+    },
+    addDayText: {
+        color: theme.textColor,
+        fontSize: getResponsiveFontSize(50),
+        fontWeight: '300',
+    },
 });
 
 export default HomeScreen;

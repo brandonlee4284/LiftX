@@ -23,17 +23,12 @@ const getResponsiveFontSize = (baseFontSize) => {
 
 const createStyles = (theme) => StyleSheet.create({      
     card: {
-        width: width*0.4,
-        height: width*0.4,
+        width: width*0.39,
+        height: width*0.39,
         borderRadius: 40,
         backgroundColor: theme.backdropColor,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: "#E1EDF4",
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 5,
         margin: 8.7
     },
     category: {
@@ -52,7 +47,8 @@ const createStyles = (theme) => StyleSheet.create({
     stat: {
         fontSize: getResponsiveFontSize(14),
         textAlign: 'center',
-        color: theme.textColor
+        color: theme.textColor,
+        paddingHorizontal: 10
     },
 });
 
