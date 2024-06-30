@@ -11,17 +11,19 @@ export const loginUser = async (email, password, setErrorMessage) => {
   const auth = FIREBASE_AUTH;
   signInWithEmailAndPassword(auth, email, password).then(async () => {
     // Delete user data from local storage
-    const keys = ['@PublicUser', '@PrivateUserData', '@PrivateUserSplits', '@PrivateUserFriends', '@PrivateUserWorkout']
     try {
-      await AsyncStorage.multiRemove(keys)
+      AsyncStorage.getAllKeys()
+        .then(keys => AsyncStorage.multiRemove(keys))
+        .then(() => alert('Logout Successful!'));
     } catch (e) {
       console.log('Error removing user data from local storage: ', e);
     }
+
   }
   ).catch(error => setErrorMessage(error.message));
 };
 
-export const createNewUser = async (gender="male", weight=135, name, username, email, password, setErrorMessage, navigation) => {
+export const createNewUser = async (gender = "male", weight = 135, name, username, email, password, setErrorMessage, navigation) => {
   const auth = FIREBASE_AUTH;
   createUserWithEmailAndPassword(auth, email, password)
     .then(() => {
@@ -177,8 +179,8 @@ export const logoutUser = async () => {
   // Delete user data from local storage
   try {
     AsyncStorage.getAllKeys()
-    .then(keys => AsyncStorage.multiRemove(keys))
-    .then(() => alert('Logout Successful!'));
+      .then(keys => AsyncStorage.multiRemove(keys))
+      .then(() => alert('Logout Successful!'));
   } catch (e) {
     console.log('Error removing user data from local storage: ', e);
   }
