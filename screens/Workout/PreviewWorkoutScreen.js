@@ -67,20 +67,26 @@ const PreviewWorkoutScreen = ({ navigation, route }) => {
                 </View>
                 <View style={styles.contentContainer}>
                     <View style={styles.exerciseContainer}>
-                        {currentWorkoutDay.exercises.map((exercise, index) => (
-                            <ExerciseComponent
-                                key={index}
-                                exerciseName={exercise.name}
-                                numSets={exercise.sets}
-                                numReps={exercise.reps}
-                                weight={exercise.weight}
-                                notes={exercise.notes}
-                            />
-                        ))}
+                        {currentWorkoutDay.exercises.length > 0 ? (
+                            currentWorkoutDay.exercises.map((exercise, index) => (
+                                <ExerciseComponent
+                                    key={index}
+                                    exerciseName={exercise.name}
+                                    numSets={exercise.sets}
+                                    numReps={exercise.reps}
+                                    weight={exercise.weight}
+                                    notes={exercise.notes}
+                                />
+                            ))
+                        ) : (
+                            <Text style={styles.noExerciseText}>Add an exercise to start a workout</Text>
+                        )}
                     </View>
-                    <View style={styles.buttonContainer}>
-                        <WorkoutButtonComponent text="Start Workout" onPress={() => handleWorkout(currentWorkoutDay)}/>
-                    </View>
+                    {currentWorkoutDay.exercises.length > 0 && (
+                        <View style={styles.buttonContainer}>
+                            <WorkoutButtonComponent text="Start Workout" onPress={() => handleWorkout(currentWorkoutDay)}/>
+                        </View>
+                    )}
                 </View>
             </ScrollView>
         </View>
@@ -134,6 +140,13 @@ const createStyles = (theme) => StyleSheet.create({
     buttonContainer: {
         alignItems: 'center',
         marginBottom: 20, // Adds space between button and bottom of ScrollView
+    },
+    noExerciseText: {
+        color: theme.grayTextColor,
+        fontSize: getResponsiveFontSize(18),
+        fontWeight: '400',
+        textAlign: 'center',
+        marginTop: 20,
     },
 });
 
