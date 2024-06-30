@@ -1,5 +1,6 @@
 import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
+import { setAsyncCloud } from './helperFuncs';
 
 // Update the user's friends data in Firestore and local storage
 export const createPrivateFriends = async () => {
@@ -21,6 +22,9 @@ export const createPrivateFriends = async () => {
             await setDoc(fReqReceivedDocRef, initPrivateFriendsData);
             await setDoc(fReqSentDocRef, initPrivateFriendsData);
             await setDoc(fListDocRef, initFriendListData);
+
+            setAsyncCloud(fReqSentDocRef, 'fReqSent', initPrivateFriendsData);
+            setAsyncCloud(fListDocRef, 'fList', initFriendListData);
         } catch (e) {
             console.error('Error initializing private friends: ', e);
         }
