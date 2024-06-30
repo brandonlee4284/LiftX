@@ -1,21 +1,28 @@
 import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 // Update the user's friends data in Firestore and local storage
-export const createPrivateFriends = async (data) => {
+export const createPrivateFriends = async () => {
     const user = FIREBASE_AUTH.currentUser;
     if (user) {
-        const privateFriendsDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'public', 'friends');
-        try {
-            await AsyncStorage.setItem('@PublicUserFriends', JSON.stringify(data));
-        } catch (e) {
-            console.log('Error saving public friends to local storage: ', e)
-        }
+        const fReqReceivedDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends', 'fReqReceived');
+        const fReqSentDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends', 'fReqSent');
+        const fListDocRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends', 'fList');
+
+        const initPrivateFriendsData = {
+            friendRequests: []
+        };
+
+        const initFriendListData = {
+            friends: []
+        };
 
         try {
-            await setDoc(privateFriendsDocRef, data);
-        } catch (error) {
-            console.error('Error updating public friends: ', error);
+            await setDoc(fReqReceivedDocRef, initPrivateFriendsData);
+            await setDoc(fReqSentDocRef, initPrivateFriendsData);
+            await setDoc(fListDocRef, initFriendListData);
+        } catch (e) {
+            console.error('Error initializing private friends: ', e);
         }
     }
 };
