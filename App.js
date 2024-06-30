@@ -26,6 +26,7 @@ import OnboardingScreen from './screens/Onboarding/Onboarding';
 import OnboardingQuestionsScreen from './screens/Onboarding/OnboardingQuestions';
 import NavBar from './screens/Components/Navbar';
 import EditWorkoutScreen from './screens/Workout/EditWorkoutScreen';
+import AddFriendScreen from './screens/AddFriendScreen';
 
 AppRegistry.registerComponent('main', () => MainApp);
 
@@ -83,6 +84,15 @@ function SettingStack() {
   );
 }
 
+function AddFriendStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="AddFriends" component={AddFriendScreen} />
+    </Stack.Navigator>
+  );
+}
+
+
 function OnboardingStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -136,6 +146,7 @@ function RootNavigator() {
           <RootStack.Screen name="ProfileNav" component={ProfileStack} options={{ animationEnabled: false }}/>
 
           <RootStack.Screen name="Setting" component={SettingStack} />
+          <RootStack.Screen name="AddFriend" component={AddFriendStack} />
           <RootStack.Screen name="Onboarding" component={OnboardingStack} />
           <RootStack.Screen name="OnboardingQuestions" component={OnboardingQuestionsStack} />
           {/* ADD DMS????? <-?, FRIENDS TAB */}

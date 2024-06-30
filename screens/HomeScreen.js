@@ -111,10 +111,6 @@ const HomeScreen = ({ navigation, route }) => {
         }
     };
 
-    const handleSnapToItem = () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    };
-
     const handleAddSplit = async () => {
         // Implement the logic for adding a new split
         try {
@@ -302,7 +298,6 @@ const HomeScreen = ({ navigation, route }) => {
                                 snapEnabled={true}
                                 pagingEnabled={true}
                                 loop={false}
-                                onSnapToItem={handleSnapToItem}
                             />
                         </View>
                         {/* Other Splits */}

@@ -30,7 +30,7 @@ export function Header(props) {
 
     const handleAddProfile = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        navigation.navigate('Onboarding');
+        navigation.navigate('AddFriend');
     };
 
     const handleSettings = () => {

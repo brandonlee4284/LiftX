@@ -4,7 +4,6 @@ import { View, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-nati
 import { useNavigation  } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
 import Ionicons from '@expo/vector-icons/Ionicons';
-import * as Haptics from 'expo-haptics';
 
 const { height, width } = Dimensions.get('window');
 
@@ -15,7 +14,6 @@ export function NavBar({ activeRoute }) {
     
 
     const navigateToScreen = (screenName) => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         navigation.navigate(screenName);
     };
     

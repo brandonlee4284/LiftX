@@ -53,7 +53,6 @@ const PreviewWorkoutScreen = ({ navigation, route }) => {
     };
 
     const goBack = () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         navigation.goBack();
     };
 

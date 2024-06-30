@@ -79,6 +79,7 @@ const EditExerciseComponent = ({ exerciseName, numSets, numReps, weight, notes, 
                     onChangeText={handleSetsChange}
                     placeholder={"0"}
                     placeholderTextColor={theme.grayTextColor}
+                    maxLength={4}
                 />
                 <Text style={styles.setsReps}> sets, </Text>
                 <TextInput 
@@ -88,6 +89,7 @@ const EditExerciseComponent = ({ exerciseName, numSets, numReps, weight, notes, 
                     onChangeText={handleRepsChange}
                     placeholder={"0"}
                     placeholderTextColor={theme.grayTextColor}
+                    maxLength={4}
                 />
                 <Text style={styles.setsReps}> reps @ </Text>
                 <TextInput 
@@ -97,6 +99,7 @@ const EditExerciseComponent = ({ exerciseName, numSets, numReps, weight, notes, 
                     onChangeText={handleWeightChange}
                     placeholder={"0"}
                     placeholderTextColor={theme.grayTextColor}
+                    maxLength={4}
                 />
                 <Text style={styles.setsReps}>lb</Text>
             </View>
