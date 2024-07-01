@@ -4,7 +4,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from "./ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
 import { getUserUIDByUsername } from '../api/friends';
-
+import { sendFriendRequest } from '../api/friends';
 
 const { height, width } = Dimensions.get('window');
 
@@ -19,8 +19,7 @@ const AddFriendScreen = () => {
         setLoading(true);
         try {
             const uid = await getUserUIDByUsername(username);
-            console.log(username);
-            console.log(uid);
+            sendFriendRequest(uid, username);
             if (uid) {
                 alert('User found!');
             } else {
