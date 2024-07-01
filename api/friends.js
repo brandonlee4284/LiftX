@@ -1,6 +1,7 @@
-import { getDoc, doc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { getDoc, doc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import { setAsyncCloud } from './helperFuncs';
+import { getUsername } from './profile';
 
 // Update the user's friends data in Firestore and local storage
 export const createPrivateFriends = async () => {
@@ -31,7 +32,7 @@ export const createPrivateFriends = async () => {
     }
 };
 
-const synchronizeFriends = async () => {
+export const synchronizeFriends = async () => {
     const user = FIREBASE_AUTH.currentUser;
     if (!user) return;
 
@@ -87,12 +88,12 @@ const synchronizeFriends = async () => {
     }
 };
 
-const sendFriendRequest = async (receiverUid, receiverUsername) => {
+export const sendFriendRequest = async (receiverUid, receiverUsername) => {
     const user = FIREBASE_AUTH.currentUser;
     if (!user) return;
 
     const senderUid = user.uid;
-    const senderUsername = user.displayName; // Assuming username is stored in displayName
+    const senderUsername = await getUsername()
     const timestamp = new Date().toISOString();
 
     const senderRef = doc(FIRESTORE_DB, 'users', senderUid, 'friends', 'fReqSent');
@@ -121,7 +122,7 @@ const sendFriendRequest = async (receiverUid, receiverUsername) => {
     }
 };
 
-const acceptFriendRequest = async (senderUid, senderUsername) => {
+export const acceptFriendRequest = async (senderUid, senderUsername) => {
     const user = FIREBASE_AUTH.currentUser;
     if (!user) return;
 
@@ -135,7 +136,7 @@ const acceptFriendRequest = async (senderUid, senderUsername) => {
     await synchronizeFriends(senderUid);
 };
 
-const denyFriendRequest = async (senderUid) => {
+export const denyFriendRequest = async (senderUid) => {
     const user = FIREBASE_AUTH.currentUser;
     if (!user) return;
 
