@@ -132,10 +132,8 @@ const EditWorkoutScreen = ({ navigation, route }) => {
     }
 
     return (
-        <KeyboardAvoidingView
+        <View
             style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // Adjust this offset as needed
         >
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.headerContainer}>
@@ -199,7 +197,7 @@ const EditWorkoutScreen = ({ navigation, route }) => {
                 subMsg={"Make sure each exercise has a name, set count, rep count, and weight."}
                 close={handleClose}
             />
-        </KeyboardAvoidingView>
+        </View>
     );
 };
 
