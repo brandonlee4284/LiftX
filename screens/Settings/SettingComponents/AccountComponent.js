@@ -4,6 +4,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeProvider";
 import * as Haptics from 'expo-haptics';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { clearAsyncStorage } from '../../../api/helperFuncs';
 
 const { height, width } = Dimensions.get('window');
 
@@ -18,6 +19,11 @@ const AccountComponent = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         navigation.navigate("ProfileEdit")
     };
+
+    const handleSync = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        clearAsyncStorage();
+    }
 
     return (
         <View>
@@ -58,6 +64,10 @@ const AccountComponent = () => {
                 <TouchableOpacity style={styles.row}>
                     <MaterialCommunityIcons name="book" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Workout History</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.row} onPress = {handleSync}>
+                    <MaterialCommunityIcons name="account-sync" size={getResponsiveFontSize(24)} style={styles.icon} />
+                    <Text style={styles.text}>Sync Data</Text>
                 </TouchableOpacity>
             </View>
         </View>

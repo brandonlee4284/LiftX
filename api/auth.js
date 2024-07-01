@@ -5,20 +5,14 @@ import { createPublicUser, createPrivateUser } from './profile';
 import { createPrivateSplits } from './splits';
 import { createPrivateFriends } from './friends';
 import { createPrivateWorkout } from './workout';
+import { clearAsyncStorage } from "./helperFuncs";
 
 // Login user with email and password
 export const loginUser = async (email, password, setErrorMessage) => {
   const auth = FIREBASE_AUTH;
   signInWithEmailAndPassword(auth, email, password).then(async () => {
     // Delete user data from local storage
-    try {
-      AsyncStorage.getAllKeys()
-        .then(keys => AsyncStorage.multiRemove(keys))
-        .then(() => alert('Logout Successful!'));
-    } catch (e) {
-      console.log('Error removing user data from local storage: ', e);
-    }
-
+    await clearAsyncStorage();
   }
   ).catch(error => setErrorMessage(error.message));
 };
@@ -177,12 +171,6 @@ export const createNewUser = async (gender = "male", weight = 135, name, usernam
 
 export const logoutUser = async () => {
   // Delete user data from local storage
-  try {
-    AsyncStorage.getAllKeys()
-      .then(keys => AsyncStorage.multiRemove(keys))
-      .then(() => alert('Logout Successful!'));
-  } catch (e) {
-    console.log('Error removing user data from local storage: ', e);
-  }
+  await clearAsyncStorage();
   FIREBASE_AUTH.signOut();
 }

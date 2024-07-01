@@ -47,3 +47,12 @@ export const setAsyncCloud = async (docRef, asyncTag, data) => {
         console.log("Error updating ", asyncTag, "; Error: ", e)
     }
 }
+
+export const clearAsyncStorage = () => {
+    try {
+        AsyncStorage.getAllKeys()
+            .then(keys => AsyncStorage.multiRemove(keys))
+    } catch (e) {
+        console.log('Error removing user data from local storage: ', e);
+    }
+}
