@@ -1,7 +1,7 @@
-import { getDoc, doc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion } from 'firebase/firestore';
+import { getDoc, doc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import { setAsyncCloud } from './helperFuncs';
-import { getUsername } from './profile';
+import { getDisplayName, getProfilePicture, getUsername } from './profile';
 
 // Update the user's friends data in Firestore and local storage
 export const createPrivateFriends = async () => {
@@ -64,6 +64,7 @@ export const synchronizeFriends = async () => {
                 const newFriend = {
                     uid: sentRequest.receiverUid,
                     username: sentRequest.receiverUsername
+                    
                 };
 
                 // Update the friend list
@@ -93,7 +94,9 @@ export const sendFriendRequest = async (receiverUid, receiverUsername) => {
     if (!user) return;
 
     const senderUid = user.uid;
-    const senderUsername = await getUsername()
+    const senderUsername = await getUsername();
+    const senderPFP = await getProfilePicture();
+    const senderDisplayName = await getDisplayName();
     const timestamp = new Date().toISOString();
 
     const senderRef = doc(FIRESTORE_DB, 'users', senderUid, 'friends', 'fReqSent');
@@ -104,7 +107,10 @@ export const sendFriendRequest = async (receiverUid, receiverUsername) => {
         receiverUid,
         senderUsername,
         receiverUsername,
+        senderPFP,
+        senderDisplayName,
         timestamp
+        
     };
 
     try {
@@ -127,9 +133,9 @@ export const acceptFriendRequest = async (senderUid, senderUsername) => {
     if (!user) return;
 
     const receiverUid = user.uid;
-    const receiverUsername = user.displayName; // Assuming username is stored in displayName
+    const receiverUsername = await getUsername(); 
 
-    await sendFriendRequest(senderUid, receiverUsername);
+    await sendFriendRequest(senderUid, senderUsername);
 
     // Sync the friend lists
     await synchronizeFriends(receiverUid);
@@ -155,14 +161,14 @@ export const denyFriendRequest = async (senderUid) => {
             return;
         }
 
-        await updateDoc(senderRef, {
-            friendRequests: arrayRemove(friendRequest)
-        });
-
-        await updateDoc(receiverRef, {
-            friendRequests: arrayRemove(friendRequest)
-        });
-
+        try {
+            await updateDoc(receiverRef, {
+                friendRequests: arrayRemove(friendRequest)
+            });
+        } catch (error) {
+            console.log('cannot write recieverRef');
+        }
+        
         console.log('Friend request denied');
     } catch (error) {
         console.error('Error denying friend request:', error);
@@ -184,6 +190,52 @@ export const getUserUIDByUsername = async (username) => {
         }
     } catch (error) {
         console.error('Error fetching user UID: ', error);
+        throw error;
+    }
+};
+
+// gets fReqRecieved of the user
+export const getFriendRequests = async () => {
+    try {
+        const user = FIREBASE_AUTH.currentUser;
+        if (!user) throw new Error('User is not authenticated.');
+
+        // Reference to the fReqReceived document in the friends sub-collection
+        const friendRequestsRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends', 'fReqReceived');
+        const friendRequestsDoc = await getDoc(friendRequestsRef);
+
+        if (friendRequestsDoc.exists()) {
+            // Retrieve and return the friendRequests array
+            return friendRequestsDoc.data().friendRequests || [];
+        } else {
+            // If the document does not exist, return an empty array
+            return [];
+        }
+    } catch (error) {
+        console.error('Error fetching friend requests: ', error);
+        throw error;
+    }
+};
+
+// gets friends of the user logged in
+export const getFriendList = async () => {
+    try {
+        const user = FIREBASE_AUTH.currentUser;
+        if (!user) throw new Error('User is not authenticated.');
+
+        // Reference to the fReqReceived document in the friends sub-collection
+        const friendListRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends', 'fList');
+        const friendListDoc = await getDoc(friendListRef);
+
+        if (friendListDoc.exists()) {
+            // Retrieve and return the friendRequests array
+            return friendListDoc.data().friends || [];
+        } else {
+            // If the document does not exist, return an empty array
+            return [];
+        }
+    } catch (error) {
+        console.error('Error fetching friend list: ', error);
         throw error;
     }
 };

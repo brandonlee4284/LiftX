@@ -2,23 +2,26 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import { useTheme } from '../../ThemeProvider';
 import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const { width, height } = Dimensions.get('window');
 
-const UserContainer = ({ rank, username, profilePicture, score }) => {
+const UserContainer = ({ rank, username, profilePicture, score, onPress }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.rank}>{rank}</Text>
-            {profilePicture ? (
-                <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
-            ) : (
-                <Ionicons name="person-circle" size={getResponsiveFontSize(40)} color={theme.textColor} style={styles.defaultIcon} />
-            )}
-            <Text style={styles.username}>{username}</Text>
-            <Text style={styles.score}>{score}</Text>
+        <View>
+            <TouchableOpacity onPress={onPress} style={styles.container}>
+                <Text style={styles.rank}>{rank}</Text>
+                {profilePicture ? (
+                    <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+                ) : (
+                    <Ionicons name="person-circle" size={getResponsiveFontSize(40)} color={theme.textColor} style={styles.defaultIcon} />
+                )}
+                <Text style={styles.username}>{username}</Text>
+                <Text style={styles.score}>{score}</Text>
+            </TouchableOpacity>
         </View>
     );
 };
