@@ -24,6 +24,7 @@
     "expo-camera": "~15.0.9",
     "expo-constants": "~16.0.1",
     "expo-dev-client": "~4.0.14",
+    "expo-haptics": "~13.0.1",
     "expo-image-picker": "~15.0.5",
     "expo-linear-gradient": "~13.0.2",
     "expo-media-library": "~16.0.3",
@@ -51,8 +52,7 @@
     "react-native-vision-camera": "^4.0.5",
     "react-native-web": "~0.19.10",
     "react-navigation-stack": "^2.10.4",
-    "typescript": "~5.3.3",
-    "expo-haptics": "~13.0.1"
+    "typescript": "~5.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
