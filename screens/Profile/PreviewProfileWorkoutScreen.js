@@ -16,7 +16,6 @@ const PreviewProfileWorkoutScreen = ({ navigation, route }) => {
     const currentWorkoutDay = updatedWorkoutDay ? updatedWorkoutDay : workoutDay;
     
     const goBack = () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         navigation.goBack();
     };
 

@@ -54,6 +54,7 @@ const createStyles = (theme) => StyleSheet.create({
         width: width*0.093,
         height: width*0.093,
         borderRadius: (width*0.093) / 2,
+        marginRight: 10,
     },
     username: {
         fontSize: getResponsiveFontSize(18),

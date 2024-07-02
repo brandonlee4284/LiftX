@@ -1,7 +1,8 @@
-import { getDoc, doc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { getDoc, doc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove, writeBatch } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import { setAsyncCloud } from './helperFuncs';
 import { getDisplayName, getProfilePicture, getUsername } from './profile';
+
 
 // Update the user's friends data in Firestore and local storage
 export const createPrivateFriends = async () => {
@@ -32,6 +33,7 @@ export const createPrivateFriends = async () => {
     }
 };
 
+/*
 export const synchronizeFriends = async () => {
     const user = FIREBASE_AUTH.currentUser;
     if (!user) return;
@@ -88,6 +90,62 @@ export const synchronizeFriends = async () => {
         console.error('Error synchronizing friends:', error);
     }
 };
+*/
+
+export const synchronizeFriends = async () => {
+    const startSync = Date.now();
+    const user = FIREBASE_AUTH.currentUser;
+    if (!user) return;
+
+    const userRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends', 'fReqSent');
+    const receivedRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends', 'fReqReceived');
+    const friendsRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends', 'fList');
+
+    try {
+        const [userDoc, receivedDoc] = await Promise.all([getDoc(userRef), getDoc(receivedRef)]);
+
+        if (!userDoc.exists || !receivedDoc.exists) return;
+
+        const sentRequests = userDoc.data().friendRequests || [];
+        const receivedRequests = receivedDoc.data().friendRequests || [];
+
+        const receivedMap = new Map(receivedRequests.map(req => [`${req.senderUid}-${req.receiverUid}`, req]));
+
+        const batch = writeBatch(FIRESTORE_DB);
+
+        sentRequests.forEach((sentRequest) => {
+            const matchKey = `${sentRequest.receiverUid}-${sentRequest.senderUid}`;
+            const match = receivedMap.get(matchKey);
+
+            if (match) {
+                const newFriend = {
+                    uid: sentRequest.receiverUid,
+                    username: sentRequest.receiverUsername
+                };
+
+                batch.update(friendsRef, {
+                    friends: arrayUnion(newFriend)
+                });
+
+                batch.update(userRef, {
+                    friendRequests: arrayRemove(sentRequest)
+                });
+
+                batch.update(receivedRef, {
+                    friendRequests: arrayRemove(match)
+                });
+            }
+        });
+
+        await batch.commit();
+        const endSync = Date.now();
+        console.log(`Synchronization took ${endSync - startSync} ms`);
+    } catch (error) {
+        console.error('Error synchronizing friends:', error);
+    }
+};
+
+
 
 export const sendFriendRequest = async (receiverUid, receiverUsername) => {
     const user = FIREBASE_AUTH.currentUser;
@@ -175,24 +233,7 @@ export const denyFriendRequest = async (senderUid) => {
     }
 };
 
-export const getUserUIDByUsername = async (username) => {
-    try {
-        const usersRef = collection(FIRESTORE_DB, 'users');
-        const q = query(usersRef, where('username', '==', username));
-        const querySnapshot = await getDocs(q);
 
-        if (!querySnapshot.empty) {
-            // Assuming usernames are unique, we'll take the first matching document
-            const userDoc = querySnapshot.docs[0];
-            return userDoc.id; // The document ID is the UID
-        } else {
-            return null;
-        }
-    } catch (error) {
-        console.error('Error fetching user UID: ', error);
-        throw error;
-    }
-};
 
 // gets fReqRecieved of the user
 export const getFriendRequests = async () => {
@@ -220,22 +261,90 @@ export const getFriendRequests = async () => {
 // gets friends of the user logged in
 export const getFriendList = async () => {
     try {
+        const startSync = Date.now();
         const user = FIREBASE_AUTH.currentUser;
         if (!user) throw new Error('User is not authenticated.');
 
         // Reference to the fReqReceived document in the friends sub-collection
         const friendListRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends', 'fList');
-        const friendListDoc = await getDoc(friendListRef);
-
-        if (friendListDoc.exists()) {
-            // Retrieve and return the friendRequests array
-            return friendListDoc.data().friends || [];
-        } else {
-            // If the document does not exist, return an empty array
-            return [];
+        // Use getDoc with caching enabled
+        const friendListDoc = await getDoc(friendListRef, { source: 'cache' });
+        
+        if (!friendListDoc.exists()) {
+            // If not in cache, fetch from server
+            const friendListDocServer = await getDoc(friendListRef, { source: 'server' });
+            if (friendListDocServer.exists()) {
+                return friendListDocServer.data().friends || [];
+            } else {
+                return [];
+            }
         }
+        const endSync = Date.now();
+        console.log(`Fetching Friend List took ${endSync - startSync} ms`);
+        return friendListDoc.data().friends || [];
     } catch (error) {
         console.error('Error fetching friend list: ', error);
+        throw error;
+    }
+};
+
+export const getUserUIDByUsername = async (username) => {
+    try {
+        const usersRef = collection(FIRESTORE_DB, 'users');
+        const q = query(usersRef, where('username', '==', username));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            // Assuming usernames are unique, we'll take the first matching document
+            const userDoc = querySnapshot.docs[0];
+            return userDoc.id; // The document ID is the UID
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching user UID: ', error);
+        throw error;
+    }
+};
+
+
+// Get all details of the user with the given UID
+export const getUserDetails = async (uid) => {  
+    try {
+        const startSync = Date.now();
+        const userRef = doc(FIRESTORE_DB, 'users', uid);
+        const userDoc = await getDoc(userRef, {
+            fieldMask: ['profilePicture', 'displayName', 'numFriends', 'bio', 'activeSplit', 'displayScore']
+        });
+
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const endSync = Date.now();
+            console.log(`Fetching User Data took ${endSync - startSync} ms`);
+            return {
+                profilePicture: userData.profilePicture || null,
+                displayName: userData.displayName || null,
+                friendCount: userData.numFriends !== undefined ? userData.numFriends : null,
+                bio: userData.bio || null,
+                activeSplit: userData.activeSplit || null,
+                displayScores: userData.displayScore
+                    ? {
+                        overall: userData.displayScore.overall.toFixed(1),
+                        chest: userData.displayScore.chest.toFixed(1),
+                        back: userData.displayScore.back.toFixed(1),
+                        shoulders: userData.displayScore.shoulders.toFixed(1),
+                        arms: userData.displayScore.arms.toFixed(1),
+                        legs: userData.displayScore.legs.toFixed(1)
+                    }
+                    : null,
+            };
+            
+        } else {
+            return null;
+        }
+       
+    } catch (error) {
+        console.error('Error fetching user details: ', error);
         throw error;
     }
 };

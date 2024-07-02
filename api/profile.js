@@ -48,11 +48,23 @@ export const getProfilePicture = async () => {
     return publicUserData.profilePicture;
 };  
 
+// Get the currently logged in users number of friends
+export const getNumFriends = async () => {
+    let publicUserData = await fetchPublicUserData();
+    return publicUserData.numFriends;
+};  
+
 // get the active split of user
 export const getActiveSplit = async () => {
     let publicUserData = await fetchPublicUserData();
     return publicUserData.activeSplit;
 };
+
+// increase number of friends by one of the current user
+export const updateFriendCount = async () => {
+    let publicUserData = await fetchPublicUserData();
+    publicUserData.numFriends = publicUserData.numFriends + 1;
+};  
 
 
 // sets split to the Active Split and moves split to front of the array in private splits
@@ -79,18 +91,18 @@ export const getUserScores = async () => {
         // Check if publicUserData and displayScore are valid
         if (publicUserData && publicUserData.displayScore) {
             // Extract and order the scores
-            const displayScore = publicUserData.displayScore;
-            const orderedScores = [
-                displayScore.overall.toFixed(1),
-                displayScore.chest.toFixed(1),
-                displayScore.back.toFixed(1),
-                displayScore.shoulders.toFixed(1),
-                displayScore.arms.toFixed(1),
-                displayScore.legs.toFixed(1)
-            ];
-
-            // Return the ordered scores
-            return orderedScores;
+            return {
+                displayScores: publicUserData.displayScore
+                    ? {
+                        overall: publicUserData.displayScore.overall.toFixed(1),
+                        chest: publicUserData.displayScore.chest.toFixed(1),
+                        back: publicUserData.displayScore.back.toFixed(1),
+                        shoulders: publicUserData.displayScore.shoulders.toFixed(1),
+                        arms: publicUserData.displayScore.arms.toFixed(1),
+                        legs: publicUserData.displayScore.legs.toFixed(1)
+                    }
+                    : null
+            }
         } else {
             console.warn('DisplayScore data is not in the expected format or is missing');
             return [];

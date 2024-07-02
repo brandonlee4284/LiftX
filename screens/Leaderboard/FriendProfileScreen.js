@@ -5,25 +5,22 @@ import { fetchPublicUserData, getActiveSplit, getUserScores } from "../../api/pr
 import { useTheme } from "../ThemeProvider";
 import { Header } from "../Components/Header";
 import NavBar from "../Components/Navbar";
-import UserInformation from "./ProfileComponents/UserInformation";
-import backgroundImage from "../../assets/profilebackDrop.png";
-import DayCard from "./ProfileComponents/DayCard";
+import UserInformation from "../Profile/ProfileComponents/UserInformation";
+import DayCard from "../Profile/ProfileComponents/DayCard";
 import Carousel from 'react-native-reanimated-carousel';
 import DayComponent from "../HomeComponents/DayComponent";
-import ScoreCard from "./ProfileComponents/ScoreCard";
+import ScoreCard from "../Profile/ProfileComponents/ScoreCard";
 import * as Haptics from 'expo-haptics';
 import { getWorkoutDay } from "../../api/workout";
 
 
+
 const { height, width } = Dimensions.get('window');
 
-const ProfileScreen = ({ navigation, route }) => {
-    const [publicUserData, setPublicUserData] = useState({});
-    const [activeSplitDays, setActiveSplitDays] = useState([]);
-    const [userScores, setUserScores] = useState(null);
-    const [activeSplit, setActiveSplitState] = useState(null);
+const FriendProfileScreen = ({ navigation, route }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
+    const { friend } = route.params || {}; // Destructure with default empty object
     const categories = ["overall", "chest", "back", "shoulders", "arms", "legs"];
 
     const stats = {
@@ -34,92 +31,72 @@ const ProfileScreen = ({ navigation, route }) => {
         arms: 76,
         legs: 82
     } // placeholder stats
-    
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Fetch public user data
-                const userData = await fetchPublicUserData();
-                if (userData) {
-                    setPublicUserData(userData);
-                }
-    
-                // Fetch active split day names
-                const fetchedActiveSplit = await getActiveSplit();
-                if (fetchedActiveSplit) {
-                    setActiveSplitDays(fetchedActiveSplit.days);
-                    setActiveSplitState(fetchedActiveSplit); 
-                }
-    
-                // Fetch user scores
-                const fetchedUserScores = await getUserScores();
-                if (fetchedUserScores && fetchedUserScores.displayScores) {
-                    setUserScores(fetchedUserScores.displayScores);
-                }
-                
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-    
-        fetchData();
-    }, []); 
-
-    const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-    const renderScoreCards = () => {
-        if (!userScores) {
-            return null; // Or render a loading indicator
-        }
-        return categories.map((category, index) => (
-            <ScoreCard 
-                key={index}
-                category={capitalize(category)}
-                score={userScores[category]}
-                stat={stats[category]}
-            />
-        ));
-    };
+    if (!friend) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.errorText}>No friend data available.</Text>
+            </View>
+        );
+        
+    }
 
     const handleSelectDay = async (dayName, activeSplit) => { 
         try {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
             const workoutDay = await getWorkoutDay(dayName, activeSplit);
-            navigation.navigate('PreviewProfileWorkout', { workoutDay, splitName: activeSplit.splitName, user: publicUserData.displayName });
+            navigation.navigate('ProfileNav', {
+                screen: 'PreviewProfileWorkout',
+                params: { workoutDay, splitName: friend.activeSplit.splitName, user: friend.displayName },
+            });
         } catch (error) {
             console.error(error);
         }
     };
 
+    const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+    const renderScoreCards = () => {
+        return categories.map((category, index) => (
+            <ScoreCard 
+                key={index}
+                category={capitalize(category)}
+                score={friend.displayScores[category]}
+                stat={stats[category]}
+            />
+        ));
+    };
+
     return (
         <View style={styles.container}>
-            <NavBar activeRoute="ProfileNav"/>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                <ImageBackground source={backgroundImage} style={styles.backgroundImage} resizeMode="contain"/>
-                <Header page="Profile" />
+                <View style={styles.header}>
+                    <Ionicons name="chevron-back" onPress={() => navigation.goBack()}  size={getResponsiveFontSize(25)} color={theme.textColor} style={{left:-width * 0.32}} />
+                    <Text style={styles.headerText}>{friend.username}</Text>
+                </View>
                 <View style={styles.body}>
                     {/* User info */}
                     <View style={styles.userInfoContainer}>
                         <UserInformation
-                            profilePicture={publicUserData.profilePicture}
-                            displayName={publicUserData.displayName}
-                            username={publicUserData.username}
-                            friendCount={publicUserData.numFriends}
-                            bio={publicUserData.bio}
+                            profilePicture={friend.profilePicture}
+                            displayName={friend.displayName}
+                            username={friend.username}
+                            friendCount={friend.friendCount}
+                            bio={friend.bio}
                         />
                     </View>
                     {/* Active Split */}
 
                     <View style={styles.activeSplitTextContainer}>
                         <Text style={styles.title}>Active Split</Text>
+                        <MaterialIcons name="save-alt" size={getResponsiveFontSize(25)} color={theme.textColor} />
                     </View>
                     <View style={styles.carouselContainer}>
-                        {activeSplitDays.length > 0 ? (
+                        {friend.activeSplit.days.length > 0 ? (
                             <Carousel
                                 width={width}
                                 height={width * 0.5}
-                                data={activeSplitDays.map(day => day.dayName)}
-                                renderItem={({ item }) => <DayCard name={item} onPress={() => handleSelectDay(item, activeSplit)} />}
+                                data={friend.activeSplit.days.map(day => day.dayName)}
+                                renderItem={({ item }) => <DayCard name={item} onPress={() => handleSelectDay(item, friend.activeSplit)} />}
                                 mode="parallax"
                                 modeConfig={{
                                     parallaxScrollingScale: 1,
@@ -133,7 +110,7 @@ const ProfileScreen = ({ navigation, route }) => {
                             />
                         ) : (
                             <Text style={styles.noWorkoutsText}>
-                                {publicUserData.displayName} has no workouts in their active split
+                                {friend.displayName} has no workouts in their active split
                             </Text>
                         )}
                     </View>
@@ -141,7 +118,6 @@ const ProfileScreen = ({ navigation, route }) => {
                     <View style={styles.scoresContainer}>
                         <View style={styles.scoresTextContainer}>
                             <Text style={styles.title}>Scores</Text>
-                            <Ionicons name="information-circle-outline" size={getResponsiveFontSize(25)} color={theme.textColor} style={{marginLeft:10}} />
                         </View>
                         <View style={styles.scoreCardsContainer}>
                             {renderScoreCards()}
@@ -149,7 +125,6 @@ const ProfileScreen = ({ navigation, route }) => {
                     </View>
                 </View>
             </ScrollView>
-           
         </View>
     );
 };
@@ -165,23 +140,31 @@ const createStyles = (theme) => StyleSheet.create({
         paddingTop: 40,
         backgroundColor: theme.backgroundColor
     },
-    backgroundImage: {
-        position: 'absolute',
-        width: '120%',
-        height: '120%',
-        transform: [
-            { translateX: -width*0.24 }, 
-            { translateY: -width*1.366 }, 
-        ],
-        zIndex: -1,
+    header: {
+        width: '100%',
+        flexDirection: 'row',
+        //alignItems: 'center',
+        justifyContent: 'center',
     },
-    body: {
-        marginTop: 30,
-        paddingHorizontal: 23
+    headerText: {
+        color: theme.textColor,
+        fontSize: getResponsiveFontSize(20),
+        fontWeight: 'bold',
+        left: -width*0.04
     },
     scrollViewContent: {
         paddingBottom: 120, 
         marginTop: 23, 
+    },
+    errorText: {
+        textAlign: 'center',
+        marginTop: 20,
+        color: theme.grayTextColor,
+        fontSize: getResponsiveFontSize(18),
+    },
+    body: {
+        marginTop: 10,
+        paddingHorizontal: 23
     },
     userInfoContainer: {
         marginTop: 40
@@ -223,7 +206,8 @@ const createStyles = (theme) => StyleSheet.create({
         paddingHorizontal: 40,
         marginVertical: 90,
     },
+    
    
 });
 
-export default ProfileScreen;
+export default FriendProfileScreen;

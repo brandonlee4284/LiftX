@@ -27,7 +27,7 @@ import OnboardingQuestionsScreen from './screens/Onboarding/OnboardingQuestions'
 import NavBar from './screens/Components/Navbar';
 import EditWorkoutScreen from './screens/Workout/EditWorkoutScreen';
 import AddFriendScreen from './screens/AddFriendScreen';
-import FriendProfileScreen from './screens/FriendProfileScreen';
+import FriendProfileScreen from './screens/Leaderboard/FriendProfileScreen';
 
 AppRegistry.registerComponent('main', () => MainApp);
 

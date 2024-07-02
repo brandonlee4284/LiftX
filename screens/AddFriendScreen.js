@@ -223,7 +223,7 @@ const createStyles = (theme) => StyleSheet.create({
     profilePicture: {
         width: width*0.116,
         height: width*0.116,
-        borderRadius: 25,
+        borderRadius: (width*0.116) / 2,
         marginRight: 10,
     },
     defaultIcon: {

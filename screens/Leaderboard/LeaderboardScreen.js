@@ -5,7 +5,7 @@ import { Header } from "../Components/Header";
 import { useTheme } from "../ThemeProvider";
 import NavBar from "../Components/Navbar";
 import UserContainer from "./LeaderboardComponents/UserContainer";
-import { getFriendList, synchronizeFriends } from '../../api/friends';
+import { getUserDetails, getFriendList, synchronizeFriends } from '../../api/friends';
 import * as Haptics from 'expo-haptics';
 
 const { height, width } = Dimensions.get('window');
@@ -15,26 +15,44 @@ const LeaderboardScreen = ({ navigation }) => {
     const styles = createStyles(theme);
     const [loading, setLoading] = useState(false);
     const [friends, setFriends] = useState([]);
+    const [friendProfilePicture, setFriendProfilePicture] = useState("");
+    const [friendOverallScore, setFriendOverallScore] = useState(0);
 
     useEffect(() => {
         const synchronizeAndFetchFriends = async () => {
             setLoading(true); // Show loading indicator
             try {
-                await synchronizeFriends();
+                const startSync = Date.now();
+                await synchronizeFriends();   
                 const friendsList = await getFriendList();
-                if(friendsList) {
-                    setFriends(friendsList);
+                if (friendsList) {
+                    const friendsWithDetails = await Promise.all(
+                        friendsList.map(async (friend) => {
+                            const userDetails = await getUserDetails(friend.uid);
+                            return {
+                                ...friend,
+                                profilePicture: userDetails?.profilePicture,
+                                displayName: userDetails?.displayName,
+                                friendCount: userDetails?.friendCount,
+                                bio: userDetails?.bio,
+                                activeSplit: userDetails?.activeSplit,
+                                displayScores: userDetails?.displayScores
+                            };
+                        })
+                    );
+                    setFriends(friendsWithDetails);
+                    const endSync = Date.now();
+                    console.log(`Fetching and synchronizing all friend data took ${endSync - startSync} ms`);
                 } else {
                     console.log("friend list is null");
                 }
-                
             } catch (error) {
                 alert('Error syncing friends: ' + error.message);
             } finally {
                 setLoading(false); // Hide loading indicator
             }
         };
-
+    
         synchronizeAndFetchFriends();
     }, []);
 
@@ -57,8 +75,8 @@ const LeaderboardScreen = ({ navigation }) => {
                 key={friend.uid}
                 rank={index + 1} // Assuming the list is already sorted
                 username={friend.username}   
-                profilePicture="" //profilePicture={friend.profilePicture}
-                score="1.0" //score={friend.score}
+                profilePicture={friend.profilePicture}
+                score={friend.displayScores?.overall || 'N/A'}
                 onPress={() => handleFriendProfile(friend)}
             />
         ));
@@ -127,7 +145,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.grayTextColor,
         fontSize: getResponsiveFontSize(18),
         marginTop: 20
-    }
+    },
     
 });
 
