@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useRef } from "react";
+import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import EditExerciseComponent from "./WorkoutComponents/EditExerciseComponent";
@@ -28,6 +28,9 @@ const EditWorkoutScreen = ({ navigation, route }) => {
     const [showEndWorkoutModal, setShowEndWorkoutModal] = useState(false);
     const [showWarningModal, setShowWarningModal] = useState(false);
     const [showIncompleteExerciseWarningModal, setShowIncompleteExerciseWarningModal] = useState(false);
+    const [currentlyOpenSwipeable, setCurrentlyOpenSwipeable] = useState(null);
+
+    const swipeableRefs = useRef([]);
 
     const handleSaveWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -131,7 +134,26 @@ const EditWorkoutScreen = ({ navigation, route }) => {
         setShowIncompleteExerciseWarningModal(true);
     }
 
+    const closeAllSwipes = () => {
+        swipeableRefs.current.forEach(swipeable => {
+            if (swipeable) swipeable.close();
+        });
+    };
+
+    const handleSwipeableOpen = (index) => {
+        if (currentlyOpenSwipeable !== null && currentlyOpenSwipeable !== index) {
+            swipeableRefs.current[currentlyOpenSwipeable]?.close();
+        }
+        setCurrentlyOpenSwipeable(index);
+    };
+
+    const handleOutsideTouch = () => {
+        Keyboard.dismiss();
+        closeAllSwipes();
+    };
+
     return (
+        <TouchableWithoutFeedback onPress={handleOutsideTouch}>
         <View
             style={styles.container}
         >
@@ -151,6 +173,7 @@ const EditWorkoutScreen = ({ navigation, route }) => {
                     <View style={styles.exerciseContainer}>
                         {exercises.map((exercise, index) => (
                             <EditExerciseComponent
+                                ref={(ref) => (swipeableRefs.current[index] = ref)}
                                 key={index}
                                 exerciseName={exercise.name}
                                 numSets={exercise.sets}
@@ -163,10 +186,11 @@ const EditWorkoutScreen = ({ navigation, route }) => {
                                 onWeightChange={(weight) => updateExercise(index, { ...exercise, weight })}
                                 onNotesChange={(notes) => updateExercise(index, { ...exercise, notes })}
                                 removeExercise={() => removeExercise(index)}
+                                onSwipeableOpen={() => handleSwipeableOpen(index)}
                             />
                         ))}
                         <View style={styles.addbuttonContainer}>
-                            <TouchableOpacity style={styles.addButton} onPress={addExerciseBoxes}>
+                            <TouchableOpacity style={styles.addButton} onPress={() => { addExerciseBoxes(); handleOutsideTouch(); }} >
                                 <Text style={styles.addButtonText}>+</Text>
                             </TouchableOpacity>
                         </View>
@@ -198,6 +222,7 @@ const EditWorkoutScreen = ({ navigation, route }) => {
                 close={handleClose}
             />
         </View>
+        </TouchableWithoutFeedback>
     );
 };
 
@@ -244,7 +269,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     exerciseContainer: {
         marginTop: 40,
-        paddingHorizontal: 20,
+        //paddingHorizontal: 20,
     },
     addbuttonContainer: {
         alignItems: 'center',
@@ -255,17 +280,17 @@ const createStyles = (theme) => StyleSheet.create({
         marginBottom: 20, // Adds space between button and bottom of ScrollView
     },
     button: {
-        width: width * 0.5,
+        width: width * 0.4,
         height: getResponsiveFontSize(57),
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.primaryColor,
+        backgroundColor: theme.dangerColor,
         borderRadius: 20,
         marginTop: 20
     },
     buttonText: {
-        color: theme.backgroundColor,
-        fontSize: getResponsiveFontSize(18),
+        color: theme.textColor,
+        fontSize: getResponsiveFontSize(16),
         fontWeight: 'bold',
     },
     addButton: {

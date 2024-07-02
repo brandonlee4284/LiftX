@@ -37,6 +37,8 @@ const createStyles = (theme) => StyleSheet.create({
         width: width*0.3,
         height: width*0.3,
         borderRadius: width*0.3 / 2,
+        borderColor: theme.textColor,
+        borderWidth: 3
     },
     displayName: {
         fontSize: getResponsiveFontSize(24),

@@ -15,6 +15,7 @@ import * as Haptics from 'expo-haptics';
 import AddSplitComponent from "./HomeComponents/AddSplitComponent";
 import DeleteWorkoutModal from "./Workout/WorkoutComponents/DeleteWorkoutModal";
 import WarningModal from "./Components/WarningModal";
+import { synchronizeFriends } from "../api/friends";
 
 /*
 To-Do list
@@ -45,6 +46,7 @@ const HomeScreen = ({ navigation, route }) => {
     } = route.params || {};
 
     useEffect(() => {
+        //synchronizeFriends();
         if (route.params?.completedWorkout) {
             setModalVisible(true);
             navigation.setParams({ completedWorkout: false });

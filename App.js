@@ -27,6 +27,7 @@ import OnboardingQuestionsScreen from './screens/Onboarding/OnboardingQuestions'
 import NavBar from './screens/Components/Navbar';
 import EditWorkoutScreen from './screens/Workout/EditWorkoutScreen';
 import AddFriendScreen from './screens/AddFriendScreen';
+import FriendProfileScreen from './screens/Leaderboard/FriendProfileScreen';
 
 AppRegistry.registerComponent('main', () => MainApp);
 
@@ -62,6 +63,7 @@ function LeaderboardStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Leaderboard" component={LeaderboardScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -87,7 +89,7 @@ function SettingStack() {
 function AddFriendStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="AddFriends" component={AddFriendScreen} />
+      <Stack.Screen name="FriendProfile" component={AddFriendScreen} />
     </Stack.Navigator>
   );
 }
