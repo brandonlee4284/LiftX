@@ -23,7 +23,7 @@ const PreviewProfileWorkoutScreen = ({ navigation, route }) => {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.headerContainer}>
-                    <Ionicons name="arrow-back" onPress={() => goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
+                    <Ionicons name="chevron-back" onPress={() => goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
                     <Text style={styles.header}>{currentWorkoutDay.dayName}</Text>
                 </View>
                 <View style={styles.contentContainer}>

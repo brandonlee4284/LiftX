@@ -6,13 +6,13 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const { width, height } = Dimensions.get('window');
 
-const UserContainer = ({ rank, username, profilePicture, score }) => {
+const FriendContainer = ({ rank, username, profilePicture, score, onPress }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
     return (
         <View>
-            <TouchableOpacity style={styles.container}>
+            <TouchableOpacity onPress={onPress} style={styles.container}>
                 <Text style={styles.rank}>{rank}</Text>
                 {profilePicture ? (
                     <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
@@ -36,14 +36,12 @@ const createStyles = (theme) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: theme.primaryColor,
+        backgroundColor: theme.backdropColor,
         borderRadius: 15,
         paddingVertical: 10,
         paddingHorizontal: 15,
         marginVertical: 5,
-        height: height*0.065,
-        borderWidth: 2,
-        borderColor: theme.textColor
+        height: height*0.065
     },
     rank: {
         fontSize: getResponsiveFontSize(18),
@@ -63,7 +61,6 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         flex: 1,
         textAlign: 'left',
-        fontWeight: 'bold'
     },
     score: {
         fontSize: getResponsiveFontSize(18),
@@ -77,4 +74,4 @@ const createStyles = (theme) => StyleSheet.create({
     },
 });
 
-export default UserContainer;
+export default FriendContainer;

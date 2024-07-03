@@ -7,6 +7,8 @@ import NavBar from "../Components/Navbar";
 import UserContainer from "./LeaderboardComponents/UserContainer";
 import { getUserDetails, getFriendList, synchronizeFriends } from '../../api/friends';
 import * as Haptics from 'expo-haptics';
+import { fetchPublicUserData } from "../../api/profile";
+import FriendContainer from "./LeaderboardComponents/FriendContainer";
 
 const { height, width } = Dimensions.get('window');
 
@@ -15,8 +17,6 @@ const LeaderboardScreen = ({ navigation }) => {
     const styles = createStyles(theme);
     const [loading, setLoading] = useState(false);
     const [friends, setFriends] = useState([]);
-    const [friendProfilePicture, setFriendProfilePicture] = useState("");
-    const [friendOverallScore, setFriendOverallScore] = useState(0);
 
     useEffect(() => {
         const synchronizeAndFetchFriends = async () => {
@@ -24,6 +24,7 @@ const LeaderboardScreen = ({ navigation }) => {
             try {
                 const startSync = Date.now();
                 await synchronizeFriends();   
+                const userData = await fetchPublicUserData();
                 const friendsList = await getFriendList();
                 if (friendsList) {
                     const friendsWithDetails = await Promise.all(
@@ -40,7 +41,16 @@ const LeaderboardScreen = ({ navigation }) => {
                             };
                         })
                     );
-                    setFriends(friendsWithDetails);
+                    const userWithDetails = {
+                        uid: "currentUser",
+                        username: "You",
+                        profilePicture: userData?.profilePicture,
+                        displayScores: {
+                            overall: userData?.displayScore?.overall.toFixed(1) || '-'
+                        }
+                    };
+
+                    setFriends([userWithDetails, ...friendsWithDetails]);
                     const endSync = Date.now();
                     console.log(`Fetching and synchronizing all friend data took ${endSync - startSync} ms`);
                 } else {
@@ -61,25 +71,41 @@ const LeaderboardScreen = ({ navigation }) => {
         navigation.navigate("FriendProfile", { friend })
     };
 
+    const handleLeaderBoardRanks = async () => {
+        // sort friends by score descending
+    };
+
+
     const renderFriends = () => {
         if (loading) {
             return <ActivityIndicator size="medium" color={theme.textColor} style={{ padding: 100 }}/>;
         }
-
-        if (friends.length === 0) {
-            return <Text style={styles.noFriendsText}>Add friends to see who's the strongest</Text>;
-        }
-
-        return friends.map((friend, index) => (
-            <UserContainer
-                key={friend.uid}
-                rank={index + 1} // Assuming the list is already sorted
-                username={friend.username}   
-                profilePicture={friend.profilePicture}
-                score={friend.displayScores?.overall || 'N/A'}
-                onPress={() => handleFriendProfile(friend)}
-            />
-        ));
+        
+        return friends.map((friend, index) => {
+            if (friend.uid === "currentUser") {
+                return (
+                    <View key={friend.uid}>
+                        <UserContainer
+                            rank={index + 1}
+                            username={friend.username}
+                            profilePicture={friend.profilePicture}
+                            score={friend.displayScores?.overall || '-'}
+                        />
+                    </View>
+                );
+            } else {
+                return (
+                    <FriendContainer
+                        key={friend.uid}
+                        rank={index + 1}
+                        username={friend.username}
+                        profilePicture={friend.profilePicture}
+                        score={friend.displayScores?.overall || '-'}
+                        onPress={() => handleFriendProfile(friend)}
+                    />
+                );
+            }
+        });
     };
 
     return (

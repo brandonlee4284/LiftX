@@ -19,8 +19,21 @@ import { synchronizeFriends } from "../api/friends";
 
 /*
 To-Do list
-- Change split name (done)
-- catch duplicate split names (done)
+- unique usernames
+- info modals (leaderboard, scores in profile)
+- download another persons split
+- redesign edit split name modal
+- sort leaderboard
+- display scores/stats
+- update scores and stats after completing workout (display changes in the modal popup)
+- privacy settings
+- change password
+- logout warning modal
+- fix persistence
+- make it required to do onboarding questionaire (make modal if any info is not filled)
+- remove friend
+- update friend count
+- rework workout screen
 */
 
 const { height, width } = Dimensions.get('window');

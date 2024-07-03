@@ -15,23 +15,54 @@ const WorkoutScreen = ({ navigation, route }) => {
     const { workoutDay } = route.params;
     const { theme } = useTheme();
     const styles = createStyles(theme);
-    const flattenedSets = workoutDay.exercises.reduce((acc, exercise, index) => {
-        acc.push(...Array.from({ length: exercise.sets }, () => exercise));
+    const flattenedSets = workoutDay.exercises.reduce((acc, exercise) => {
+        const setsWithNumbers = Array.from({ length: exercise.sets }, (_, setNumber) => ({
+            ...exercise,
+            setNumber: setNumber + 1
+        }));
+        acc.push(...setsWithNumbers);
         return acc;
     }, []);
-
-    const [activeSet, setActiveSet] = useState(workoutDay.exercises.length > 0 ? workoutDay.exercises[0] : null);
     const [currentNote, setCurrentNote] = useState(activeSet ? activeSet.notes : "");
+    // active set
+    const [activeSet, setActiveSet] = useState(
+        workoutDay.exercises.length > 0
+            ? { ...workoutDay.exercises[0], setNumber: 1 }
+            : null
+    );
+    // next 6 sets
     const [upNextSets, setUpNextSets] = useState(() => {
         const remainingSets = activeSet ? flattenedSets.slice(1) : flattenedSets;
         return remainingSets.slice(0, Math.min(remainingSets.length, 6));
     });
+    // all sets after upNextSets
     const [restOfSets, setRestOfSets] = useState(() => {
         const remainingSets = activeSet ? flattenedSets.slice(1) : flattenedSets;
         return remainingSets.slice(upNextSets.length);
     });
 
     const [setsCompleted, setSetsCompleted] = useState(1);
+
+    // Stopwatch functionality
+    const [secondsElapsed, setSecondsElapsed] = useState(0);
+    const [stopwatchInterval, setStopwatchInterval] = useState(null);
+
+    useEffect(() => {
+        // Start the stopwatch interval
+        const interval = setInterval(() => {
+            setSecondsElapsed(prevSeconds => prevSeconds + 1);
+        }, 1000);
+
+        setStopwatchInterval(interval);
+
+        // Clean up interval on component unmount
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        setCurrentNote(activeSet ? activeSet.notes : "");
+    }, [activeSet]);
+
     const handleEndWorkout = () => {
         // save workout to workout history
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -41,10 +72,6 @@ const WorkoutScreen = ({ navigation, route }) => {
             setShowEndWorkoutModal(true);
         }
     }
-
-    useEffect(() => {
-        setCurrentNote(activeSet ? activeSet.notes : "");
-    }, [activeSet]);
 
     // Function to handle feedback buttons
     const handleFeedback = () => {
@@ -78,21 +105,41 @@ const WorkoutScreen = ({ navigation, route }) => {
         setShowEndWorkoutModal(false);
     };
 
-    // Stopwatch functionality
-    const [secondsElapsed, setSecondsElapsed] = useState(0);
-    const [stopwatchInterval, setStopwatchInterval] = useState(null);
+    // puts the active exercise to the end of the restOfSets
+    const handleRequeue = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        console.log("handleRequeue called");
 
-    useEffect(() => {
-        // Start the stopwatch interval
-        const interval = setInterval(() => {
-            setSecondsElapsed(prevSeconds => prevSeconds + 1);
-        }, 1000);
-
-        setStopwatchInterval(interval);
-
-        // Clean up interval on component unmount
-        return () => clearInterval(interval);
-    }, []);
+        if (!activeSet || upNextSets.length === 0) {
+            // Do not proceed if there's no active set or upNextSets is empty
+            return;
+        }
+    
+        if (activeSet) {    
+            const tempActiveSet = activeSet;
+            const nextActiveSet = upNextSets.length > 0 ? upNextSets[0] : null;
+    
+            const newUpNextSets = upNextSets.slice(1);
+    
+            let updatedRestOfSets = restOfSets;
+    
+            if (restOfSets.length > 0) {
+                const firstRestSet = restOfSets[0];
+                newUpNextSets.push(firstRestSet);
+                updatedRestOfSets = restOfSets.slice(1);
+            }
+    
+            if (newUpNextSets.length < 6) {
+                newUpNextSets.push(tempActiveSet);
+            } else {
+                updatedRestOfSets.push(tempActiveSet);
+            }
+        
+            setActiveSet(nextActiveSet);
+            setUpNextSets(newUpNextSets);
+            setRestOfSets(updatedRestOfSets);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -112,6 +159,7 @@ const WorkoutScreen = ({ navigation, route }) => {
                             exerciseName={activeSet.name}
                             numReps={activeSet.reps}
                             weight={activeSet.weight}
+                            setNumber={activeSet.setNumber}
                         />
                     )}
                 </View>
@@ -131,11 +179,11 @@ const WorkoutScreen = ({ navigation, route }) => {
                 </View>
                 <View style={styles.bottomContainer}>
                     <View style={styles.feedbackButtonContainer}>
-                        {/* 
-                        <TouchableOpacity style={styles.smallButton} onPress={handleFeedback}>
+                        {
+                        <TouchableOpacity style={styles.smallButton} onPress={handleRequeue}>
                             <MaterialCommunityIcons name="reload" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
                         </TouchableOpacity>
-                        */}
+                        }
                         <TouchableOpacity style={styles.largeButton} onPress={handleFeedback}>
                             <Feather name="skip-forward" size={getResponsiveFontSize(30)} color={theme.backgroundColor} />
                         </TouchableOpacity>
@@ -241,6 +289,7 @@ const createStyles = (theme) => StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginVertical: 30,
+        left: -width * 0.1
     },
     smallButton: {
         width: width * 0.1,

@@ -2,6 +2,7 @@ import React, { useState, forwardRef } from "react";
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, TextInput } from 'react-native';
 import { useTheme } from "../../ThemeProvider";
 import { Swipeable } from 'react-native-gesture-handler';
+import DraggableFlatList from 'react-native-draggable-flatlist';
 
 const { width } = Dimensions.get('window');
 

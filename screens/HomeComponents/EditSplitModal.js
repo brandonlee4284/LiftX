@@ -36,10 +36,10 @@ const EditSplitModal = ({ visible, splitName, savePress, deletePress, onRequestC
                             />
                             <View style={styles.buttonContainer}>
                                 <TouchableOpacity style={styles.saveButton} onPress={() => savePress(name)}>
-                                    <Text style={styles.buttonText}>Save</Text>
+                                    <Text style={styles.savebuttonText}>Save</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.removeButton} onPress={deletePress}>
-                                    <Text style={styles.buttonText}>Remove Split</Text>
+                                    <Text style={styles.removebuttonText}>Remove Split</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -101,7 +101,13 @@ const createStyles = (theme) => StyleSheet.create({
         borderRadius: 10,
         marginTop: 10, 
     },
-    buttonText: {
+    savebuttonText: {
+        color: theme.backgroundColor,
+        fontSize: getResponsiveFontSize(16),
+        fontWeight: '600',
+        textAlign: 'center'
+    },
+    removebuttonText: {
         color: theme.backgroundColor,
         fontSize: getResponsiveFontSize(16),
         fontWeight: '600',

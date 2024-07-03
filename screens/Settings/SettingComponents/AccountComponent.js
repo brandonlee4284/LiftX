@@ -66,10 +66,6 @@ const AccountComponent = () => {
                     <Ionicons name="key-outline" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Change Password</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.row}>
-                    <MaterialCommunityIcons name="book" size={getResponsiveFontSize(24)} style={styles.icon} />
-                    <Text style={styles.text}>Workout History</Text>
-                </TouchableOpacity>
                 <TouchableOpacity style={styles.row} onPress = {handleSync}>
                     <MaterialCommunityIcons name="account-sync" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Sync Data</Text>
