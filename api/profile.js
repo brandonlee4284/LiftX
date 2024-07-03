@@ -128,7 +128,30 @@ export const setUserGender = async (newGender) => {
     await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'data'), '@PrivateUserData', privateUserData);
 }; 
 
-// updates user profile
-export const updateProfile = async (newPFP, newDisplayName, newUsername) => {
+export const updateUserProfile = async (newPFP, newDisplayName, newBio) => {
+    try {
+        // Fetch public user data
+        let publicUserData = await fetchPublicUserData();
+
+        if (newPFP) {
+            publicUserData.profilePicture = newPFP;
+        }
+        if (newDisplayName) {
+            const trimmedDisplayName = newDisplayName.trim().replace(/(\r\n|\n|\r)/gm, "");
+            publicUserData.displayName = trimmedDisplayName;
+        }
+       
+        const trimmedBio = newBio.trim().replace(/(\r\n|\n|\r)/gm, "");
+
+        publicUserData.bio = trimmedBio;
+        
+
+        // Update public user data with active split
+        await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
+        console.log("updated user profile");
+
+    } catch (error) {
+        console.error("Error setting active split: ", error);
+    }
     
-}; 
+};

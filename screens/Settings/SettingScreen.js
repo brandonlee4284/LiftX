@@ -17,7 +17,7 @@ const SettingScreen = () => {
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
-                <Ionicons name="arrow-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
+                <Ionicons name="chevron-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
                 <Text style={styles.header}>Settings</Text>
             </View>
             <View style={styles.body}>

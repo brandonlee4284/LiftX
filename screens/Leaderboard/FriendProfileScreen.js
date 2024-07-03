@@ -70,7 +70,7 @@ const FriendProfileScreen = ({ navigation, route }) => {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.header}>
-                    <Ionicons name="chevron-back" onPress={() => navigation.goBack()}  size={getResponsiveFontSize(25)} color={theme.textColor} style={{left:-width * 0.32}} />
+                    <Ionicons name="chevron-back" onPress={() => navigation.goBack()}  size={getResponsiveFontSize(25)} color={theme.textColor} style={{position:'absolute', left: width*0.046}} />
                     <Text style={styles.headerText}>{friend.username}</Text>
                 </View>
                 <View style={styles.body}>
@@ -141,16 +141,13 @@ const createStyles = (theme) => StyleSheet.create({
         backgroundColor: theme.backgroundColor
     },
     header: {
-        width: '100%',
-        flexDirection: 'row',
-        //alignItems: 'center',
+        alignItems: 'center',
         justifyContent: 'center',
     },
     headerText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(20),
         fontWeight: 'bold',
-        left: -width*0.04
     },
     scrollViewContent: {
         paddingBottom: 120, 

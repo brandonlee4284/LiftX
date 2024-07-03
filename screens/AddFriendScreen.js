@@ -96,7 +96,7 @@ const AddFriendScreen = () => {
     return (
         <ScrollView style={styles.container}>
             <View style={styles.headerContainer}>
-                <Ionicons name="arrow-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon} />
+                <Ionicons name="chevron-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon} />
                 <Text style={styles.header}>Add Friends</Text>
             </View>
             <View style={styles.inputContainer}>
@@ -137,7 +137,7 @@ const AddFriendScreen = () => {
                                 style={[styles.actionButton, styles.acceptButton]}
                                 onPress={() => handleAcceptRequest(request.senderUid, request.senderUsername)}
                             >
-                                <Text style={styles.buttonText}>+ Add</Text>
+                                <Text style={styles.buttonText}>+ Accept</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.actionButton, styles.rejectButton]}

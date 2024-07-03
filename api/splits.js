@@ -211,7 +211,6 @@ export const dayExist = async (splitName, dayName) => {
         if (dayIndex !== -1) {
             return true;
         } else {
-            console.log('Day not found');
             return false;
         }
     } else {

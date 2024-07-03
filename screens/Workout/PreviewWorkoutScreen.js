@@ -17,31 +17,6 @@ const PreviewWorkoutScreen = ({ navigation, route }) => {
     const styles = createStyles(theme); 
     const currentWorkoutDay = updatedWorkoutDay ? updatedWorkoutDay : workoutDay;
     
-    /*
-    const [activeSplit, setActiveSplitState] = useState(null);
-    useFocusEffect(
-        useCallback(() => {
-            const fetchData = async () => {
-                try {
-                    // Fetch active split day
-                    const fetchedActiveSplit = await getActiveSplit();
-                    if (fetchedActiveSplit) {
-                        setActiveSplitState(fetchedActiveSplit);
-                        if (currentWorkoutDay?.dayName) {
-                            const updatedWorkoutDay = await getWorkoutDay(currentWorkoutDay.dayName, fetchedActiveSplit);
-                            setCurrentWorkoutDay(updatedWorkoutDay);
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
-            };
-
-            fetchData();
-        }, [currentWorkoutDay])
-    );
-    */
-
     const handleWorkout = (workoutDay) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         navigation.navigate('Workout', { workoutDay });
@@ -60,7 +35,7 @@ const PreviewWorkoutScreen = ({ navigation, route }) => {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.headerContainer}>
-                    <Ionicons name="arrow-back" onPress={() => goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
+                    <Ionicons name="chevron-back" onPress={() => goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
                     <Text style={styles.header}>{currentWorkoutDay.dayName}</Text>
                     <Feather name="edit" onPress={() => handleEditWorkoutDay(currentWorkoutDay)} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.editIcon}/>
                 </View>
