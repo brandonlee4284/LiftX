@@ -36,3 +36,8 @@ yarn-error.*
 
 # for eas build
 app.json
+
+.venv
+*.ipynb
+
+exercise_data.json
