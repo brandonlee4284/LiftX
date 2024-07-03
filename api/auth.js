@@ -1,11 +1,12 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createPublicUser, createPrivateUser } from './profile';
+import { createPublicUser, createPrivateUser, fetchPublicUserData } from './profile';
 import { createPrivateSplits } from './splits';
 import { createPrivateFriends } from './friends';
 import { createPrivateWorkout } from './workout';
 import { clearAsyncStorage } from "./helperFuncs";
+import dayjs from "dayjs";
 
 // Login user with email and password
 export const loginUser = async (email, password, setErrorMessage) => {
@@ -13,6 +14,10 @@ export const loginUser = async (email, password, setErrorMessage) => {
   signInWithEmailAndPassword(auth, email, password).then(async () => {
     // Delete user data from local storage
     await clearAsyncStorage();
+
+    // Get user data from firestore and save to local storage
+    await fetchPublicUserData()
+    await fetchPublicUserData()
   }
   ).catch(error => setErrorMessage(error.message));
 };
@@ -136,13 +141,19 @@ export const createNewUser = async (gender = "male", weight = 135, name, usernam
         }
 
         let initPrivateWorkoutData = {
-          hiddenStats: { // Calculated after ending a workout based on 2-weeks rolling average of 1RM from exercise history
-            bench: 135,
-            deadlift: 135
+          stats: { 
+            chest: {
+              bench: {totalSets: [dayjs(), dayjs(), dayjs()], repMax: 135, score: 30, change: 0},
+            }
           },
-          exerciseHistory: { // Score calculated using weight and onerep, adj calculated using score and pos/neg feedback
-            bench: [{ oneRep: 135, score: 30, adj: 1.01 }],
-            deadlift: [{ oneRep: 135, score: 30, adj: 1.01 },],
+          overallScore: {
+            overall: {score:0, change:0},
+            chest: {score:30, change:0},
+            back: {score:0, change:0},
+            legs: {score:0, change:0},
+            shoulders: {score:0, change:0},
+            arms: {score:0, change:0},
+            core: {score:0, change:0},
           },
         }
 

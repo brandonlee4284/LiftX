@@ -39,5 +39,3 @@ app.json
 
 .venv
 *.ipynb
-
-exercise_data.json

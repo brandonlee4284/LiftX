@@ -19,6 +19,7 @@
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/stack": "^6.3.29",
     "@types/react-native-snap-carousel": "^3.8.11",
+    "dayjs": "^1.11.11",
     "expo": "~51.0.8",
     "expo-av": "~14.0.5",
     "expo-camera": "~15.0.9",

@@ -5,6 +5,7 @@ import { useTheme } from "../../ThemeProvider";
 import * as Haptics from 'expo-haptics';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { clearAsyncStorage } from '../../../api/helperFuncs';
+import { calculateScore } from '../../../api/score';
 
 const { height, width } = Dimensions.get('window');
 
@@ -23,6 +24,10 @@ const AccountComponent = () => {
     const handleSync = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         clearAsyncStorage();
+    }
+
+    const handleTest = () => {
+        calculateScore(135,"male",18,130,"Bench")
     }
 
     return (
@@ -68,6 +73,10 @@ const AccountComponent = () => {
                 <TouchableOpacity style={styles.row} onPress = {handleSync}>
                     <MaterialCommunityIcons name="account-sync" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Sync Data</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.row} onPress = {handleTest}>
+                    <MaterialCommunityIcons name="ab-testing" size={getResponsiveFontSize(24)} style={styles.icon} />
+                    <Text style={styles.text}>Test Exercise</Text>
                 </TouchableOpacity>
             </View>
         </View>
