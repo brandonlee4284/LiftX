@@ -1,19 +1,16 @@
 import { getDoc, doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { dayExist } from './splits';
 import exerciseData from '../exercise_data.json';
 import { fetchAsyncCloud, setAsyncCloud } from './helperFuncs';
 import { calculateScore } from './score';
 
 export const createPrivateWorkout = async (data) => {
-    const user = FIREBASE_AUTH.currentUser;
-    setAsyncCloud(doc(FIRESTORE_DB, 'users', user.uid, 'private', 'workout'), '@PrivateUserWorkout', data);
+    await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'workout'), '@PrivateUserWorkout', data);
 };
 
 export const fetchPrivateWorkout = async () => {
-    const user = FIREBASE_AUTH.currentUser;
-    fetchAsyncCloud(doc(FIRESTORE_DB, 'users', user.uid, 'private', 'workout'), '@PrivateUserWorkout');
+    return await fetchAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUserer.uid, 'private', 'workout'), '@PrivateUserWorkout');
 }
 
 export const updateExerciseStats = async (workouDetails) => {
@@ -29,7 +26,7 @@ export const updateExerciseStats = async (workouDetails) => {
         const score = await calculateScore(weight, reps, name);
 
         // Add the current days sets to the totalSets array
-        const now = dayjs()
+        const now = dayjs().toString()
         const setArr = []
         for (let i = 0; i < sets; i++) {
             setArr.push(now);

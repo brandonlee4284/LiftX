@@ -37,8 +37,8 @@ export const setAsyncCloud = async (docRef, asyncTag, data) => {
         if (user) {
             try {
                 await setDoc(docRef, data);
-            } catch (error) {
-                throw new error("Error updating cloud for, ", asyncTag, "; Error: ", e);
+            } catch (e) {
+                throw new Error(e);
             }
         }
 
