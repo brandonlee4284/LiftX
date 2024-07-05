@@ -33,7 +33,7 @@ To-Do list
 - make it required to do onboarding questionaire (make modal if any info is not filled)
 - remove friend
 - update friend count
-- update score manually (setting and onboarding)
+- update score manually (setting - select exercise name (dropdown) -> enter weight and reps -> update score button)
 - in onboarding pt2 users enter their active split and use these exercises and weight to initialize score
 */
 

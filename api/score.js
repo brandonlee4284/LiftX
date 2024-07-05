@@ -44,7 +44,7 @@ const calculatePercentile = async (repMax, gender, age, bodyweight, exerciseName
     return (0.5 * bwScore + 0.5 * ageScore);
 }
 
-const calculate1rm = (weight, reps) => {
+export const calculate1rm = (weight, reps) => {
     // Bryzcki Formula
     return weight * (36 / (37 - reps));
 }

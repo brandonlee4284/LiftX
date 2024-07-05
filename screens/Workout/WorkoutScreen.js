@@ -74,9 +74,19 @@ const WorkoutScreen = ({ navigation, route }) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         if (activeSet === null) {
             console.log(completedExercises);
-            //await updateExerciseStats(completedExercises);
-            //await updateOverallStats();
-            navigation.navigate('Home', { completedWorkout: true, stopwatch: secondsElapsed, setsCompleted, dayName: workoutDay.dayName });
+            try {
+                await updateExerciseStats(completedExercises);
+                await updateOverallStats();
+                navigation.navigate('Home', { 
+                    completedWorkout: true, 
+                    stopwatch: secondsElapsed, 
+                    setsCompleted, 
+                    dayName: workoutDay.dayName 
+                });
+            } catch (error) {
+                console.error("Error updating stats:", error);
+            }
+            
         } else {
             setShowEndWorkoutModal(true);
         }
@@ -98,7 +108,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             setCompletedExercises(prevExercises => [
                 ...prevExercises,
                 {
-                    name: activeSet.name,
+                    name: activeSet.name.toLowerCase().replace(/\s+/g, ''),
                     sets: activeSet.sets,
                     reps: activeSet.reps,
                     weight: activeSet.weight
@@ -111,7 +121,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             setCompletedExercises(prevCompletedExercises => [
                 ...prevCompletedExercises,
                 {
-                    name: activeSet.name,
+                    name: activeSet.name.toLowerCase().replace(/\s+/g, ''),
                     sets: activeSet.setNumber,
                     reps: activeSet.reps,
                     weight: activeSet.weight

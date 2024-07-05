@@ -3,7 +3,8 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import { dayExist } from './splits';
 import exerciseData from '../exercise_data.json';
 import { fetchAsyncCloud, setAsyncCloud } from './helperFuncs';
-import { calculateScore } from './score';
+import { calculateScore, calculate1rm } from './score';
+import dayjs from "dayjs";
 
 export const createPrivateWorkout = async (data) => {
     await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'workout'), '@PrivateUserWorkout', data);
@@ -21,29 +22,40 @@ export const updateExerciseStats = async (workouDetails) => {
     for (const exercise of workouDetails) {
         const {name, sets, reps, weight} = exercise;
 
-        const group = exerciseData[name].group;
-        const repMax = calculate1rm(weight, reps);
-        const score = await calculateScore(weight, reps, name);
+        if (exerciseData[name]) {
+            const group = exerciseData[name].group;
+            const repMax = calculate1rm(weight, reps);
+            const score = await calculateScore(weight, reps, name);
 
-        // Add the current days sets to the totalSets array
-        const now = dayjs().toString()
-        const setArr = []
-        for (let i = 0; i < sets; i++) {
-            setArr.push(now);
-        }
-
-        // Update the sets for the exercise
-        if (stats[group][name]) {
-            stats[group][name].totalSets.push(...setArr)
-        } else {
-            stats[group][name] = {
-                totalSets: setArr,
+            // Add the current days sets to the totalSets array
+            const now = dayjs().toString()
+            const setArr = []
+            for (let i = 0; i < sets; i++) {
+                setArr.push(now);
             }
+
+            // Ensure the group exists in stats
+            /*
+            if (!stats[group]) {
+                stats[group] = {};
+            }
+            */
+
+            // Update the sets for the exercise
+            if (stats[group][name]) {
+                stats[group][name].totalSets.push(...setArr)
+            } else {
+                stats[group][name] = {
+                    totalSets: setArr,
+                }
+            }
+            // Update the repMax, change, and score for the exercise
+            stats[group][name].repMax = repMax;
+            stats[group][name].change = score - stats[group][name].score; //stats[group][name].change = score - (stats[group][name].score || 0);
+            stats[group][name].score = score;
+        } else {
+            console.warn(`Exercise data for ${name} not found.`);
         }
-        // Update the repMax, change, and score for the exercise
-        stats[group][name].repMax = repMax;
-        stats[group][name].change = score - stats[group][name].score;
-        stats[group][name].score = score;
     }
 
     workoutData.stats = stats;
@@ -51,6 +63,7 @@ export const updateExerciseStats = async (workouDetails) => {
 }
 
 export const updateOverallStats = async () => {
+    
     let workoutData = await fetchPrivateWorkout();
     let stats = workoutData.stats;
     let overallScore = workoutData.overallScore;
@@ -86,12 +99,14 @@ export const updateOverallStats = async () => {
             score = 0;
         }
 
+        
         totalOverallScore += score;
         overallScore[muscleGroup].change = score - overallScore[muscleGroup].score;
         overallScore[muscleGroup].score = score;
     });
 
     // Update the overall score
+    
     overallScore.overall.change = totalOverallScore - overallScore.overall.score;
     overallScore.overall.score = totalOverallScore;
 
