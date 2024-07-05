@@ -22,7 +22,7 @@ export const loginUser = async (email, password, setErrorMessage) => {
   ).catch(error => setErrorMessage(error.message));
 };
 
-export const createNewUser = async (gender = "male", weight = 135, name, username, email, password, setErrorMessage, navigation) => {
+export const createNewUser = async (gender = "male", weight = 135, age, name, username, email, password, setErrorMessage, navigation) => {
   const auth = FIREBASE_AUTH;
   createUserWithEmailAndPassword(auth, email, password)
     .then(() => {
@@ -74,6 +74,7 @@ export const createNewUser = async (gender = "male", weight = 135, name, usernam
         {
           gender: gender,
           weight: weight,
+          age: age,
           email: email,
         }
 

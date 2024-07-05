@@ -30,6 +30,11 @@ const AccountComponent = () => {
         calculateScore(135,"male",18,130,"Bench")
     }
 
+    const handleOnboard = () => {
+        navigation.navigate("Onboarding");
+    }
+
+
     return (
         <View>
             <Text style={styles.header}>Account</Text>
@@ -66,6 +71,10 @@ const AccountComponent = () => {
                     <Ionicons name="key-outline" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Change Password</Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.row}>
+                    <MaterialCommunityIcons name="update" size={getResponsiveFontSize(24)} style={styles.icon} />
+                    <Text style={styles.text}>Update Scores</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.row} onPress = {handleSync}>
                     <MaterialCommunityIcons name="account-sync" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Sync Data</Text>
@@ -73,6 +82,10 @@ const AccountComponent = () => {
                 <TouchableOpacity style={styles.row} onPress = {handleTest}>
                     <MaterialCommunityIcons name="ab-testing" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Test Exercise</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.row} onPress = {handleOnboard}>
+                    <MaterialCommunityIcons name="ab-testing" size={getResponsiveFontSize(24)} style={styles.icon} />
+                    <Text style={styles.text}>Onboard Testing</Text>
                 </TouchableOpacity>
             </View>
         </View>

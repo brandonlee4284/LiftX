@@ -128,6 +128,13 @@ export const setUserGender = async (newGender) => {
     await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'data'), '@PrivateUserData', privateUserData);
 }; 
 
+// sets the age of a user
+export const setUserAge = async (newAge) => {
+    let privateUserData = await fetchPrivateUserData();
+    privateUserData.age = newAge;
+    await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'data'), '@PrivateUserData', privateUserData);
+}; 
+
 export const updateUserProfile = async (newPFP, newDisplayName, newBio) => {
     try {
         // Fetch public user data

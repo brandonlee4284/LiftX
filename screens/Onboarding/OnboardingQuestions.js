@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, Keyboa
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import { getDisplayName, setUserWeight, setUserGender } from '../../api/profile';
+import { getDisplayName, setUserWeight, setUserGender, setUserAge } from '../../api/profile';
 import * as Haptics from 'expo-haptics';
 
 
@@ -17,6 +17,7 @@ const OnboardingQuestionsScreen = () => {
    // gender and weight var
    const [gender, setGender] = useState(null);
    const [weight, setWeight] = useState('');
+   const [age, setAge] = useState('');
 
    useEffect(() => {
         async function fetchData() {
@@ -39,6 +40,7 @@ const OnboardingQuestionsScreen = () => {
         try {
             await setUserGender(gender);
             await setUserWeight(weight);
+            await setUserAge(age);
             navigation.navigate('Home');
         } catch (error) {
             console.error('Error in handleHome: ', error);
@@ -85,6 +87,16 @@ const OnboardingQuestionsScreen = () => {
                             placeholderTextColor={theme.textColor}
                         />
                         <Text style={styles.weightUnit}>lbs</Text>
+                    </View>
+                    <Text style={styles.title}>Enter your age</Text>
+                    <View style={styles.weightContainer}>
+                        <TextInput
+                            style={styles.input}
+                            value={age}
+                            onChangeText={setAge}
+                            keyboardType="numeric"
+                            placeholderTextColor={theme.textColor}
+                        />
                     </View>
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity onPress={handleHome} style={styles.button}>
@@ -134,7 +146,7 @@ const createStyles = (theme) => StyleSheet.create({
         marginBottom: 20,
     },
     body: {
-        marginTop: 130
+        marginTop: 100
     },
     title: {
         fontSize: getResponsiveFontSize(18),
@@ -163,7 +175,7 @@ const createStyles = (theme) => StyleSheet.create({
     weightContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 30,
     },
     input: {
         height: height * 0.06,
@@ -186,7 +198,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     buttonContainer: {
         alignItems: 'center',
-        marginTop: 20
+        marginTop: 0
     },
     button: {
         width: width * 0.7,
@@ -203,7 +215,7 @@ const createStyles = (theme) => StyleSheet.create({
             width: 0,
             height: 20,
         },
-        marginTop: 70
+        marginTop: 30
     },
     buttonText: {
         color: theme.backgroundColor,

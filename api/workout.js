@@ -10,7 +10,7 @@ export const createPrivateWorkout = async (data) => {
 };
 
 export const fetchPrivateWorkout = async () => {
-    return await fetchAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUserer.uid, 'private', 'workout'), '@PrivateUserWorkout');
+    return await fetchAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'workout'), '@PrivateUserWorkout');
 }
 
 export const updateExerciseStats = async (workouDetails) => {

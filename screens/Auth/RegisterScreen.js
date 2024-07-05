@@ -19,6 +19,7 @@ const RegisterScreen = ({ navigation }) => {
     const [password, setPassword] = useState("");
     const [weight, setWeight] = useState("");
     const [gender, setGender] = useState("");
+    const [age, setAge] = useState("");
     const [displayName, setDisplayName] = useState("");
     const [errorMessage, setErrorMessage] = useState(null);
 
@@ -28,7 +29,7 @@ const RegisterScreen = ({ navigation }) => {
 
     const handleSignUp = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        createNewUser(gender, weight, displayName, username, email, password, setErrorMessage, navigation);
+        createNewUser(gender, weight, age, displayName, username, email, password, setErrorMessage, navigation);
     };
 
     return (

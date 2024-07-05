@@ -24,7 +24,7 @@ To-Do list
 - download another persons split
 - redesign edit split name modal
 - sort leaderboard
-- display scores/stats
+- display scores/stats (profile/friendprofile)
 - update scores and stats after completing workout (display changes in the modal popup)
 - privacy settings
 - change password
@@ -33,7 +33,8 @@ To-Do list
 - make it required to do onboarding questionaire (make modal if any info is not filled)
 - remove friend
 - update friend count
-- rework workout screen
+- update score manually (setting and onboarding)
+- in onboarding pt2 users enter their active split and use these exercises and weight to initialize score
 */
 
 const { height, width } = Dimensions.get('window');

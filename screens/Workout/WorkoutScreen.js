@@ -7,6 +7,7 @@ import EndWorkoutModal from "./WorkoutComponents/EndWorkoutModal";
 import * as Haptics from 'expo-haptics';
 import ActiveExerciseComponent from "./WorkoutComponents/ActiveExerciseComponent";
 import UpNextActiveExerciseComponent from "./WorkoutComponents/UpNextExerciseComponent";
+import { updateExerciseStats, updateOverallStats } from "../../api/workout";
 
 
 const { height, width } = Dimensions.get('window');
@@ -47,6 +48,12 @@ const WorkoutScreen = ({ navigation, route }) => {
     const [secondsElapsed, setSecondsElapsed] = useState(0);
     const [stopwatchInterval, setStopwatchInterval] = useState(null);
 
+    // modal that pops up if a user is trying to end a workout early
+    const [showEndWorkoutModal, setShowEndWorkoutModal] = useState(false);
+
+    // completed exercises ([{name sets reps weight}, ...])
+    const [completedExercises, setCompletedExercises] = useState([]);
+
     useEffect(() => {
         // Start the stopwatch interval
         const interval = setInterval(() => {
@@ -63,10 +70,12 @@ const WorkoutScreen = ({ navigation, route }) => {
         setCurrentNote(activeSet ? activeSet.notes : "");
     }, [activeSet]);
 
-    const handleEndWorkout = () => {
-        // save workout to workout history
+    const handleEndWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         if (activeSet === null) {
+            console.log(completedExercises);
+            //await updateExerciseStats(completedExercises);
+            //await updateOverallStats();
             navigation.navigate('Home', { completedWorkout: true, stopwatch: secondsElapsed, setsCompleted, dayName: workoutDay.dayName });
         } else {
             setShowEndWorkoutModal(true);
@@ -85,18 +94,36 @@ const WorkoutScreen = ({ navigation, route }) => {
             }
             const updatedUpNext = [...newUpNextSets.slice(1)];
             setUpNextSets(updatedUpNext);
+
+            setCompletedExercises(prevExercises => [
+                ...prevExercises,
+                {
+                    name: activeSet.name,
+                    sets: activeSet.sets,
+                    reps: activeSet.reps,
+                    weight: activeSet.weight
+                }
+            ]);
+
             setActiveSet(nextActiveSet);
             setSetsCompleted(prevCompleted => prevCompleted + 1);
-        } else {
+        } else if(activeSet != null) {
+            setCompletedExercises(prevCompletedExercises => [
+                ...prevCompletedExercises,
+                {
+                    name: activeSet.name,
+                    sets: activeSet.setNumber,
+                    reps: activeSet.reps,
+                    weight: activeSet.weight
+                }
+            ]);
             setActiveSet(null);
             
-        }
+        } 
     };
 
-    // modal that pops up if a user is trying to end a workout early
-    const [showEndWorkoutModal, setShowEndWorkoutModal] = useState(false);
-
     const handleEnd = () => {
+        console.log(completedExercises);
         navigation.navigate('Home', { completedWorkout: false });
         setShowEndWorkoutModal(false);
     };

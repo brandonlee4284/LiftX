@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../ThemeProvider";
 import { fetchPublicUserData, updateUserProfile } from "../../api/profile";
 import * as ImagePicker from 'expo-image-picker';
+import * as Haptics from 'expo-haptics';
 
 const { width } = Dimensions.get('window');
 
@@ -56,6 +57,7 @@ const ProfileEditScreen = ({ navigation }) => {
 
     const handleSaveProfile = async () => {
         // Save profile logic here
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         await updateUserProfile(profilePicture, displayName, bio);
 
         navigation.goBack();
