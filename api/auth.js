@@ -143,13 +143,11 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
 
         let initPrivateWorkoutData = {
           stats: { 
-            chest: {
-              bench: {totalSets: [dayjs().toString(), dayjs().toString(), dayjs().toString()], repMax: 135, score: 30, change: 0},
-            }
+            
           },
           overallScore: {
             overall: {score:0, change:0},
-            chest: {score:30, change:0},
+            chest: {score:0, change:0},
             back: {score:0, change:0},
             legs: {score:0, change:0},
             shoulders: {score:0, change:0},

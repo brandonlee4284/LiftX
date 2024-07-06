@@ -86,11 +86,10 @@ const WorkoutScreen = ({ navigation, route }) => {
             } catch (error) {
                 console.error("Error updating stats:", error);
             }
-            
         } else {
             setShowEndWorkoutModal(true);
         }
-    }
+    };
 
     // Function to handle feedback buttons
     const handleFeedback = () => {

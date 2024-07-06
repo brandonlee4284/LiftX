@@ -7,7 +7,9 @@ import { calculateScore, calculate1rm } from './score';
 import dayjs from "dayjs";
 
 export const createPrivateWorkout = async (data) => {
+    //console.log('Saving workout data to Firestore:', data.stats.arms);
     await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'workout'), '@PrivateUserWorkout', data);
+    //console.log('Workout data successfully saved to Firestore.');
 };
 
 export const fetchPrivateWorkout = async () => {
@@ -15,51 +17,74 @@ export const fetchPrivateWorkout = async () => {
 }
 
 export const updateExerciseStats = async (workouDetails) => {
+    console.log('Fetching private workout data...');
     let workoutData = await fetchPrivateWorkout();
+    console.log('Workout data fetched:', workoutData);
+
     let stats = workoutData.stats;
+    console.log('Stats:', stats);
+
+    if (!stats) {
+        console.error('Stats not found in workout data.');
+        return;
+    }
 
     // Calculate the 1RM and score for each exercise
     for (const exercise of workouDetails) {
-        const {name, sets, reps, weight} = exercise;
+        const { name, sets, reps, weight } = exercise;
+        console.log(`Processing exercise: ${name}`);
 
         if (exerciseData[name]) {
-            const group = exerciseData[name].group;
+            console.log(`Exercise data found for ${name}`);
+            const group = exerciseData[name].group.toLowerCase();
             const repMax = calculate1rm(weight, reps);
             const score = await calculateScore(weight, reps, name);
+            console.log(`Group: ${group}, repMax: ${repMax}, score: ${score}`);
 
-            // Add the current days sets to the totalSets array
-            const now = dayjs().toString()
-            const setArr = []
+            // Add the current day's sets to the totalSets array
+            const now = dayjs().toString();
+            const setArr = [];
             for (let i = 0; i < sets; i++) {
                 setArr.push(now);
             }
+            console.log('Set array:', setArr);
 
             // Ensure the group exists in stats
-            /*
+            
             if (!stats[group]) {
+                console.log(`Group ${group} not found in stats. Creating new group.`);
                 stats[group] = {};
             }
-            */
+            
 
             // Update the sets for the exercise
             if (stats[group][name]) {
-                stats[group][name].totalSets.push(...setArr)
+                console.log(`Updating existing exercise ${name} in group ${group}`);
+                stats[group][name].totalSets.push(...setArr);
             } else {
+                console.log(`Creating new exercise entry for ${name} in group ${group}`);
                 stats[group][name] = {
                     totalSets: setArr,
-                }
+                    repMax: repMax,
+                    change: score, // Initial change is the score itself
+                    score: score,
+                };
             }
+
             // Update the repMax, change, and score for the exercise
             stats[group][name].repMax = repMax;
-            stats[group][name].change = score - stats[group][name].score; //stats[group][name].change = score - (stats[group][name].score || 0);
+            stats[group][name].change = score - (stats[group][name].score || 0);
             stats[group][name].score = score;
+            console.log(`Updated exercise stats for ${name}:`, stats[group][name]);
         } else {
             console.warn(`Exercise data for ${name} not found.`);
         }
     }
 
     workoutData.stats = stats;
-    createPrivateWorkout(workoutData);
+    console.log('Updated workout data stats:', workoutData.stats);
+    await createPrivateWorkout(workoutData);
+    console.log('Workout data saved.');
 }
 
 export const updateOverallStats = async () => {
@@ -74,9 +99,15 @@ export const updateOverallStats = async () => {
     const now = dayjs();
     const oneMonthAgo = now.subtract(1, 'month');
 
+    if (!overallScore.overall) {
+        overallScore.overall = { change: 0, score: 0 };
+    }
+    
     // Calculate the overall score for each muscle group
     muscleGroups.forEach(muscleGroup => {
         const exercises = stats[muscleGroup];
+        let score = 0; // Initialize score variable
+
         if (exercises) {
             let totalScore = 0;
             let totalSets = 0;
@@ -113,6 +144,11 @@ export const updateOverallStats = async () => {
     workoutData.overallScore = overallScore;
     createPrivateWorkout(workoutData);
 }
+
+// given a dayName and a split, returns the day in that split
+export const syncScores = async () => {
+    
+};
 
 
 // given a dayName and a split, returns the day in that split
