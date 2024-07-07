@@ -5,6 +5,7 @@ import { useTheme } from "../ThemeProvider";
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import { getDisplayName, setUserWeight, setUserGender, setUserAge } from '../../api/profile';
 import * as Haptics from 'expo-haptics';
+import WarningModal from "../Components/WarningModal";
 
 
 const { height, width } = Dimensions.get('window');
@@ -18,6 +19,8 @@ const OnboardingQuestionsScreen = () => {
    const [gender, setGender] = useState(null);
    const [weight, setWeight] = useState('');
    const [age, setAge] = useState('');
+   const [warningModalVisible, setWarningModalVisible] = useState(false);
+   const [warningMessage, setWarningMessage] = useState('');
 
    useEffect(() => {
         async function fetchData() {
@@ -37,6 +40,21 @@ const OnboardingQuestionsScreen = () => {
 
     const handleHome = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        if (!gender) {
+            setWarningMessage('Please select your gender');
+            setWarningModalVisible(true);
+            return;
+        }
+        if (!weight) {
+            setWarningMessage('Please enter your weight');
+            setWarningModalVisible(true);
+            return;
+        }
+        if (!age) {
+            setWarningMessage('Please enter your age');
+            setWarningModalVisible(true);
+            return;
+        }
         try {
             await setUserGender(gender);
             await setUserWeight(weight);
@@ -106,6 +124,12 @@ const OnboardingQuestionsScreen = () => {
                         </TouchableOpacity>
                     </View>
                 </View>
+                <WarningModal
+                    visible={warningModalVisible}
+                    close={() => setWarningModalVisible(false)}
+                    msg={"Incomplete Fields"}
+                    subMsg={warningMessage}
+                />
             </View>
         </TouchableWithoutFeedback>
     );

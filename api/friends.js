@@ -1,7 +1,7 @@
 import { getDoc, doc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove, writeBatch } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import { setAsyncCloud } from './helperFuncs';
-import { getDisplayName, getProfilePicture, getUsername } from './profile';
+import { fetchPublicUserData, getDisplayName, getProfilePicture, getUsername } from './profile';
 
 
 // Update the user's friends data in Firestore and local storage
@@ -102,9 +102,9 @@ export const synchronizeFriends = async () => {
     const friendsRef = doc(FIRESTORE_DB, 'users', user.uid, 'friends', 'fList');
 
     try {
-        const [userDoc, receivedDoc] = await Promise.all([getDoc(userRef), getDoc(receivedRef)]);
+        const [userDoc, receivedDoc, publicUserData] = await Promise.all([getDoc(userRef), getDoc(receivedRef), fetchPublicUserData()]);
 
-        if (!userDoc.exists || !receivedDoc.exists) return;
+        if (!userDoc.exists || !receivedDoc.exists || !publicUserData) return;
 
         const sentRequests = userDoc.data().friendRequests || [];
         const receivedRequests = receivedDoc.data().friendRequests || [];
@@ -112,21 +112,25 @@ export const synchronizeFriends = async () => {
         const receivedMap = new Map(receivedRequests.map(req => [`${req.senderUid}-${req.receiverUid}`, req]));
 
         const batch = writeBatch(FIRESTORE_DB);
+        let friendAdded = false;
 
         sentRequests.forEach((sentRequest) => {
             const matchKey = `${sentRequest.receiverUid}-${sentRequest.senderUid}`;
             const match = receivedMap.get(matchKey);
 
             if (match) {
+                // Add to friend list
                 const newFriend = {
                     uid: sentRequest.receiverUid,
                     username: sentRequest.receiverUsername
                 };
 
+                // Update the friend list
                 batch.update(friendsRef, {
                     friends: arrayUnion(newFriend)
                 });
 
+                // Remove matched requests
                 batch.update(userRef, {
                     friendRequests: arrayRemove(sentRequest)
                 });
@@ -134,8 +138,16 @@ export const synchronizeFriends = async () => {
                 batch.update(receivedRef, {
                     friendRequests: arrayRemove(match)
                 });
+
+                friendAdded = true;
             }
         });
+
+        if (friendAdded) {
+            // update friend count
+            publicUserData.numFriends = publicUserData.numFriends + 1;
+            await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
+        }
 
         await batch.commit();
         const endSync = Date.now();

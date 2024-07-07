@@ -13,6 +13,8 @@ import DayComponent from "../HomeComponents/DayComponent";
 import ScoreCard from "./ProfileComponents/ScoreCard";
 import * as Haptics from 'expo-haptics';
 import { getWorkoutDay } from "../../api/workout";
+import InformationModal from "../Components/InformationModal";
+import { synchronizeFriends } from "../../api/friends";
 
 
 const { height, width } = Dimensions.get('window');
@@ -25,6 +27,7 @@ const ProfileScreen = ({ navigation, route }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
     const categories = ["overall", "chest", "back", "shoulders", "arms", "legs"];
+    const [modalVisible, setModalVisible] = useState(false);
 
     const stats = {
         overall: 85,
@@ -141,7 +144,9 @@ const ProfileScreen = ({ navigation, route }) => {
                     <View style={styles.scoresContainer}>
                         <View style={styles.scoresTextContainer}>
                             <Text style={styles.title}>Scores</Text>
-                            <Ionicons name="information-circle-outline" size={getResponsiveFontSize(25)} color={theme.textColor} style={{marginLeft:10}} />
+                            <TouchableOpacity onPress={() => setModalVisible(true)}>
+                                <Ionicons name="information-circle-outline" size={getResponsiveFontSize(25)} color={theme.textColor} style={{marginLeft:10}} />
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.scoreCardsContainer}>
                             {renderScoreCards()}
@@ -149,7 +154,12 @@ const ProfileScreen = ({ navigation, route }) => {
                     </View>
                 </View>
             </ScrollView>
-           
+            <InformationModal
+                visible={modalVisible}
+                close={() => setModalVisible(false)}
+                msg="Scores"
+                subMsg="write score description."
+            />
         </View>
     );
 };

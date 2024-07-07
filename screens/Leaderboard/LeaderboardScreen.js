@@ -9,6 +9,7 @@ import { getUserDetails, getFriendList, synchronizeFriends } from '../../api/fri
 import * as Haptics from 'expo-haptics';
 import { fetchPublicUserData } from "../../api/profile";
 import FriendContainer from "./LeaderboardComponents/FriendContainer";
+import InformationModal from "../Components/InformationModal"; 
 
 const { height, width } = Dimensions.get('window');
 
@@ -17,6 +18,7 @@ const LeaderboardScreen = ({ navigation }) => {
     const styles = createStyles(theme);
     const [loading, setLoading] = useState(false);
     const [friends, setFriends] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         const synchronizeAndFetchFriends = async () => {
@@ -50,7 +52,10 @@ const LeaderboardScreen = ({ navigation }) => {
                         }
                     };
 
-                    setFriends([userWithDetails, ...friendsWithDetails]);
+                    const allFriends = [userWithDetails, ...friendsWithDetails];
+                    handleLeaderboardRanks(allFriends);  // Call with the updated friends array
+                    setFriends(allFriends);
+                    
                     const endSync = Date.now();
                     console.log(`Fetching and synchronizing all friend data took ${endSync - startSync} ms`);
                 } else {
@@ -71,14 +76,24 @@ const LeaderboardScreen = ({ navigation }) => {
         navigation.navigate("FriendProfile", { friend })
     };
 
-    const handleLeaderBoardRanks = async () => {
-        // sort friends by score descending
+    // sort friends by overall score descending
+    const handleLeaderboardRanks = (friendsArray) => {
+        const sortedFriends = friendsArray.sort((a, b) => {
+            const scoreA = parseFloat(a.displayScores?.overall) || 0;
+            const scoreB = parseFloat(b.displayScores?.overall) || 0;
+            return scoreB - scoreA;
+        });
+        setFriends(sortedFriends);
     };
 
 
     const renderFriends = () => {
         if (loading) {
             return <ActivityIndicator size="medium" color={theme.textColor} style={{ padding: 100 }}/>;
+        }
+
+        if (friends.length === 0) {
+            return <Text style={styles.noFriendsText}>No friends found</Text>;
         }
         
         return friends.map((friend, index) => {
@@ -117,7 +132,9 @@ const LeaderboardScreen = ({ navigation }) => {
                         {/* Title */}
                         <View style={styles.titleContainer}>
                             <Text style={styles.title}>Leaderboard</Text>
-                            <Ionicons name="information-circle-outline" size={getResponsiveFontSize(25)} color={theme.textColor} />
+                            <TouchableOpacity onPress={() => setModalVisible(true)}>
+                                <Ionicons name="information-circle-outline" size={getResponsiveFontSize(25)} color={theme.textColor} />
+                            </TouchableOpacity>
                         </View>
 
                         {/* Leaderboard */}
@@ -128,7 +145,12 @@ const LeaderboardScreen = ({ navigation }) => {
                         
                 </View>
             </ScrollView>
-            
+            <InformationModal
+                visible={modalVisible}
+                close={() => setModalVisible(false)}
+                msg="Leaderboard"
+                subMsg="This is a brief explanation of the leaderboard, how scores are calculated, and how you can improve your rank."
+            />
         </View>
     );
 };

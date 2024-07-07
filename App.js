@@ -99,13 +99,6 @@ function OnboardingStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="OnboardingScreen" component={OnboardingScreen} />
-    </Stack.Navigator>
-  );
-}
-
-function OnboardingQuestionsStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="OnboardingQuestionsScreen" component={OnboardingQuestionsScreen} />
     </Stack.Navigator>
   );
@@ -150,7 +143,6 @@ function RootNavigator() {
           <RootStack.Screen name="Setting" component={SettingStack} />
           <RootStack.Screen name="AddFriend" component={AddFriendStack} />
           <RootStack.Screen name="Onboarding" component={OnboardingStack} />
-          <RootStack.Screen name="OnboardingQuestions" component={OnboardingQuestionsStack} />
           {/* ADD DMS????? <-?, FRIENDS TAB */}
         </>
       ) : (

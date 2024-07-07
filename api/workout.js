@@ -5,6 +5,7 @@ import exerciseData from '../exercise_data.json';
 import { fetchAsyncCloud, setAsyncCloud } from './helperFuncs';
 import { calculateScore, calculate1rm } from './score';
 import dayjs from "dayjs";
+import { fetchPublicUserData } from './profile';
 
 export const createPrivateWorkout = async (data) => {
     //console.log('Saving workout data to Firestore:', data.stats.arms);
@@ -142,12 +143,49 @@ export const updateOverallStats = async () => {
     overallScore.overall.score = totalOverallScore;
 
     workoutData.overallScore = overallScore;
-    createPrivateWorkout(workoutData);
+    await createPrivateWorkout(workoutData);
 }
 
-// given a dayName and a split, returns the day in that split
+// syncs scores in workout with public displayScores
 export const syncScores = async () => {
-    
+    try {
+        // Fetch the private workout data
+        console.log('Fetching private workout data...');
+        let workoutData = await fetchPrivateWorkout();
+        console.log('Private workout data fetched:', workoutData);
+
+        // Fetch the public user data
+        console.log('Fetching public user data...');
+        const publicUserData = await fetchPublicUserData();
+        console.log('Public user data fetched:', publicUserData);
+
+        // Extract the overall scores from the private workout data
+        let overallScore = workoutData.overallScore;
+        console.log('Overall scores:', overallScore);
+
+        // Ensure overallScore is present in the private workout data
+        if (!overallScore) {
+            console.error('Overall scores not found in workout data.');
+            return;
+        }
+
+        // Update the public displayScore with the scores from the private workout data
+        const muscleGroups = ['arms', 'chest', 'back', 'shoulders', 'legs', 'overall'];
+        muscleGroups.forEach(group => {
+            if (overallScore[group]) {
+                publicUserData.displayScore[group] = overallScore[group].score;
+            } else {
+                console.warn(`Score for muscle group ${group} not found in workout data.`);
+            }
+        });
+
+        // Save the updated public user data back to Firestore
+        console.log('Saving updated public user data to Firestore:', publicUserData);
+        await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
+        console.log('Public user data successfully saved.');
+    } catch (error) {
+        console.error('Error syncing scores:', error);
+    }
 };
 
 

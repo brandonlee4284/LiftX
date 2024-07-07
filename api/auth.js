@@ -7,6 +7,8 @@ import { createPrivateFriends } from './friends';
 import { createPrivateWorkout } from './workout';
 import { clearAsyncStorage } from "./helperFuncs";
 import dayjs from "dayjs";
+import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore'; // Import Firestore utilities
+
 
 // Login user with email and password
 export const loginUser = async (email, password, setErrorMessage) => {
@@ -24,6 +26,17 @@ export const loginUser = async (email, password, setErrorMessage) => {
 
 export const createNewUser = async (gender = "male", weight = 135, age, name, username, email, password, setErrorMessage, navigation) => {
   const auth = FIREBASE_AUTH;
+  const db = getFirestore();
+
+  // Check if the username already exists
+  const usernamesRef = collection(db, 'users'); // Adjust this to your actual collection name
+  const usernameQuery = query(usernamesRef, where('username', '==', username));
+  const querySnapshot = await getDocs(usernameQuery);
+  if (!querySnapshot.empty) {
+    setErrorMessage("Username already exists! Please try another one.");
+    return;
+  }
+
   createUserWithEmailAndPassword(auth, email, password)
     .then(() => {
       try {
@@ -183,4 +196,8 @@ export const logoutUser = async () => {
   // Delete user data from local storage
   await clearAsyncStorage();
   FIREBASE_AUTH.signOut();
+}
+
+export const changePassword = async () => {
+  // change users password
 }
