@@ -77,7 +77,7 @@ const WorkoutScreen = ({ navigation, route }) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         if (activeSet === null) {
             setIsLoading(true); // Start loading
-            //console.log(completedExercises);
+            console.log(completedExercises);
             try {
                 await updateExerciseStats(completedExercises);
                 //console.log("Exercise stats updated.");
@@ -259,6 +259,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             {isLoading && (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="#fff" />
+                    <Text style={styles.loadingText}>Updating your scores...</Text>
                 </View>
             )}
           
@@ -391,6 +392,11 @@ const createStyles = (theme) => StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    loadingText: {
+        fontSize: getResponsiveFontSize(20),
+        color: theme.textColor,
+        paddingTop: 20
+    }
 
 });
 

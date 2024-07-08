@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform  } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import EditExerciseComponent from "./WorkoutComponents/EditExerciseComponent";
@@ -196,83 +196,89 @@ const EditWorkoutScreen = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <TouchableWithoutFeedback onPress={handleOutsideTouch}>
-                <View>
-                        <View style={styles.headerContainer}>
-                            <Ionicons name="chevron-back" onPress={() => goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
-                            <TextInput 
-                                style={styles.header}
-                                keyboardType="default"
-                                value={updatedDayName}
-                                onChangeText={setUpdatedDayName}
-                                maxLength={8}
-                            />
-                            <Feather name="check-square" onPress={handleSaveWorkout} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.saveIcon}/>
-                        </View>
-                        <View style={styles.contentContainer}>
-                            <View style={styles.exerciseContainer}>
-                                {exercises.map((exercise, index) => (
-                                    <EditExerciseComponent
-                                        ref={(ref) => updateRef(ref, index)}
-                                        key={exercise.id}
-                                        exerciseName={exercise.name}
-                                        numSets={exercise.sets}
-                                        numReps={exercise.reps}
-                                        weight={exercise.weight}
-                                        notes={exercise.notes}
-                                        onExerciseNameChange={(name) => updateExercise(index, { ...exercise, name })}
-                                        onSetsChange={(sets) => updateExercise(index, { ...exercise, sets })}
-                                        onRepsChange={(reps) => updateExercise(index, { ...exercise, reps })}
-                                        onWeightChange={(weight) => updateExercise(index, { ...exercise, weight })}
-                                        onNotesChange={(notes) => updateExercise(index, { ...exercise, notes })}
-                                        removeExercise={() => removeExercise(index)}
-                                        onSwipeableOpen={() => handleSwipeableOpen(index)}
-                                    />
-                                ))}
-                                {/*
-                                    <DraggableFlatList
-                                    data={exercises}
-                                    renderItem={renderItem}
-                                    keyExtractor={(item) => item.id.toString()}
-                                    onDragEnd={({ data }) => setExercises(data)}
-                                     />
-                                */}
+            <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1 }}
+            >
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    
+                    <TouchableWithoutFeedback onPress={handleOutsideTouch}>
+                    <View>
+                            <View style={styles.headerContainer}>
+                                <Ionicons name="chevron-back" onPress={() => goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
+                                <TextInput 
+                                    style={styles.header}
+                                    keyboardType="default"
+                                    value={updatedDayName}
+                                    onChangeText={setUpdatedDayName}
+                                    maxLength={8}
+                                />
+                                <Feather name="check-square" onPress={handleSaveWorkout} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.saveIcon}/>
+                            </View>
+                            <View style={styles.contentContainer}>
+                                <View style={styles.exerciseContainer}>
+                                    {exercises.map((exercise, index) => (
+                                        <EditExerciseComponent
+                                            ref={(ref) => updateRef(ref, index)}
+                                            key={exercise.id}
+                                            exerciseName={exercise.name}
+                                            numSets={exercise.sets}
+                                            numReps={exercise.reps}
+                                            weight={exercise.weight}
+                                            notes={exercise.notes}
+                                            onExerciseNameChange={(name) => updateExercise(index, { ...exercise, name })}
+                                            onSetsChange={(sets) => updateExercise(index, { ...exercise, sets })}
+                                            onRepsChange={(reps) => updateExercise(index, { ...exercise, reps })}
+                                            onWeightChange={(weight) => updateExercise(index, { ...exercise, weight })}
+                                            onNotesChange={(notes) => updateExercise(index, { ...exercise, notes })}
+                                            removeExercise={() => removeExercise(index)}
+                                            onSwipeableOpen={() => handleSwipeableOpen(index)}
+                                        />
+                                    ))}
+                                    {/*
+                                        <DraggableFlatList
+                                        data={exercises}
+                                        renderItem={renderItem}
+                                        keyExtractor={(item) => item.id.toString()}
+                                        onDragEnd={({ data }) => setExercises(data)}
+                                        />
+                                    */}
+                                    
+                                    <View style={styles.addbuttonContainer}>
+                                        <TouchableOpacity style={styles.addButton} onPress={() => { addExerciseBoxes(); handleOutsideTouch(); }} >
+                                            <Text style={styles.addButtonText}>+</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
                                 
-                                <View style={styles.addbuttonContainer}>
-                                    <TouchableOpacity style={styles.addButton} onPress={() => { addExerciseBoxes(); handleOutsideTouch(); }} >
-                                        <Text style={styles.addButtonText}>+</Text>
+                                <View style={styles.buttonContainer}>
+                                    <TouchableOpacity style={styles.button} onPress={deleteWarning}>
+                                        <Text style={styles.buttonText}>Delete Workout</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                            
-                            <View style={styles.buttonContainer}>
-                                <TouchableOpacity style={styles.button} onPress={deleteWarning}>
-                                    <Text style={styles.buttonText}>Delete Workout</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    <DeleteWorkoutModal
-                        visible={showEndWorkoutModal}
-                        cancel={handleCancel}
-                        del={handleDeleteWorkout}
-                        workoutName={updatedDayName}
-                    />
-                    <WarningModal
-                        visible={showWarningModal}
-                        msg={`${updatedDayName} already exists in this split`}
-                        subMsg={"Please choose another name."}
-                        close={handleClose}
-                    />
-                    <WarningModal
-                        visible={showIncompleteExerciseWarningModal}
-                        msg={"Incomplete exercises"}
-                        subMsg={"Make sure each exercise has a name, set count, rep count, and weight."}
-                        close={handleClose}
-                    />
-                </View>
-                </TouchableWithoutFeedback>
-            </ScrollView>
+                        <DeleteWorkoutModal
+                            visible={showEndWorkoutModal}
+                            cancel={handleCancel}
+                            del={handleDeleteWorkout}
+                            workoutName={updatedDayName}
+                        />
+                        <WarningModal
+                            visible={showWarningModal}
+                            msg={`${updatedDayName} already exists in this split`}
+                            subMsg={"Please choose another name."}
+                            close={handleClose}
+                        />
+                        <WarningModal
+                            visible={showIncompleteExerciseWarningModal}
+                            msg={"Incomplete exercises"}
+                            subMsg={"Make sure each exercise has a name, set count, rep count, and weight."}
+                            close={handleClose}
+                        />
+                    </View>
+                    </TouchableWithoutFeedback>
+                </ScrollView>
+            </KeyboardAvoidingView>
         </View>
 
     );

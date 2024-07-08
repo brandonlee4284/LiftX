@@ -50,7 +50,7 @@ const createStyles = (theme) => StyleSheet.create({
     progressBarContainer: {
         height: width * 0.015,
         width: '75%',
-        backgroundColor: '#e0e0e0',
+        backgroundColor: theme.textColor,
         borderRadius: 10,
         overflow: 'hidden',
         marginTop: 10,

@@ -1,6 +1,6 @@
 import { getDoc, doc, setDoc, updateDoc, collection, query, where, getDocs, arrayUnion, arrayRemove, writeBatch } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
-import { setAsyncCloud } from './helperFuncs';
+import { fetchAsyncCloud, setAsyncCloud } from './helperFuncs';
 import { fetchPublicUserData, getDisplayName, getProfilePicture, getUsername } from './profile';
 
 
@@ -157,8 +157,6 @@ export const synchronizeFriends = async () => {
     }
 };
 
-
-
 export const sendFriendRequest = async (receiverUid, receiverUsername) => {
     const user = FIREBASE_AUTH.currentUser;
     if (!user) return;
@@ -169,8 +167,14 @@ export const sendFriendRequest = async (receiverUid, receiverUsername) => {
     const senderDisplayName = await getDisplayName();
     const timestamp = new Date().toISOString();
 
+    if (senderUid === receiverUid) {
+        throw new Error('You cannot add yourself as a friend.');
+    }
+
     const senderRef = doc(FIRESTORE_DB, 'users', senderUid, 'friends', 'fReqSent');
+    const senderFriendRef = doc(FIRESTORE_DB, 'users', senderUid, 'friends', 'fList');
     const receiverRef = doc(FIRESTORE_DB, 'users', receiverUid, 'friends', 'fReqReceived');
+    const receiverSentRef = doc(FIRESTORE_DB, 'users', receiverUid, 'friends', 'fReqSent');
 
     const friendRequest = {
         senderUid,
@@ -184,6 +188,30 @@ export const sendFriendRequest = async (receiverUid, receiverUsername) => {
     };
 
     try {
+        // check if friend req already sent
+        const receiverDoc = await getDoc(receiverRef);
+        if (receiverDoc.exists()) {
+            const data = receiverDoc.data();
+            const existingRequests = data.friendRequests || [];
+            
+            // Check if a friend request from the sender already exists
+            const alreadyRequested = existingRequests.some(request => request.senderUid === senderUid);
+            if (alreadyRequested) {
+                throw new Error('Friend request already sent.');
+            }
+        }
+
+        // Check if the sender is already friends with the receiver
+        const senderFriendsDoc = await getDoc(senderFriendRef);
+        if (senderFriendsDoc.exists()) {
+            const data = senderFriendsDoc.data();
+            const friendsList = data.friends || [];
+            const alreadyFriends = friendsList.some(friend => friend.uid === receiverUid);
+            if (alreadyFriends) {
+                throw new Error('This user is already your friend.');
+            }
+        }
+
         await updateDoc(senderRef, {
             friendRequests: arrayUnion(friendRequest)
         });
@@ -194,7 +222,8 @@ export const sendFriendRequest = async (receiverUid, receiverUsername) => {
 
         console.log('Friend request sent');
     } catch (error) {
-        console.error('Error sending friend request:', error);
+        //console.error('Error sending friend request:', error);
+        throw error;
     }
 };
 
@@ -300,6 +329,34 @@ export const getFriendList = async () => {
     }
 };
 
+// checks if the senderUsername is in fReqRecieved 
+export const usernameRecieved = async (senderUsername) => {
+    const user = FIREBASE_AUTH.currentUser;
+    if (!user) return false; // or throw an error, depending on your needs
+
+    const receiverUid = user.uid;
+    const receiverRef = doc(FIRESTORE_DB, 'users', receiverUid, 'friends', 'fReqReceived');
+
+    try {
+        // Get the document for the received friend requests
+        const receiverDoc = await getDoc(receiverRef);
+        if (receiverDoc.exists()) {
+            const data = receiverDoc.data();
+            const existingRequests = data.friendRequests || [];
+
+            // Check if a request from the given senderUsername exists
+            const usernameExists = existingRequests.some(request => request.senderUsername === senderUsername);
+            if(usernameExists){
+                throw new Error('User has already sent you a friend request.');
+            }
+        } 
+    } catch (error) {
+        //console.error('Error checking friend request:', error);
+        throw error; // Re-throw the error to handle it in your calling function
+    }
+};
+
+
 export const getUserUIDByUsername = async (username) => {
     try {
         const usersRef = collection(FIRESTORE_DB, 'users');
@@ -357,6 +414,58 @@ export const getUserDetails = async (uid) => {
        
     } catch (error) {
         console.error('Error fetching user details: ', error);
+        throw error;
+    }
+};
+
+// adds friends active split to your private splits
+export const downloadFriendSplit = async (friendUID) => {  
+    try {
+        // Retrieve the friend's active split
+        const userRef = doc(FIRESTORE_DB, 'users', friendUID);
+        const userDoc = await getDoc(userRef);
+        const friendUserData = userDoc.data();
+        
+        if (!friendUserData.activeSplit) {
+            console.error('Friend\'s active split not found');
+            return;
+        }
+
+        
+        const activeSplitData = friendUserData.activeSplit;
+
+        // Get the current user's UID
+        const currentUserUID = FIREBASE_AUTH.currentUser.uid;
+
+        // Get the current user's splits
+        const userSplitsRef = doc(FIRESTORE_DB, 'users', currentUserUID, 'private', 'splits');
+        const userSplitsDoc = await getDoc(userSplitsRef);
+
+        let currentSplits = userSplitsDoc.exists() ? userSplitsDoc.data().splits : [];
+
+        // Check if the split name already exists
+        const splitExists = currentSplits.some(split => split.splitName === activeSplitData.splitName);
+        
+        if (splitExists) {
+            throw new Error('A split with this name already exists');
+        }
+
+        // Create the new split based on the friend's active split
+        const newSplit = {
+            splitName: activeSplitData.splitName,
+            days: activeSplitData.days,
+        };
+
+        // Add the new split to the current user's splits
+        currentSplits.push(newSplit);
+        //console.log(currentSplits);
+        // Update the user's splits in Firestore
+        const updatedSplits = { splits: currentSplits };
+        await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', updatedSplits);
+
+        console.log('Friend\'s split downloaded and added to your private splits');
+        
+    } catch (error) {
         throw error;
     }
 };

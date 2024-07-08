@@ -3,8 +3,9 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, TextI
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "./ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
-import { getUserUIDByUsername, sendFriendRequest, getFriendRequests, acceptFriendRequest, denyFriendRequest, synchronizeFriends } from '../api/friends';
+import { getUserUIDByUsername, sendFriendRequest, getFriendRequests, acceptFriendRequest, denyFriendRequest, synchronizeFriends, usernameRecieved } from '../api/friends';
 import * as Haptics from 'expo-haptics';
+import WarningModal from "./Components/WarningModal";
 
 
 const { height, width } = Dimensions.get('window');
@@ -16,7 +17,7 @@ const AddFriendScreen = () => {
     const [username, setUsername] = useState('');
     const [loading, setLoading] = useState(false);
     const [friendRequests, setFriendRequests] = useState([]);
-
+    const [notification, setNotification] = useState({ message: '', visible: false, color: theme.primaryColor });
     // Fetch friend requests on component mount
     useEffect(() => {
         const synchronizeAndFetchRequests = async () => {
@@ -25,7 +26,7 @@ const AddFriendScreen = () => {
                 await synchronizeFriends();
                 await fetchFriendRequests();
             } catch (error) {
-                alert('Error syncing and fetching friend requests: ' + error.message);
+                console.error('Error syncing and fetching friend requests: ' + error.message);
             } finally {
                 setLoading(false); // Hide loading indicator
             }
@@ -41,10 +42,15 @@ const AddFriendScreen = () => {
             const requests = await getFriendRequests();
             setFriendRequests(requests);
         } catch (error) {
-            alert('Error fetching friend requests: ' + error.message);
+            console.error('Error fetching friend requests: ' + error.message);
         } finally {
             setLoading(false);
         }
+    };
+
+    const showNotification = (message, color) => {
+        setNotification({ message, visible: true, color });
+        setTimeout(() => setNotification({ message: '', visible: false, color: theme.primaryColor }), 5000);
     };
 
     const handleFindUser = async () => {
@@ -53,15 +59,28 @@ const AddFriendScreen = () => {
         try {
             const uid = await getUserUIDByUsername(username);
             if (uid) {
+                await usernameRecieved(username);
                 await sendFriendRequest(uid, username);
-                alert('Friend request sent!');
+                showNotification('Friend request sent!', theme.primaryColor);
             } else {
-                alert('User not found!');
+                showNotification('Username not found!', theme.dangerColor);
             }
         } catch (error) {
-            alert('Error finding user: ' + error.message);
+            if (error.message === 'Friend request already sent.') {
+                showNotification('Friend request is pending', theme.warningColor);
+            } else if (error.message === 'This user is already your friend.') {
+                showNotification('User is already your friend', theme.warningColor);
+            } else if (error.message === 'User has already sent you a friend request.') {
+                showNotification('User already sent you a friend request, check pending requests', theme.warningColor);
+            } else if (error.message === 'You cannot add yourself as a friend.') {
+                showNotification('Cannot send a friend request to yourself', theme.warningColor);
+            } else {
+                console.error('Error finding user: ' + error.message);
+                showNotification('Error sending friend request. Please try again.', theme.dangerColor);
+            }
         } finally {
             setLoading(false);
+            setUsername('');
         }
     };
 
@@ -70,10 +89,10 @@ const AddFriendScreen = () => {
         setLoading(true);
         try {
             await acceptFriendRequest(senderUid, senderUsername);
-            alert('Friend request accepted!');
+            showNotification('Friend request accepted!', theme.primaryColor);
             fetchFriendRequests(); // Refresh the friend requests list
         } catch (error) {
-            alert('Error accepting friend request: ' + error.message);
+            console.error('Error accepting friend request: ' + error.message);
         } finally {
             setLoading(false);
         }
@@ -84,72 +103,85 @@ const AddFriendScreen = () => {
         setLoading(true);
         try {
             await denyFriendRequest(senderUid);
-            alert('Friend request rejected!');
             fetchFriendRequests(); // Refresh the friend requests list
+            showNotification('Friend request removed!', theme.dangerColor);
         } catch (error) {
-            alert('Error rejecting friend request: ' + error.message);
+            console.error('Error rejecting friend request: ' + error.message);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.headerContainer}>
-                <Ionicons name="chevron-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon} />
-                <Text style={styles.header}>Add Friends</Text>
-            </View>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Enter friend's username"
-                    placeholderTextColor={theme.grayTextColor}
-                    value={username}
-                    onChangeText={setUsername}
-                />
-                <TouchableOpacity style={styles.button} onPress={handleFindUser} disabled={loading}>
-                    <Text style={styles.buttonText}>Send request</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.friendRequestsContainer}>
-                <Text style={styles.friendRequestsTitle}>Pending Requests</Text>
-                {friendRequests.map((request, index) => (
-                    <View key={index} style={styles.friendRequestRow}>
-                        {request.senderPFP ? (
-                            <Image
-                                source={{ uri: request.senderPFP }}
-                                style={styles.profilePicture}
-                            />
-                        ) : (
-                            <Ionicons
-                                name="person-circle"
-                                size={getResponsiveFontSize(50)}
-                                color={theme.textColor}
-                                style={styles.defaultIcon}
-                            />
-                        )}
-                        <View style={styles.textContainer}>
-                            <Text style={styles.friendDisplayName}>{request.senderDisplayName}</Text>
-                            <Text style={styles.friendRequestText}>{request.senderUsername}</Text>
+        <View style={styles.container}>
+            <ScrollView>
+                <View style={styles.headerContainer}>
+                    <Ionicons name="chevron-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon} />
+                    <Text style={styles.header}>Add Friends</Text>
+                </View>
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Enter friend's username"
+                        placeholderTextColor={theme.grayTextColor}
+                        value={username}
+                        onChangeText={setUsername}
+                    />
+                    <TouchableOpacity style={styles.button} onPress={handleFindUser} disabled={loading}>
+                        <Text style={styles.buttonText}>Send request</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.friendRequestsContainer}>
+                    <Text style={styles.friendRequestsTitle}>Pending Requests</Text>
+                    {friendRequests.map((request, index) => (
+                        <View key={index} style={styles.friendRequestRow}>
+                            {request.senderPFP ? (
+                                <Image
+                                    source={{ uri: request.senderPFP }}
+                                    style={styles.profilePicture}
+                                />
+                            ) : (
+                                <Ionicons
+                                    name="person-circle"
+                                    size={getResponsiveFontSize(50)}
+                                    color={theme.textColor}
+                                    style={styles.defaultIcon}
+                                />
+                            )}
+                            <View style={styles.textContainer}>
+                                <Text style={styles.friendDisplayName}>{request.senderDisplayName}</Text>
+                                <Text style={styles.friendRequestText}>{request.senderUsername}</Text>
+                            </View>
+                            <View style={styles.buttonsContainer}>
+                                <TouchableOpacity
+                                    style={[styles.actionButton, styles.acceptButton]}
+                                    onPress={() => handleAcceptRequest(request.senderUid, request.senderUsername)}
+                                >
+                                    <Text style={styles.buttonText}>Accept</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.actionButton, styles.rejectButton]}
+                                    onPress={() => handleRejectRequest(request.senderUid)}
+                                >
+                                    <Text style={styles.buttonRemoveText}>Remove</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        <View style={styles.buttonsContainer}>
-                            <TouchableOpacity
-                                style={[styles.actionButton, styles.acceptButton]}
-                                onPress={() => handleAcceptRequest(request.senderUid, request.senderUsername)}
-                            >
-                                <Text style={styles.buttonText}>+ Accept</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.actionButton, styles.rejectButton]}
-                                onPress={() => handleRejectRequest(request.senderUid)}
-                            >
-                                <Text style={styles.buttonText}>Remove</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                ))}
-            </View>
-        </ScrollView>
+                    ))}
+                </View>
+                
+            </ScrollView>
+            {loading && (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="medium" color="#fff" />
+                </View>
+            )}
+            {notification.visible && (
+                <View style={[styles.notificationContainer, { backgroundColor: notification.color }]}>
+                    <Text style={styles.notificationText}>{notification.message}</Text>
+                </View>
+            )}
+        </View>
     );
 };
 
@@ -201,8 +233,12 @@ const createStyles = (theme) => StyleSheet.create({
         borderRadius: 10,
     },
     buttonText: {
-        color: theme.buttonTextColor,
         fontWeight: 'bold',
+        color: theme.backgroundColor
+    },
+    buttonRemoveText: {
+        fontWeight: 'bold',
+        color: theme.textColor
     },
     friendRequestsContainer: {
         marginTop: 30,
@@ -257,8 +293,30 @@ const createStyles = (theme) => StyleSheet.create({
         backgroundColor: theme.primaryColor,
     },
     rejectButton: {
-        backgroundColor: theme.primaryColor,
+        backgroundColor: theme.dangerColor,
     },
+    loadingContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    notificationContainer: {
+        position: 'absolute',
+        transform: [{ translateY: 880 }],
+        width: width,
+        paddingBottom: 30,
+        padding: 10,
+        backgroundColor: theme.primaryColor,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    notificationText: {
+        color: theme.textColor,
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
+
 });
 
 export default AddFriendScreen;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions, ImageBackground  } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions, ImageBackground, ActivityIndicator } from 'react-native';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { fetchPublicUserData, getActiveSplit, getUserScores } from "../../api/profile";
 import { useTheme } from "../ThemeProvider";
@@ -12,6 +12,8 @@ import DayComponent from "../HomeComponents/DayComponent";
 import ScoreCard from "../Profile/ProfileComponents/ScoreCard";
 import * as Haptics from 'expo-haptics';
 import { getWorkoutDay } from "../../api/workout";
+import { downloadFriendSplit } from "../../api/friends";
+import WarningModal from "../Components/WarningModal";
 
 
 
@@ -22,6 +24,9 @@ const FriendProfileScreen = ({ navigation, route }) => {
     const styles = createStyles(theme);
     const { friend } = route.params || {}; // Destructure with default empty object
     const categories = ["overall", "chest", "back", "shoulders", "arms", "legs"];
+    const [warningModalVisible, setWarningModalVisible] = useState(false);
+    const [isLoading, setLoading] = useState(false);
+
 
     const stats = {
         overall: 85,
@@ -53,6 +58,32 @@ const FriendProfileScreen = ({ navigation, route }) => {
             console.error(error);
         }
     };
+
+    const handleDownloadFriendSplit = async () => { 
+        try {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+            setLoading(true); // Start loading
+            await downloadFriendSplit(friend.uid);
+            setLoading(false); 
+            navigation.navigate('HomeNav', {
+                screen: 'Home',
+                //params: { workoutDay, splitName: friend.activeSplit.splitName, user: friend.displayName },
+            });
+        } catch (error) {
+            setLoading(false);
+            if (error.message === 'A split with this name already exists') {
+                setWarningModalVisible(true);
+            } else {
+                console.error(error);
+            }
+        }
+        
+    };
+
+    const handleClose = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setWarningModalVisible(false);
+    }
 
     const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
     const renderScoreCards = () => {
@@ -88,7 +119,9 @@ const FriendProfileScreen = ({ navigation, route }) => {
 
                     <View style={styles.activeSplitTextContainer}>
                         <Text style={styles.title}>Active Split</Text>
-                        <MaterialIcons name="save-alt" size={getResponsiveFontSize(25)} color={theme.textColor} />
+                        <TouchableOpacity onPress={handleDownloadFriendSplit}>
+                            <MaterialIcons name="save-alt" size={getResponsiveFontSize(25)} color={theme.textColor} />
+                        </TouchableOpacity>
                     </View>
                     <View style={styles.carouselContainer}>
                         {friend.activeSplit.days.length > 0 ? (
@@ -125,6 +158,18 @@ const FriendProfileScreen = ({ navigation, route }) => {
                     </View>
                 </View>
             </ScrollView>
+            <WarningModal
+                visible={warningModalVisible}
+                msg={"Split Already Exists"}
+                subMsg={"Change the split name before downloading another one"}
+                close={handleClose}
+            />
+            {isLoading && (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="medium" color="#fff" />
+                    <Text style={styles.loadingText}>Downloading Split...</Text>
+                </View>
+            )}
         </View>
     );
 };
@@ -203,7 +248,17 @@ const createStyles = (theme) => StyleSheet.create({
         paddingHorizontal: 40,
         marginVertical: 90,
     },
-    
+    loadingContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        fontSize: getResponsiveFontSize(14),
+        color: theme.textColor,
+        paddingTop: 20
+    }
    
 });
 

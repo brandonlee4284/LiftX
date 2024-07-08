@@ -233,7 +233,7 @@ const createStyles = (theme) => StyleSheet.create({
         marginTop: 10,
     },
     progressBar: {
-        height: 10,
+        height: width*0.023,
         borderRadius: 5,
         marginTop: 10,
     },

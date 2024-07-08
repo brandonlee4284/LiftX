@@ -49,7 +49,7 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
           bio: "This is a sample bio.", // Placeholder bio
           profilePicture: null, // Placeholder image
           numFriends: 0,
-          displayScore: { overall: 1.0, chest: 1.0, back: 1.0, legs: 1.0, shoulders: 1.0, arms: 1.0 },
+          displayScore: { overall: 0, chest: 0, back: 0, legs: 0, shoulders: 0, arms: 0 },
           activeSplit: {
             splitName: "PPL",
             days: [
@@ -159,13 +159,13 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
             
           },
           overallScore: {
-            overall: {score:0, change:0},
-            chest: {score:0, change:0},
-            back: {score:0, change:0},
-            legs: {score:0, change:0},
-            shoulders: {score:0, change:0},
-            arms: {score:0, change:0},
-            core: {score:0, change:0},
+            overall: {score:0, stats: 0, change:0},
+            chest: {score:0, stats: 0, change:0},
+            back: {score:0, stats: 0, change:0},
+            legs: {score:0, stats: 0, change:0},
+            shoulders: {score:0, stats: 0, change:0},
+            arms: {score:0, stats: 0, change:0},
+            core: {score:0, stats: 0, change:0},
           },
         }
 

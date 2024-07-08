@@ -26,17 +26,26 @@ To-Do list
 - logout warning modal (done)
 - update friend count (done)
 - show score change in end workout modal (done)
-- download another persons split 
-- update score manually (setting - select exercise name (dropdown) -> enter weight and reps -> update score button)
-- show 1 rm in friendPreviewWorkout under exercise name (est. 1RM: 135 lbs)
-- send friend req/accept friend req alerts
-- prevent keyboard from blocking input boxes
+- download another persons split (done)
+- show 1 rm in previewWorkout under exercise name (done)
+- send friend req/accept friend req alerts (done)
+- only send one friend req to a account (done)
+- cannot send a friend req to a friend (done)
+- cannot send a friend req to a friend that has already sent you one (done)
+- cannot send a freiend req to yourself
+- prevent keyboard from blocking input boxes (done)
+- onboarding scores (done)
+
+- remove friend (only from users list)
 - dropdown select exercise
-- display stats
+- update score manually (setting - select exercise name (dropdown) -> enter weight and reps -> update score button)
+- apply drop down (muscle specific) for onboarding names
+- fix scores calculations/display percentiles/stats
 - privacy settings
-- change password
 - fix persistence
-- remove friend
+- email verification
+- change password/forgot password login screen
+
 */
 
 const { height, width } = Dimensions.get('window');
