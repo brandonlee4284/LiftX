@@ -13,7 +13,7 @@ const AnimatedProgressBar = ({ progress, color, maxValue = 1000 }) => {
     useEffect(() => {
         Animated.timing(widthAnim, {
             toValue: (progress / maxValue) * width * 0.7,
-            duration: 1000,
+            duration: 3000,
             easing: Easing.linear,
             useNativeDriver: false,
         }).start();

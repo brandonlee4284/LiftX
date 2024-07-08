@@ -112,7 +112,7 @@ const CompleteWorkoutModal = ({
                                                 <Text
                                                     style={[
                                                         styles.changeScoreText,
-                                                        { color: scoreChanges[group.key]?.change > 0 ? theme.positiveColor : theme.negativeColor }
+                                                        { color: scoreChanges[group.key]?.change > 0 ? theme.positiveColor : theme.dangerColor }
                                                     ]}
                                                 >
                                                     {scoreChanges[group.key] &&

@@ -65,6 +65,7 @@ function LeaderboardStack() {
     <Stack.Navigator>
       <Stack.Screen name="Leaderboard" component={LeaderboardScreen} options={{ headerShown: false }} />
       <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PreviewProfileWorkout" component={PreviewProfileWorkoutScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

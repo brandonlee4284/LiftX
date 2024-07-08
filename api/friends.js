@@ -227,6 +227,7 @@ export const sendFriendRequest = async (receiverUid, receiverUsername) => {
     }
 };
 
+/*
 export const acceptFriendRequest = async (senderUid, senderUsername) => {
     const user = FIREBASE_AUTH.currentUser;
     if (!user) return;
@@ -239,6 +240,45 @@ export const acceptFriendRequest = async (senderUid, senderUsername) => {
     // Sync the friend lists
     await synchronizeFriends(receiverUid);
     await synchronizeFriends(senderUid);
+};
+*/
+
+export const acceptFriendRequest = async (senderUid, senderUsername) => {
+    const user = FIREBASE_AUTH.currentUser;
+    if (!user) return;
+
+    const receiverUid = user.uid;
+    const receiverUsername = await getUsername(); 
+
+    const receiverRef = doc(FIRESTORE_DB, 'users', receiverUid, 'friends', 'fList');
+
+    try {
+        const receiverDoc = await getDoc(receiverRef);
+        const receiverData = receiverDoc.data();
+        const friendList = receiverData.friends;
+
+        // Check if the sender already exists in the friend list
+        const existingFriend = friendList.find(friend => friend.uid === senderUid);
+        
+        if (existingFriend) {
+            // Remove the existing friend from the friend list
+            const publicUserData = await fetchPublicUserData();
+            const updatedFriendList = friendList.filter(friend => friend.uid !== senderUid);
+            await updateDoc(receiverRef, { friends: updatedFriendList });
+            publicUserData.numFriends = publicUserData.numFriends - 1;
+            await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
+            console.log('Existing friend removed from the list');
+        }
+
+        // Continue with accepting the friend request
+        await sendFriendRequest(senderUid, senderUsername);
+
+        // Sync the friend lists
+        await synchronizeFriends(receiverUid);
+        await synchronizeFriends(senderUid);
+    } catch (error) {
+        console.error('Error processing friend request:', error);
+    }
 };
 
 export const denyFriendRequest = async (senderUid) => {
@@ -274,6 +314,47 @@ export const denyFriendRequest = async (senderUid) => {
     }
 };
 
+// removes friend only from the logged in users friend list
+export const removeFriend = async (friendUID) => {
+    const user = FIREBASE_AUTH.currentUser;
+    if (!user) return;
+
+    const userUid = user.uid;
+
+    const userRef = doc(FIRESTORE_DB, 'users', userUid, 'friends', 'fList');
+    const publicUserData = await fetchPublicUserData();
+
+    try {
+        const userDoc = await getDoc(userRef);
+        const userData = userDoc.data();
+        const friendList = userData.friends;
+        
+        // Check if the friendUID exists in the friend list
+        const friendToRemove = friendList.find(friend => friend.uid === friendUID);
+        
+        if (!friendToRemove) {
+            console.error('Friend not found in the list');
+            return;
+        }
+
+        // Remove the friend from the friend list
+        const updatedFriendList = friendList.filter(friend => friend.uid !== friendUID);
+        console.log(updatedFriendList);
+        // Update the user's document with the modified friend list
+        try {
+            await updateDoc(userRef, {
+                friends: updatedFriendList
+            });
+            publicUserData.numFriends = publicUserData.numFriends - 1;
+            await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
+            console.log('Friend removed successfully');
+        } catch (error) {
+            console.error('Error removing friend:', error);
+        }
+    } catch (error) {
+        console.error('Error accessing user document:', error);
+    }
+};
 
 
 // gets fReqRecieved of the user

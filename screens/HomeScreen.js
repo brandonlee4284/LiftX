@@ -35,8 +35,8 @@ To-Do list
 - cannot send a freiend req to yourself
 - prevent keyboard from blocking input boxes (done)
 - onboarding scores (done)
+- remove friend (done)
 
-- remove friend (only from users list)
 - dropdown select exercise
 - update score manually (setting - select exercise name (dropdown) -> enter weight and reps -> update score button)
 - apply drop down (muscle specific) for onboarding names

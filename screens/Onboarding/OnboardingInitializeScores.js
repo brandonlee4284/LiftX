@@ -238,7 +238,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     buttonContainer: {
         alignItems: 'center',
-        marginTop: 150,
+        marginTop: 100,
     },
     button: {
         width: width * 0.7,
@@ -247,13 +247,6 @@ const createStyles = (theme) => StyleSheet.create({
         alignItems: 'center',
         backgroundColor: theme.primaryColor,
         borderRadius: 10,
-        shadowColor: theme.primaryColor,
-        shadowOpacity: 0.52,
-        shadowRadius: 50,
-        shadowOffset: {
-            width: 0,
-            height: 20,
-        },
     },
     buttonText: {
         color: theme.backgroundColor,

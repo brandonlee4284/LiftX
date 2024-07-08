@@ -303,7 +303,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     notificationContainer: {
         position: 'absolute',
-        transform: [{ translateY: 880 }],
+        transform: [{ translateY: 2.04*width }],
         width: width,
         paddingBottom: 30,
         padding: 10,

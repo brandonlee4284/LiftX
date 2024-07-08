@@ -182,7 +182,7 @@ const createStyles = (theme) => StyleSheet.create({
     genderContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginBottom: 50,
+        marginBottom: 10,
     },
     genderBox: {
         width: width * 0.4,
@@ -223,7 +223,6 @@ const createStyles = (theme) => StyleSheet.create({
     },
     buttonContainer: {
         alignItems: 'center',
-        marginTop: 0
     },
     button: {
         width: width * 0.7,
