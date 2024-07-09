@@ -37,10 +37,12 @@ To-Do list
 - onboarding scores (done)
 - remove friend (done)
 - workout screen improvements (done)
+- dropdown select exercise (done)
+- apply drop down (muscle specific) for onboarding names (done)
+- warning message if exercise is inputed not in exercise.json (done)
+- update score manually (done)
 
-- dropdown select exercise
-- update score manually (setting - select exercise name (dropdown) -> enter weight and reps -> update score button)
-- apply drop down (muscle specific) for onboarding names
+- notifications for updated scores, updated profile, save workout, dowload another persons split, etc.
 - fix scores calculations/display percentiles/stats
 - privacy settings
 - fix persistence

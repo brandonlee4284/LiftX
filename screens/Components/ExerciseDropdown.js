@@ -5,7 +5,7 @@ import exerciseData from '../../exercise_data.json';
 
 const { width } = Dimensions.get('window');
 
-const ExerciseDropdown = ({ value, onChangeText }) => {
+const ExerciseDropdown = ({ value, onChangeText, filter }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
     const [query, setQuery] = useState(value);
@@ -14,14 +14,19 @@ const ExerciseDropdown = ({ value, onChangeText }) => {
 
     useEffect(() => {
         if (query) {
-            const results = Object.keys(exerciseData).filter(exercise =>
-                exercise.toLowerCase().includes(query.toLowerCase())
-            );
+            let results = Object.keys(exerciseData);
+
+            if (filter) {
+                results = results.filter(exercise => exerciseData[exercise].group === filter);
+            }
+
+            results = results.filter(exercise => exercise.toLowerCase().includes(query.toLowerCase()));
             setFilteredData(results);
         } else {
             setFilteredData([]);
+            setShowDropdown(false); // Close dropdown if query is empty
         }
-    }, [query]);
+    }, [query, filter]);
 
     const handleSelect = (item) => {
         setQuery(item);
@@ -43,7 +48,7 @@ const ExerciseDropdown = ({ value, onChangeText }) => {
                 placeholderTextColor={theme.grayTextColor}
             />
             {showDropdown && filteredData.length > 0 && (
-                <ScrollView style={styles.dropdown}>
+                <ScrollView style={styles.dropdown} showsVerticalScrollIndicator={false}>
                     {filteredData.map((item) => (
                         <TouchableOpacity key={item} onPress={() => handleSelect(item)} style={styles.item}>
                             <Text style={styles.itemText}>{item}</Text>
@@ -65,29 +70,28 @@ const createStyles = (theme) => StyleSheet.create({
         textDecorationLine: 'underline',
     },
     dropdown: {
-        backgroundColor: theme.backdropColor,
+        backgroundColor: theme.primaryColor,
         position: 'absolute',
         top: getResponsiveFontSize(26),
-        width: '70%',
+        width: '100%',
         maxHeight: getResponsiveFontSize(80),
-        borderWidth: 1,
-        borderColor: theme.backdropColor,
-        borderRadius: 5,
+        borderRadius: 10,
         zIndex: 999,
     },
     item: {
         padding: getResponsiveFontSize(10),
         borderBottomWidth: 1,
-        borderBottomColor: theme.backdropColor,
+        borderBottomColor: theme.primaryColor,
     },
     itemText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(16),
+        fontWeight: '700'
     },
 });
 
 const getResponsiveFontSize = (baseFontSize) => {
-    const scale = width / 425; 
+    const scale = width / 425;
     return Math.round(baseFontSize * scale);
 };
 

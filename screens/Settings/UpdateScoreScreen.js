@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
@@ -9,10 +9,11 @@ import WarningModal from "../Components/WarningModal";
 import { customExerciseExist, syncScores, updateExerciseStats, updateOverallStats } from "../../api/workout";
 import ExerciseDropdown from "../Components/ExerciseDropdown";
 import SafteyModal from "../Components/SafteyModal";
+import { Ionicons } from "@expo/vector-icons";
 
 const { height, width } = Dimensions.get('window');
 
-const OnboardingInitializeScores = () => {
+const UpdateScoreScreen = () => {
     const navigation = useNavigation();
     const { theme } = useTheme();
     const styles = createStyles(theme);
@@ -25,7 +26,6 @@ const OnboardingInitializeScores = () => {
     ]);
     const [warningModalVisible, setWarningModalVisible] = useState(false);
     const [exerciseWarningModalVisible, setExerciseWarningModalVisible] = useState(false);
-
     
     const handleHome = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -37,7 +37,7 @@ const OnboardingInitializeScores = () => {
                     await updateExerciseStats(exercises);
                     await updateOverallStats();
                     await syncScores();
-                    navigation.navigate('Home');
+                    navigation.navigate('Settings');
                 }
                 
             } catch (error) {
@@ -56,7 +56,7 @@ const OnboardingInitializeScores = () => {
                 await updateOverallStats();
                 await syncScores();
                 setExerciseWarningModalVisible(false);
-                navigation.navigate('Home');
+                navigation.navigate('Settings');
             } catch (error) {
                 console.error('Error in handleHome: ', error);
             }
@@ -105,18 +105,16 @@ const OnboardingInitializeScores = () => {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={{ flex: 1 }}
             >
-            
-
-            <ScrollView  contentContainerStyle={styles.scrollContainer}>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View>
                     <View style={styles.header}>
-                        <Text style={styles.greetingText}>Almost There!</Text>
-                        <TouchableOpacity onPress={handleSkip}>
-                            <Text style={styles.skipText}>skip</Text>
+                        <Text style={styles.greetingText}>Update Scores</Text>
+                        <TouchableOpacity onPress={handleHome} style={styles.saveButton}>
+                            <Text style={styles.saveText}>save</Text>
                         </TouchableOpacity>
+                        <Ionicons name="chevron-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
                     </View>
-                    <Text style={styles.subText}>Find out your strength scores..</Text>
                     <View style={styles.body}>
                         <Text style={styles.title}>Select an exercise for each muscle group:</Text>
                         {exercises.map((exercise, index) => (
@@ -155,11 +153,6 @@ const OnboardingInitializeScores = () => {
                                 </View>
                             </View>
                         ))}
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity onPress={handleHome} style={styles.button}>
-                                <Text style={styles.buttonText}>Get Started</Text>
-                            </TouchableOpacity>
-                        </View>
                     </View>
                     
                     <WarningModal
@@ -200,12 +193,12 @@ const createStyles = (theme) => StyleSheet.create({
         paddingHorizontal: 30,
     },
     scrollContainer: {
-        marginTop: 23,
+        marginTop: 10,
         paddingBottom: 80,
     },
     header: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems: 'center',
     },
     greetingText: {
@@ -214,10 +207,15 @@ const createStyles = (theme) => StyleSheet.create({
         fontWeight: 'bold',
         marginVertical: 10,
     },
-    skipText: {
+    saveButton: {
+        justifyContent: 'center',
+        left: width*0.12
+    },
+    saveText: {
+        position: 'absolute',
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
-        fontWeight: 'bold',
+        
     },
     subText: {
         fontSize: getResponsiveFontSize(22),
@@ -276,22 +274,10 @@ const createStyles = (theme) => StyleSheet.create({
         textDecorationLine: 'underline',
         padding: 3
     },
-    buttonContainer: {
-        alignItems: 'center',
-    },
-    button: {
-        width: width * 0.7,
-        height: getResponsiveFontSize(57),
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: theme.primaryColor,
-        borderRadius: 10,
-    },
-    buttonText: {
-        color: theme.backgroundColor,
-        fontSize: getResponsiveFontSize(18),
-        fontWeight: 'bold',
+    backIcon: {
+        position: 'absolute',
+        left: 0,
     },
 });
 
-export default OnboardingInitializeScores;
+export default UpdateScoreScreen;

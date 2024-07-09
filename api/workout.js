@@ -189,6 +189,21 @@ export const syncScores = async () => {
 };
 
 
+// checks if any exercise names are not in exercise_data.json
+// workouDetails format: [{name, ...}, {name, ...}, ...]
+export const customExerciseExist = async (workoutDetails) => {
+    // Iterate over each workout detail
+    for (let detail of workoutDetails) {
+        // Check if the exercise name is in the exerciseData keys
+        if (!exerciseData.hasOwnProperty(detail.name)) {
+            // Return true if an exercise name is not found
+            return true;
+        }
+    }
+    // Return false if all exercise names are found in exerciseData
+    return false;
+};
+
 // given a dayName and a split, returns the day in that split
 export const getWorkoutDay = async (dayName, split) => {
     try {

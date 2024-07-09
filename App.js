@@ -29,6 +29,7 @@ import EditWorkoutScreen from './screens/Workout/EditWorkoutScreen';
 import AddFriendScreen from './screens/AddFriendScreen';
 import FriendProfileScreen from './screens/Leaderboard/FriendProfileScreen';
 import OnboardingInitializeScores from './screens/Onboarding/OnboardingInitializeScores';
+import UpdateScoreScreen from './screens/Settings/UpdateScoreScreen';
 
 AppRegistry.registerComponent('main', () => MainApp);
 
@@ -84,6 +85,7 @@ function SettingStack() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Settings" component={SettingScreen} />
       <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="UpdateScores" component={UpdateScoreScreen} />
     </Stack.Navigator>
   );
 }

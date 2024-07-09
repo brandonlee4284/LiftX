@@ -870,7 +870,7 @@
         }
     },
     "Dumbbell Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -22.185744744284122,
@@ -957,7 +957,7 @@
         }
     },
     "Bicep Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -38.54907408935429,
@@ -1044,7 +1044,7 @@
         }
     },
     "Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -38.54907408935429,
@@ -1131,7 +1131,7 @@
         }
     },
     "Barbell Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -38.54907408935429,
@@ -5220,7 +5220,7 @@
         }
     },
     "Tricep Pressdown": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -43.17726003998979,
@@ -5307,7 +5307,7 @@
         }
     },
     "Pushdown": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -43.17726003998979,
@@ -5394,7 +5394,7 @@
         }
     },
     "Cable Tricep Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -43.17726003998979,
@@ -5481,7 +5481,7 @@
         }
     },
     "Tricep Pushdown": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -43.17726003998979,
@@ -5568,7 +5568,7 @@
         }
     },
     "Dumbbell Hammer Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -56.496531869468186,
@@ -5655,7 +5655,7 @@
         }
     },
     "Hammer Curls": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -56.496531869468186,
@@ -5742,7 +5742,7 @@
         }
     },
     "Hammer Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -56.496531869468186,
@@ -6873,7 +6873,7 @@
         }
     },
     "EZ Bar Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -43.92369817368292,
@@ -8352,7 +8352,7 @@
         }
     },
     "Skull Crusher": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -72.34702533243228,
@@ -8439,7 +8439,7 @@
         }
     },
     "Skullcrusher": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -72.34702533243228,
@@ -8526,7 +8526,7 @@
         }
     },
     "Lying Tricep Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -72.34702533243228,
@@ -9570,7 +9570,7 @@
         }
     },
     "Barbell Preacher Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -34.10818317835529,
@@ -9657,7 +9657,7 @@
         }
     },
     "Preacher Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -34.10818317835529,
@@ -9918,7 +9918,7 @@
         }
     },
     "Tricep Rope Pushdown": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -41.5621468391615,
@@ -10527,7 +10527,7 @@
         }
     },
     "One Arm Dumbbell Tricep Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -39.96824793798075,
@@ -10614,7 +10614,7 @@
         }
     },
     "Dumbbell Tricep Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -39.96824793798075,
@@ -10875,7 +10875,7 @@
         }
     },
     "Cable Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -16.870097278011286,
@@ -10962,7 +10962,7 @@
         }
     },
     "Biceps Cable Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -16.870097278011286,
@@ -11049,7 +11049,7 @@
         }
     },
     "Standing Cable Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -16.870097278011286,
@@ -11136,7 +11136,7 @@
         }
     },
     "Cable Bicep Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -16.870097278011286,
@@ -11484,7 +11484,7 @@
         }
     },
     "Concentration Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -22.611959771424722,
@@ -11571,7 +11571,7 @@
         }
     },
     "Dumbbell Concentration Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -22.611959771424722,
@@ -12093,7 +12093,7 @@
         }
     },
     "Incline Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -40.6583044337474,
@@ -12180,7 +12180,7 @@
         }
     },
     "Incline Curl With Dumbbell": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -40.6583044337474,
@@ -12267,7 +12267,7 @@
         }
     },
     "Incline Dumbbell Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -40.6583044337474,
@@ -12789,7 +12789,7 @@
         }
     },
     "French Press": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -40.3493762823808,
@@ -12876,7 +12876,7 @@
         }
     },
     "Tricep Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -40.3493762823808,
@@ -15051,7 +15051,7 @@
         }
     },
     "Lying Dumbbell Tricep Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -43.03455851130202,
@@ -15225,7 +15225,7 @@
         }
     },
     "Forearm Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -20.909771034562226,
@@ -15312,7 +15312,7 @@
         }
     },
     "Wrist Curl Palm Up": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -20.909771034562226,
@@ -15399,7 +15399,7 @@
         }
     },
     "Wrist Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -20.909771034562226,
@@ -15660,7 +15660,7 @@
         }
     },
     "Seated Dip": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -21.124213770914963,
@@ -15747,7 +15747,7 @@
         }
     },
     "Tricep Press": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -21.124213770914963,
@@ -15834,7 +15834,7 @@
         }
     },
     "Machine Dip": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -21.124213770914963,
@@ -15921,7 +15921,7 @@
         }
     },
     "Machine Tricep Press": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -21.124213770914963,
@@ -16008,7 +16008,7 @@
         }
     },
     "Seated Dip Machine": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -21.124213770914963,
@@ -17487,7 +17487,7 @@
         }
     },
     "Machine Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -37.36157024154869,
@@ -17574,7 +17574,7 @@
         }
     },
     "Machine Bicep Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -37.36157024154869,
@@ -17835,7 +17835,7 @@
         }
     },
     "Tricep Kickback": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -29.618901688988245,
@@ -17922,7 +17922,7 @@
         }
     },
     "Dumbbell Kickback": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -29.618901688988245,
@@ -18009,7 +18009,7 @@
         }
     },
     "Dumbbell Tricep Kickback": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -29.618901688988245,
@@ -18357,7 +18357,7 @@
         }
     },
     "Reverse Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -33.14115052992858,
@@ -18444,7 +18444,7 @@
         }
     },
     "Reverse Barbell Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -33.14115052992858,
@@ -19575,7 +19575,7 @@
         }
     },
     "Overhead Tricep Cable Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -51.479408366406716,
@@ -19662,7 +19662,7 @@
         }
     },
     "Overhead Cable Tricep Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -51.479408366406716,
@@ -19749,7 +19749,7 @@
         }
     },
     "Tricep Overhead Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -51.479408366406716,
@@ -19836,7 +19836,7 @@
         }
     },
     "Cable Overhead Tricep Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -51.479408366406716,
@@ -20097,7 +20097,7 @@
         }
     },
     "Reverse Wrist Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -18.603093400026836,
@@ -20184,7 +20184,7 @@
         }
     },
     "Strict Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -60.29136033767324,
@@ -20271,7 +20271,7 @@
         }
     },
     "One Arm Cable Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -7.689821665148003,
@@ -20358,7 +20358,7 @@
         }
     },
     "Behind The Back Cable Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -7.689821665148003,
@@ -20445,7 +20445,7 @@
         }
     },
     "One Arm Cable Bicep Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -7.689821665148003,
@@ -20619,7 +20619,7 @@
         }
     },
     "Machine Tricep Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -37.30100245971934,
@@ -20880,7 +20880,7 @@
         }
     },
     "Dumbbell Wrist Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -9.498742767309082,
@@ -22185,7 +22185,7 @@
         }
     },
     "One Arm Dumbbell Preacher Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -27.61228020098102,
@@ -23229,7 +23229,7 @@
         }
     },
     "Seated Dumbbell Tricep Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -30.466044202021806,
@@ -27231,7 +27231,7 @@
         }
     },
     "Incline Hammer Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": 9.127067310885856,
@@ -28797,7 +28797,7 @@
         }
     },
     "Spider Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -18.787533784350714,
@@ -28971,7 +28971,7 @@
         }
     },
     "Reverse Grip Tricep Extension": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -26.960839536604126,
@@ -29058,7 +29058,7 @@
         }
     },
     "Reverse Grip Tricep Pushdown": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -26.960839536604126,
@@ -29145,7 +29145,7 @@
         }
     },
     "JM Press": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -78.21222621878326,
@@ -29667,7 +29667,7 @@
         }
     },
     "Zottman Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -10.761894509502888,
@@ -30276,7 +30276,7 @@
         }
     },
     "Seated Dumbbell Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -28.01664100606422,
@@ -31059,7 +31059,7 @@
         }
     },
     "Tate Press": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -27.06365423022615,
@@ -31842,7 +31842,7 @@
         }
     },
     "Ring Dips": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": 56.512835651610644,
@@ -32016,7 +32016,7 @@
         }
     },
     "Bench Dips": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": 68.4857758921628,
@@ -32103,7 +32103,7 @@
         }
     },
     "Cheat Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -64.68904412932392,
@@ -32364,7 +32364,7 @@
         }
     },
     "Dumbbell Reverse Wrist Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": 12.430557907398608,
@@ -32886,7 +32886,7 @@
         }
     },
     "Cable Hammer Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -50.222688019627256,
@@ -33582,7 +33582,7 @@
         }
     },
     "Dumbbell Reverse Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -23.439489228030723,
@@ -37497,7 +37497,7 @@
         }
     },
     "One Arm Pulldown": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -0.7437895461628017,
@@ -39585,7 +39585,7 @@
         }
     },
     "Overhead Cable Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -30.028430522508074,
@@ -40368,7 +40368,7 @@
         }
     },
     "Incline Cable Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -8.358298080544934,
@@ -40542,7 +40542,7 @@
         }
     },
     "Low Pulley Lying Cable Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -18.927119207864123,
@@ -40629,7 +40629,7 @@
         }
     },
     "Lying Cable Curl": {
-        "group": "arms",
+        "group": "Arms",
         "male": {
             "bw": {
                 "intercept": -18.927119207864123,

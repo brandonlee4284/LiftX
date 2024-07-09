@@ -8,6 +8,8 @@ import * as Haptics from 'expo-haptics';
 import DeleteWorkoutModal from "./WorkoutComponents/DeleteWorkoutModal";
 import WarningModal from "../Components/WarningModal";
 import DraggableFlatList from 'react-native-draggable-flatlist';
+import SafteyModal from "../Components/SafteyModal";
+import { customExerciseExist } from "../../api/workout";
 
 /*
 To-Do list
@@ -36,10 +38,63 @@ const EditWorkoutScreen = ({ navigation, route }) => {
     const [showWarningModal, setShowWarningModal] = useState(false);
     const [showIncompleteExerciseWarningModal, setShowIncompleteExerciseWarningModal] = useState(false);
     const [currentlyOpenSwipeable, setCurrentlyOpenSwipeable] = useState(null);
+    const [exerciseWarningModalVisible, setExerciseWarningModalVisible] = useState(false);
 
     const swipeableRefs = useRef([]);
 
     const handleSaveWorkout = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        // check if there are any empty exercises inputs (name, sets, reps, weight)
+        for (let exercise of exercises) {
+            if (
+                !exercise.name || 
+                exercise.sets === '' || 
+                exercise.reps === '' || 
+                exercise.weight === ''
+            ) {
+                handleIncompleteExerciseWarningModal();
+                return;
+            }
+        }
+
+        if(await customExerciseExist(exercises)){
+            setExerciseWarningModalVisible(true);
+            return;
+        }
+
+        // checks if the day already exists
+        if(await dayExist(splitName, updatedDayName) && updatedDayName != oldDayName) {
+            // do not allow duplicate daynames
+            handleWarningModal();
+            return;
+        } else if(await dayExist(splitName, oldDayName)){
+            // update day
+            // update dayName for active split
+            await editActiveSplitDayName(oldDayName, updatedDayName);
+            // update dayName for private split
+            await editDayName(splitName, oldDayName, updatedDayName);
+        } else {
+            // create new day (add updatedDayName to split)
+            await addDayNameActive(updatedDayName);
+            await addDayNamePrivate(splitName, updatedDayName);
+        }
+        
+        // update exercise active split
+        updateActiveSplitExercises(updatedDayName, exercises);
+
+        const exercisesWithoutId = exercises.map(({ id, ...rest }) => rest);
+        // update exercises private splits
+        updateExercises(splitName, updatedDayName, exercisesWithoutId);
+
+        // update workoutDay and pass to previous screen
+        const newWorkoutDay = {
+            dayName: updatedDayName,
+            exercises: exercises
+        };
+        navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName });
+    };
+
+    const handleForceSaveWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         // check if there are any empty exercises inputs (name, sets, reps, weight)
         for (let exercise of exercises) {
@@ -83,6 +138,7 @@ const EditWorkoutScreen = ({ navigation, route }) => {
             dayName: updatedDayName,
             exercises: exercises
         };
+        setExerciseWarningModalVisible(false);
         navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName });
     };
 
@@ -274,6 +330,16 @@ const EditWorkoutScreen = ({ navigation, route }) => {
                             msg={"Incomplete exercises"}
                             subMsg={"Make sure each exercise has a name, set count, rep count, and weight."}
                             close={handleClose}
+                        />
+                        <SafteyModal
+                            visible={exerciseWarningModalVisible}
+                            close={() => setExerciseWarningModalVisible(false)}
+                            msg={"Invalid Exercises"}
+                            subMsg={"Some exercises are not recognized and won't count towards your score."}
+                            opt1={handleForceSaveWorkout}
+                            opt2={() => setExerciseWarningModalVisible(false)}
+                            opt1Text={"Continue"}
+                            opt2Text={"Go back"}
                         />
                     </View>
                     </TouchableWithoutFeedback>

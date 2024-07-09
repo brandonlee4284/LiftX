@@ -127,7 +127,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             setCompletedExercises(prevExercises => [
                 ...prevExercises,
                 {
-                    name: activeSet.name.toLowerCase().replace(/\s+/g, ''),
+                    name: activeSet.name,
                     sets: activeSet.sets,
                     reps: activeSet.reps,
                     weight: activeSet.weight
@@ -141,7 +141,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             setCompletedExercises(prevCompletedExercises => [
                 ...prevCompletedExercises,
                 {
-                    name: activeSet.name.toLowerCase().replace(/\s+/g, ''),
+                    name: activeSet.name,
                     sets: activeSet.setNumber,
                     reps: activeSet.reps,
                     weight: activeSet.weight

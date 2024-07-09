@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity, TextInput } from 
 import { useTheme } from "../../ThemeProvider";
 import { Swipeable } from 'react-native-gesture-handler';
 import DraggableFlatList from 'react-native-draggable-flatlist';
+import ExerciseDropdown from "../../Components/ExerciseDropdown";
+import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get('window');
 
@@ -29,8 +31,8 @@ const EditExerciseComponent = forwardRef(({
     const [reps, setReps] = useState(numReps.toString());
     const [weightValue, setWeightValue] = useState(weight.toString());
 
-    const leftContent = `${exerciseName} ${notes ? notes : ''}`;
-    const rightContent = `${numSets} sets, ${numReps} reps`;
+    const leftContent = `${exerciseName}`;
+    const rightContent = `${numSets} sets, ${numReps} reps ${notes ? notes : ''}`;
 
     const estimatedLeftWidth = leftContent.length * getResponsiveFontSize(10) * 0.5; // Rough estimate
     const estimatedRightWidth = rightContent.length * getResponsiveFontSize(10) * 0.5; // Rough estimate
@@ -65,7 +67,7 @@ const EditExerciseComponent = forwardRef(({
 
     const renderRightActions = () => (
         <TouchableOpacity onPress={removeExercise} style={styles.deleteButton}>
-            <Text style={styles.deleteButtonText}>Delete</Text>
+            <Ionicons name="trash-outline" size={getResponsiveFontSize(30)} color={theme.textColor} />
         </TouchableOpacity>
     );
 
@@ -77,14 +79,46 @@ const EditExerciseComponent = forwardRef(({
         >
             <View style={[styles.container, shouldWrap ? styles.wrapContainer : null]}>
                 <View style={styles.leftContainer}>
-                    <TextInput
-                        style={styles.exerciseName}
-                        keyboardType="default"
+                    <ExerciseDropdown
                         value={exerciseNameState}
                         onChangeText={handleExerciseNameChange}
-                        placeholder="exercise name"
-                        placeholderTextColor={theme.grayTextColor}
                     />
+                    
+                    
+                </View>
+                <View style={styles.rightContainer}>
+                    <View style={styles.setsRepsRow}>
+                        <TextInput
+                            style={[styles.setsReps, styles.editFont]}
+                            keyboardType="numeric"
+                            value={sets}
+                            onChangeText={handleSetsChange}
+                            placeholder={"0"}
+                            placeholderTextColor={theme.grayTextColor}
+                            maxLength={4}
+                        />
+                        <Text style={styles.setsReps}> sets, </Text>
+                        <TextInput
+                            style={[styles.setsReps, styles.editFont]}
+                            keyboardType="numeric"
+                            value={reps}
+                            onChangeText={handleRepsChange}
+                            placeholder={"0"}
+                            placeholderTextColor={theme.grayTextColor}
+                            maxLength={4}
+                        />
+                        <Text style={styles.setsReps}> reps @ </Text>
+                        <TextInput
+                            style={[styles.setsReps, styles.editFont]}
+                            keyboardType="numeric"
+                            value={weightValue}
+                            onChangeText={handleWeightChange}
+                            placeholder={"0"}
+                            placeholderTextColor={theme.grayTextColor}
+                            maxLength={4}
+                        />
+                        <Text style={styles.setsReps}>lb</Text>
+                    </View>
                     <TextInput
                         style={styles.notes}
                         keyboardType="default"
@@ -92,39 +126,8 @@ const EditExerciseComponent = forwardRef(({
                         onChangeText={handleNotesChange}
                         placeholder="notes"
                         placeholderTextColor={theme.grayTextColor}
+                        maxLength={29}
                     />
-                </View>
-                <View style={styles.rightContainer}>
-                    <TextInput
-                        style={[styles.setsReps, styles.editFont]}
-                        keyboardType="numeric"
-                        value={sets}
-                        onChangeText={handleSetsChange}
-                        placeholder={"0"}
-                        placeholderTextColor={theme.grayTextColor}
-                        maxLength={4}
-                    />
-                    <Text style={styles.setsReps}> sets, </Text>
-                    <TextInput
-                        style={[styles.setsReps, styles.editFont]}
-                        keyboardType="numeric"
-                        value={reps}
-                        onChangeText={handleRepsChange}
-                        placeholder={"0"}
-                        placeholderTextColor={theme.grayTextColor}
-                        maxLength={4}
-                    />
-                    <Text style={styles.setsReps}> reps @ </Text>
-                    <TextInput
-                        style={[styles.setsReps, styles.editFont]}
-                        keyboardType="numeric"
-                        value={weightValue}
-                        onChangeText={handleWeightChange}
-                        placeholder={"0"}
-                        placeholderTextColor={theme.grayTextColor}
-                        maxLength={4}
-                    />
-                    <Text style={styles.setsReps}>lb</Text>
                 </View>
             </View>
         </Swipeable>
@@ -143,6 +146,7 @@ const createStyles = (theme) => StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 40,
         backgroundColor: theme.backgroundColor,
+        
     },
     wrapContainer: {
         flexWrap: 'wrap',
@@ -150,28 +154,37 @@ const createStyles = (theme) => StyleSheet.create({
     leftContainer: {
         flex: 1,
         alignItems: 'flex-start',
+        marginBottom: 80
     },
     rightContainer: {
         alignItems: 'center',
+        flexDirection: 'column',
+        top: -width * 0.007
+    },
+    setsRepsRow: {
         flexDirection: 'row',
-        top: -width * 0.02
+        alignItems: 'center',
     },
     setsReps: {
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
         textAlign: 'right',
     },
+    notes: {
+        fontSize: getResponsiveFontSize(14),
+        color: theme.textColor,
+        opacity: 0.7,
+        textDecorationLine: 'underline',
+        //marginTop: 10,
+        textAlign: 'right',
+        width: '100%',
+    },
     exerciseName: {
         fontSize: getResponsiveFontSize(18),
         color: theme.textColor,
         textDecorationLine: 'underline'
     },
-    notes: {
-        fontSize: getResponsiveFontSize(14),
-        color: theme.textColor,
-        opacity: 0.7,
-        textDecorationLine: 'underline'
-    },
+    
     editFont: {
         color: theme.textColor,
         textDecorationLine: 'underline',

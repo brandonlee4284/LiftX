@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, TextInput, ActivityIndicator, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "./ThemeProvider";
@@ -18,6 +18,7 @@ const AddFriendScreen = () => {
     const [loading, setLoading] = useState(false);
     const [friendRequests, setFriendRequests] = useState([]);
     const [notification, setNotification] = useState({ message: '', visible: false, color: theme.primaryColor });
+    const notificationTimeoutRef = useRef(null);
     // Fetch friend requests on component mount
     useEffect(() => {
         const synchronizeAndFetchRequests = async () => {
@@ -48,9 +49,21 @@ const AddFriendScreen = () => {
         }
     };
 
+    /*
     const showNotification = (message, color) => {
         setNotification({ message, visible: true, color });
         setTimeout(() => setNotification({ message: '', visible: false, color: theme.primaryColor }), 5000);
+    };
+    */
+
+    const showNotification = (message, color) => {
+        if (notificationTimeoutRef.current) {
+            clearTimeout(notificationTimeoutRef.current);
+        }
+        setNotification({ message, visible: true, color });
+        notificationTimeoutRef.current = setTimeout(() => {
+            setNotification({ message: '', visible: false, color: theme.primaryColor });
+        }, 5000);
     };
 
     const handleFindUser = async () => {

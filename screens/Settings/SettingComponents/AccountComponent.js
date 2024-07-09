@@ -21,17 +21,13 @@ const AccountComponent = () => {
         navigation.navigate("ProfileEdit")
     };
 
-    const handleSync = () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        clearAsyncStorage();
-    }
-
-    const handleTest = () => {
-        calculateScore(135,"male",18,130,"Bench")
-    }
-
     const handleOnboard = () => {
         navigation.navigate("Onboarding");
+    }
+
+    const handleUpdateScores = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        navigation.navigate("UpdateScores");
     }
 
 
@@ -71,17 +67,9 @@ const AccountComponent = () => {
                     <Ionicons name="key-outline" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Change Password</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.row}>
+                <TouchableOpacity style={styles.row} onPress={handleUpdateScores}>
                     <MaterialCommunityIcons name="update" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Update Scores</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.row} onPress = {handleSync}>
-                    <MaterialCommunityIcons name="account-sync" size={getResponsiveFontSize(24)} style={styles.icon} />
-                    <Text style={styles.text}>Sync Data</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.row} onPress = {handleTest}>
-                    <MaterialCommunityIcons name="ab-testing" size={getResponsiveFontSize(24)} style={styles.icon} />
-                    <Text style={styles.text}>Test Exercise</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.row} onPress = {handleOnboard}>
                     <MaterialCommunityIcons name="ab-testing" size={getResponsiveFontSize(24)} style={styles.icon} />
