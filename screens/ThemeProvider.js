@@ -15,7 +15,10 @@ export const ThemeProvider = ({ children }) => {
         errorColor: "#E9446A",
         backdropColor: "#09141B",
         navbarColor: "#151616",
-        dangerColor: "rgb(154, 42, 42)"
+        dangerColor: "rgb(114, 47, 55)",
+        positiveColor: '#50C878',
+        negativeColor: '#D22B2B',
+        warningColor: 'rgb(225, 193, 110)',
     });
 
     return (

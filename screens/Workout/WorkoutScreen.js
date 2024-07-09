@@ -7,7 +7,8 @@ import EndWorkoutModal from "./WorkoutComponents/EndWorkoutModal";
 import * as Haptics from 'expo-haptics';
 import ActiveExerciseComponent from "./WorkoutComponents/ActiveExerciseComponent";
 import UpNextActiveExerciseComponent from "./WorkoutComponents/UpNextExerciseComponent";
-import { updateExerciseStats, updateOverallStats } from "../../api/workout";
+import { fetchPrivateWorkout, syncScores, updateExerciseStats, updateOverallStats } from "../../api/workout";
+import { ActivityIndicator } from 'react-native';
 
 
 const { height, width } = Dimensions.get('window');
@@ -16,6 +17,8 @@ const WorkoutScreen = ({ navigation, route }) => {
     const { workoutDay } = route.params;
     const { theme } = useTheme();
     const styles = createStyles(theme);
+    const [isLoading, setIsLoading] = useState(false);
+
     const flattenedSets = workoutDay.exercises.reduce((acc, exercise) => {
         const setsWithNumbers = Array.from({ length: exercise.sets }, (_, setNumber) => ({
             ...exercise,
@@ -73,24 +76,37 @@ const WorkoutScreen = ({ navigation, route }) => {
     const handleEndWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         if (activeSet === null) {
+            setIsLoading(true); // Start loading
             console.log(completedExercises);
             try {
                 await updateExerciseStats(completedExercises);
+                //console.log("Exercise stats updated.");
                 await updateOverallStats();
+                //console.log("Overall stats updated.");
+                await syncScores();
+                //console.log("Scores synced.");
+
+                // get score changes
+                //console.log("Fetching score changes...");
+                let workoutData = await fetchPrivateWorkout();
+                //console.log('Workout data fetched:', workoutData.overallScore);
+
                 navigation.navigate('Home', { 
                     completedWorkout: true, 
                     stopwatch: secondsElapsed, 
                     setsCompleted, 
-                    dayName: workoutDay.dayName 
+                    dayName: workoutDay.dayName,
+                    scoreChanges: workoutData.overallScore
                 });
             } catch (error) {
                 console.error("Error updating stats:", error);
+            } finally {
+                setIsLoading(false); // End loading
             }
-            
         } else {
             setShowEndWorkoutModal(true);
         }
-    }
+    };
 
     // Function to handle feedback buttons
     const handleFeedback = () => {
@@ -133,7 +149,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     };
 
     const handleEnd = () => {
-        console.log(completedExercises);
+        //console.log(completedExercises);
         navigation.navigate('Home', { completedWorkout: false });
         setShowEndWorkoutModal(false);
     };
@@ -145,7 +161,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     // puts the active exercise to the end of the restOfSets
     const handleRequeue = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        console.log("handleRequeue called");
+        //console.log("handleRequeue called");
 
         if (!activeSet || upNextSets.length === 0) {
             // Do not proceed if there's no active set or upNextSets is empty
@@ -240,6 +256,13 @@ const WorkoutScreen = ({ navigation, route }) => {
                 onEndWorkout={handleEnd}
                 onResume={handleResume}
             />
+            {isLoading && (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#fff" />
+                    <Text style={styles.loadingText}>Updating your scores...</Text>
+                </View>
+            )}
+          
         </View>
     );
 };
@@ -362,6 +385,17 @@ const createStyles = (theme) => StyleSheet.create({
         paddingBottom: 20,
         marginTop: 10,
         alignItems: 'center',
+    },
+    loadingContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        fontSize: getResponsiveFontSize(20),
+        color: theme.textColor,
+        paddingTop: 20
     }
 
 });

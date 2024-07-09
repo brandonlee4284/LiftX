@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
 import { loginUser } from "../../api/auth";
 import { GreetingMsg } from "./Components/GreetingMsg";
 import { Input } from "./Components/Input";
@@ -8,7 +8,6 @@ import { Footer } from "./Components/Footer";
 
 import { useTheme } from "../ThemeProvider";
 import * as Haptics from 'expo-haptics';
-
 
 const { height, width } = Dimensions.get('window');
 
@@ -26,37 +25,44 @@ const LoginScreen = ({ navigation }) => {
     };
     
     return (
-        <View style={styles.container}>
-            <View style={styles.circle}/>
-            <GreetingMsg msg="Welcome Back"></GreetingMsg>
-            <View style={styles.inputContainer}>
-                <Input 
-                    mode="email" 
-                    backgroundColor={theme.inputBackgroundColor}
-                    onChangeText={setEmail}
-                    value={email}
-                    placeholder="Email"
-                    placeholderTextColor={theme.textColor}
-                />
-                <Input 
-                    mode="password" 
-                    backgroundColor={theme.inputBackgroundColor}
-                    onChangeText={setPassword}
-                    value={password}
-                    placeholder="Password"
-                    placeholderTextColor={theme.textColor}
-                />
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.container}>
+                <View style={styles.circle}/>
+                <GreetingMsg msg="Welcome Back"></GreetingMsg>
+                <View style={styles.errorContainer}>
+                    {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+                </View>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    style={styles.keyboardAvoidingView}
+                >
+                    <View style={styles.inputContainer}>
+                        <Input 
+                            mode="email" 
+                            backgroundColor={theme.inputBackgroundColor}
+                            onChangeText={setEmail}
+                            value={email}
+                            placeholder="Email"
+                            placeholderTextColor={theme.textColor}
+                        />
+                        <Input 
+                            mode="password" 
+                            backgroundColor={theme.inputBackgroundColor}
+                            onChangeText={setPassword}
+                            value={password}
+                            placeholder="Password"
+                            placeholderTextColor={theme.textColor}
+                        />
+                    </View>
+                </KeyboardAvoidingView>
+                <View style={styles.buttonContainer}>
+                    <SignInButton text="Log In" onPress={handleLogin}/>
+                </View>
+                <View style={styles.footerContainer}>
+                    <Footer msg="New to LiftX?" button="Sign Up" whenClicked="Register" />
+                </View>
             </View>
-            <View style={styles.errorContainer}>
-                {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-            </View>
-            <View style={styles.buttonContainer}>
-                <SignInButton text="Log In" onPress={handleLogin}/>
-            </View>
-            <View style={styles.footerContainer}>
-                <Footer msg="New to LiftX?" button="Sign Up" whenClicked="Register" />
-            </View>
-        </View>
+        </TouchableWithoutFeedback>
     );
 };
 
@@ -66,21 +72,25 @@ const createStyles = (theme) => StyleSheet.create({
         backgroundColor: theme.backgroundColor,
         paddingHorizontal: 20,
     },
-    inputContainer: {
-        alignItems: 'center',
-        marginBottom: height * 0.03,
+    keyboardAvoidingView: {
+        flex: 1,
+        justifyContent: 'center',
     },
     errorContainer: {
         alignItems: 'center',
-        marginBottom: height * 0.03,
+        marginBottom: 20,
+    },
+    inputContainer: {
+        alignItems: 'center',
+        marginBottom: 0,
     },
     buttonContainer: {
         alignItems: 'center',
-        marginBottom: height * 0.02,
+        marginBottom: 20,
     },
     footerContainer: {
         alignItems: 'center',
-        marginBottom: height * 0.08,
+        marginBottom: 100,
     },
     circle: {
         position: 'absolute',
@@ -98,7 +108,6 @@ const createStyles = (theme) => StyleSheet.create({
         fontWeight: "600",
         textAlign: "center"
     },
-    
 });
 
 export default LoginScreen;

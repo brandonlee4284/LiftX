@@ -28,6 +28,7 @@ import NavBar from './screens/Components/Navbar';
 import EditWorkoutScreen from './screens/Workout/EditWorkoutScreen';
 import AddFriendScreen from './screens/AddFriendScreen';
 import FriendProfileScreen from './screens/Leaderboard/FriendProfileScreen';
+import OnboardingInitializeScores from './screens/Onboarding/OnboardingInitializeScores';
 
 AppRegistry.registerComponent('main', () => MainApp);
 
@@ -64,6 +65,7 @@ function LeaderboardStack() {
     <Stack.Navigator>
       <Stack.Screen name="Leaderboard" component={LeaderboardScreen} options={{ headerShown: false }} />
       <Stack.Screen name="FriendProfile" component={FriendProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="PreviewProfileWorkout" component={PreviewProfileWorkoutScreen} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -99,14 +101,8 @@ function OnboardingStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="OnboardingScreen" component={OnboardingScreen} />
-    </Stack.Navigator>
-  );
-}
-
-function OnboardingQuestionsStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="OnboardingQuestionsScreen" component={OnboardingQuestionsScreen} />
+      <Stack.Screen name="OnboardingInitializeScores" component={OnboardingInitializeScores} />
     </Stack.Navigator>
   );
 }
@@ -150,7 +146,6 @@ function RootNavigator() {
           <RootStack.Screen name="Setting" component={SettingStack} />
           <RootStack.Screen name="AddFriend" component={AddFriendStack} />
           <RootStack.Screen name="Onboarding" component={OnboardingStack} />
-          <RootStack.Screen name="OnboardingQuestions" component={OnboardingQuestionsStack} />
           {/* ADD DMS????? <-?, FRIENDS TAB */}
         </>
       ) : (

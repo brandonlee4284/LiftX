@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import { createNewUser } from "../../api/auth";
 import { GreetingMsg } from "./Components/GreetingMsg";
 import { Input } from "./Components/Input";
@@ -8,10 +8,7 @@ import { useTheme } from "../ThemeProvider";
 import { Footer } from "./Components/Footer";
 import * as Haptics from 'expo-haptics';
 
-
 const { height, width } = Dimensions.get('window');
-
-
 
 const RegisterScreen = ({ navigation }) => {
     const [username, setUsername] = useState("");
@@ -26,81 +23,92 @@ const RegisterScreen = ({ navigation }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
-
     const handleSignUp = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         createNewUser(gender, weight, age, displayName, username, email, password, setErrorMessage, navigation);
     };
 
     return (
-        <View style={styles.container}>
-                <View style={styles.circle}/>
-                <GreetingMsg msg="Create Account"></GreetingMsg>
-                <View style={styles.errorContainer}>
-                    {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-                </View>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+        >
+            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <View style={styles.innerContainer}>
+                        <View style={styles.circle} />
+                        <GreetingMsg msg="Create Account" />
+                        <View style={styles.errorContainer}>
+                            {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
+                        </View>
 
-                <View style={styles.inputContainer}>
-                    <Input
-                        mode="displayName"
-                        onChangeText={setDisplayName}
-                        value={displayName}
-                        backgroundColor="#2C3033"
-                        placeholderTextColor={theme.textColor}
-                    />
+                        <View style={styles.inputContainer}>
+                            <Input
+                                mode="displayName"
+                                onChangeText={setDisplayName}
+                                value={displayName}
+                                backgroundColor="#2C3033"
+                                placeholderTextColor={theme.textColor}
+                            />
 
-                    <Input
-                        mode="username"
-                        onChangeText={setUsername}
-                        value={username}
-                        backgroundColor="#2C3033"
-                        placeholderTextColor={theme.textColor}
-                    />
+                            <Input
+                                mode="username"
+                                onChangeText={setUsername}
+                                value={username}
+                                backgroundColor="#2C3033"
+                                placeholderTextColor={theme.textColor}
+                            />
 
-                    <Input
-                        mode="email"
-                        onChangeText={setEmail}
-                        value={email}
-                        backgroundColor="#2C3033"
-                        placeholderTextColor={theme.textColor}
-                    />
+                            <Input
+                                mode="email"
+                                onChangeText={setEmail}
+                                value={email}
+                                backgroundColor="#2C3033"
+                                placeholderTextColor={theme.textColor}
+                            />
 
-                    <Input
-                        mode="password"
-                        onChangeText={setPassword}
-                        value={password}
-                        backgroundColor="#2C3033"
-                        placeholderTextColor={theme.textColor}
-                    />
-                </View>
+                            <Input
+                                mode="password"
+                                onChangeText={setPassword}
+                                value={password}
+                                backgroundColor="#2C3033"
+                                placeholderTextColor={theme.textColor}
+                            />
+                        </View>
 
-                <View style={styles.buttonContainer}>
-                    <SignInButton text="Sign Up" onPress={handleSignUp}/>
-                </View>
+                        <View style={styles.buttonContainer}>
+                            <SignInButton text="Sign Up" onPress={handleSignUp} />
+                        </View>
 
-                <View style={styles.footerContainer}>
-                    <Footer msg="Have an account?" button="Log In" whenClicked="Login" />
-                </View>
-
-        
-        </View>
+                        <View style={styles.footerContainer}>
+                            <Footer msg="Have an account?" button="Log In" whenClicked="Login" />
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
-const createStyles = (theme) => StyleSheet.create({    
+const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.backgroundColor,
+    },
+    innerContainer: {
+        flex: 1,
         paddingHorizontal: 20,
+        justifyContent: 'center',
     },
     circle: {
         position: 'absolute',
-        width: width * 1.7, 
-        height: width * 1.7, 
+        width: width * 1.7,
+        height: width * 1.7,
         borderRadius: (width * 1.7) / 2,
         backgroundColor: theme.backdropColor,
-        bottom: -width * 0.25,  
-        right: -width * 0.40,  
+        bottom: -width * 0.25,
+        right: -width * 0.40,
         zIndex: -1,
     },
     inputContainer: {
@@ -123,7 +131,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: "#E9446A", // Error text color
         fontSize: 13,
         fontWeight: "600",
-        textAlign: "center"
+        textAlign: "center",
     },
 });
 

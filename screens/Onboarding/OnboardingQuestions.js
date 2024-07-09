@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import { getDisplayName, setUserWeight, setUserGender, setUserAge } from '../../api/profile';
 import * as Haptics from 'expo-haptics';
+import WarningModal from "../Components/WarningModal";
 
 
 const { height, width } = Dimensions.get('window');
@@ -18,6 +19,8 @@ const OnboardingQuestionsScreen = () => {
    const [gender, setGender] = useState(null);
    const [weight, setWeight] = useState('');
    const [age, setAge] = useState('');
+   const [warningModalVisible, setWarningModalVisible] = useState(false);
+   const [warningMessage, setWarningMessage] = useState('');
 
    useEffect(() => {
         async function fetchData() {
@@ -37,11 +40,26 @@ const OnboardingQuestionsScreen = () => {
 
     const handleHome = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        if (!gender) {
+            setWarningMessage('Please select your gender');
+            setWarningModalVisible(true);
+            return;
+        }
+        if (!weight) {
+            setWarningMessage('Please enter your weight');
+            setWarningModalVisible(true);
+            return;
+        }
+        if (!age) {
+            setWarningMessage('Please enter your age');
+            setWarningModalVisible(true);
+            return;
+        }
         try {
             await setUserGender(gender);
             await setUserWeight(weight);
             await setUserAge(age);
-            navigation.navigate('Home');
+            navigation.navigate('OnboardingInitializeScores');
         } catch (error) {
             console.error('Error in handleHome: ', error);
         }
@@ -56,27 +74,7 @@ const OnboardingQuestionsScreen = () => {
                 <Text style={styles.greetingText}>Hello {displayName}!</Text>
                 <Text style={styles.subText}>Tell us more about you..</Text>
                 <View style={styles.body}>
-                    <Text style={styles.title}>Select your gender</Text>
-                    <View style={styles.genderContainer}>
-                        <TouchableOpacity
-                            style={[
-                                styles.genderBox,
-                                gender === 'male' && styles.selectedGenderBox
-                            ]}
-                            onPress={() => toggleGender('male')}
-                        >
-                            <Fontisto name="male" size={getResponsiveFontSize(54)} color={theme.textColor} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[
-                                styles.genderBox,
-                                gender === 'female' && styles.selectedGenderBox
-                            ]}
-                            onPress={() => toggleGender('female')}
-                        >
-                            <Fontisto name="female" size={getResponsiveFontSize(54)} color={theme.textColor} />
-                        </TouchableOpacity>
-                    </View>
+                    
                     <Text style={styles.title}>Enter your weight</Text>
                     <View style={styles.weightContainer}>
                         <TextInput
@@ -98,14 +96,41 @@ const OnboardingQuestionsScreen = () => {
                             placeholderTextColor={theme.textColor}
                         />
                     </View>
+                    <Text style={styles.title}>Select your gender</Text>
+                    <View style={styles.genderContainer}>
+                        <TouchableOpacity
+                            style={[
+                                styles.genderBox,
+                                gender === 'male' && styles.selectedGenderBox
+                            ]}
+                            onPress={() => toggleGender('male')}
+                        >
+                            <Fontisto name="male" size={getResponsiveFontSize(54)} color={theme.textColor} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[
+                                styles.genderBox,
+                                gender === 'female' && styles.selectedGenderBox
+                            ]}
+                            onPress={() => toggleGender('female')}
+                        >
+                            <Fontisto name="female" size={getResponsiveFontSize(54)} color={theme.textColor} />
+                        </TouchableOpacity>
+                    </View>
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity onPress={handleHome} style={styles.button}>
                             <Text style={styles.buttonText}>
-                                Get Started
+                                Next
                             </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
+                <WarningModal
+                    visible={warningModalVisible}
+                    close={() => setWarningModalVisible(false)}
+                    msg={"Incomplete Fields"}
+                    subMsg={warningMessage}
+                />
             </View>
         </TouchableWithoutFeedback>
     );
@@ -157,7 +182,7 @@ const createStyles = (theme) => StyleSheet.create({
     genderContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginBottom: 50,
+        marginBottom: 10,
     },
     genderBox: {
         width: width * 0.4,
@@ -198,7 +223,6 @@ const createStyles = (theme) => StyleSheet.create({
     },
     buttonContainer: {
         alignItems: 'center',
-        marginTop: 0
     },
     button: {
         width: width * 0.7,

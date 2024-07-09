@@ -29,7 +29,7 @@ const OnboardingScreen = () => {
             setCurrentSlide(currentSlide + 1);
             carouselRef.current?.scrollTo({ index: currentSlide + 1, animated: true });
         } else {
-            navigation.navigate('OnboardingQuestions'); // change to OnboardingQuestions
+            navigation.navigate('OnboardingQuestionsScreen'); // change to OnboardingQuestions
         }
     };
 

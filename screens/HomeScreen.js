@@ -15,26 +15,37 @@ import * as Haptics from 'expo-haptics';
 import AddSplitComponent from "./HomeComponents/AddSplitComponent";
 import DeleteWorkoutModal from "./Workout/WorkoutComponents/DeleteWorkoutModal";
 import WarningModal from "./Components/WarningModal";
-import { synchronizeFriends } from "../api/friends";
 
 /*
 To-Do list
-- unique usernames
-- info modals (leaderboard, scores in profile)
-- download another persons split
-- redesign edit split name modal
-- sort leaderboard
-- display scores/stats (profile/friendprofile)
-- update scores and stats after completing workout (display changes in the modal popup)
-- privacy settings
-- change password
-- logout warning modal
-- fix persistence
-- make it required to do onboarding questionaire (make modal if any info is not filled)
-- remove friend
-- update friend count
+- unique usernames (done)
+- info modal - leaderboard, scores in profile (done)
+- make it required to do onboarding questionaire (done)
+- sort leaderboard (done)
+- display scores (done)
+- logout warning modal (done)
+- update friend count (done)
+- show score change in end workout modal (done)
+- download another persons split (done)
+- show 1 rm in previewWorkout under exercise name (done)
+- send friend req/accept friend req alerts (done)
+- only send one friend req to a account (done)
+- cannot send a friend req to a friend (done)
+- cannot send a friend req to a friend that has already sent you one (done)
+- cannot send a freiend req to yourself
+- prevent keyboard from blocking input boxes (done)
+- onboarding scores (done)
+- remove friend (done)
+
+- dropdown select exercise
 - update score manually (setting - select exercise name (dropdown) -> enter weight and reps -> update score button)
-- in onboarding pt2 users enter their active split and use these exercises and weight to initialize score
+- apply drop down (muscle specific) for onboarding names
+- fix scores calculations/display percentiles/stats
+- privacy settings
+- fix persistence
+- email verification
+- change password/forgot password login screen
+
 */
 
 const { height, width } = Dimensions.get('window');
@@ -56,7 +67,8 @@ const HomeScreen = ({ navigation, route }) => {
         completedWorkout = false,
         stopwatch = '00:00:00',
         setsCompleted = 0,
-        dayName = 'Unknown'
+        dayName = 'Unknown',
+        scoreChanges = {}
     } = route.params || {};
 
     useEffect(() => {
@@ -325,7 +337,7 @@ const HomeScreen = ({ navigation, route }) => {
                         </View>
                 </View>
            </ScrollView>
-            <CompleteWorkoutModal visible={modalVisible} onClose={handleCloseModal} dayName={dayName} time={formatTime(stopwatch)} setsCompleted={setsCompleted} />
+            <CompleteWorkoutModal visible={modalVisible} onClose={handleCloseModal} dayName={dayName} time={formatTime(stopwatch)} setsCompleted={setsCompleted} scoreChanges={scoreChanges}/>
             <DeleteWorkoutModal
                 visible={showEndWorkoutModal}
                 cancel={handleCancel}
