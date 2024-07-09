@@ -7,6 +7,7 @@ import { getDisplayName, setUserWeight, setUserGender, setUserAge } from '../../
 import * as Haptics from 'expo-haptics';
 import WarningModal from "../Components/WarningModal";
 import { syncScores, updateExerciseStats, updateOverallStats } from "../../api/workout";
+import ExerciseDropdown from "../Components/ExerciseDropdown";
 
 const { height, width } = Dimensions.get('window');
 
@@ -75,12 +76,11 @@ const OnboardingInitializeScores = () => {
 
     // Rendering
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <KeyboardAvoidingView
-                style={styles.container}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.container}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+            <ScrollView  contentContainerStyle={styles.scrollContainer}>
+
                     <View style={styles.header}>
                         <Text style={styles.greetingText}>Almost There!</Text>
                         <TouchableOpacity onPress={handleSkip}>
@@ -95,11 +95,7 @@ const OnboardingInitializeScores = () => {
                                 <Text style={styles.muscleText}>{exercise.muscle}</Text>
                                 <View style={[styles.exerciseContainer, shouldWrap ? styles.wrapContainer : null]}>
                                     <View style={styles.leftContainer}>
-                                        <TextInput
-                                            style={styles.exerciseName}
-                                            keyboardType="default"
-                                            placeholder="exercise name"
-                                            placeholderTextColor={theme.grayTextColor}
+                                        <ExerciseDropdown
                                             value={exercise.name}
                                             onChangeText={(text) => handleInputChange(index, 'name', text)}
                                         />
@@ -135,16 +131,17 @@ const OnboardingInitializeScores = () => {
                             </TouchableOpacity>
                         </View>
                     </View>
-                </ScrollView>
                 <WarningModal
                     visible={warningModalVisible}
                     close={() => setWarningModalVisible(false)}
                     msg={"Incomplete Fields"}
                     subMsg={"Make sure to fill in all fields before continuing"}
                 />
-            </KeyboardAvoidingView>
-            
-        </TouchableWithoutFeedback>
+                
+            </ScrollView>
+            </TouchableWithoutFeedback>
+
+            </View>
     );
 };
 
@@ -157,11 +154,12 @@ const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.backgroundColor,
-        paddingTop: 78,
-        paddingHorizontal: 40
+        paddingTop: 40,
+        paddingHorizontal: 30,
     },
     scrollContainer: {
-        flexGrow: 1,
+        marginTop: 23,
+        paddingBottom: 80,
     },
     header: {
         flexDirection: 'row',
@@ -195,7 +193,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontWeight: '700'
     },
     muscleGroup: {
-        marginBottom: 20,
+        marginBottom: 100,
     },
     muscleText: {
         fontSize: getResponsiveFontSize(18),
@@ -219,12 +217,12 @@ const createStyles = (theme) => StyleSheet.create({
     rightContainer: {
         alignItems: 'center',
         flexDirection: 'row',
-        top: -width * 0.006
     },
     setsReps: {
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
         textAlign: 'right',
+        bottom: 0.0069*width
     },
     exerciseName: {
         fontSize: getResponsiveFontSize(16),
@@ -238,7 +236,6 @@ const createStyles = (theme) => StyleSheet.create({
     },
     buttonContainer: {
         alignItems: 'center',
-        marginTop: 100,
     },
     button: {
         width: width * 0.7,

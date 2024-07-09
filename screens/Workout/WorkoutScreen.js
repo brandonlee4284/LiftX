@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, FlatList, Dimensions, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import WorkoutButtonComponent from "./WorkoutComponents/WorkoutButtonComponent";
-import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Feather, Octicons } from '@expo/vector-icons';
 import EndWorkoutModal from "./WorkoutComponents/EndWorkoutModal";
 import * as Haptics from 'expo-haptics';
 import ActiveExerciseComponent from "./WorkoutComponents/ActiveExerciseComponent";
@@ -56,6 +56,9 @@ const WorkoutScreen = ({ navigation, route }) => {
 
     // completed exercises ([{name sets reps weight}, ...])
     const [completedExercises, setCompletedExercises] = useState([]);
+
+    const [notification, setNotification] = useState({ message: '', visible: false, color: theme.primaryColor });
+    const notificationTimeoutRef = useRef(null);
 
     useEffect(() => {
         // Start the stopwatch interval
@@ -133,6 +136,7 @@ const WorkoutScreen = ({ navigation, route }) => {
 
             setActiveSet(nextActiveSet);
             setSetsCompleted(prevCompleted => prevCompleted + 1);
+            showNotification('Set completed and applied to your score!', theme.positiveColor);
         } else if(activeSet != null) {
             setCompletedExercises(prevCompletedExercises => [
                 ...prevCompletedExercises,
@@ -144,18 +148,9 @@ const WorkoutScreen = ({ navigation, route }) => {
                 }
             ]);
             setActiveSet(null);
+            showNotification('Set completed and applied to your score!', theme.positiveColor);
             
         } 
-    };
-
-    const handleEnd = () => {
-        //console.log(completedExercises);
-        navigation.navigate('Home', { completedWorkout: false });
-        setShowEndWorkoutModal(false);
-    };
-
-    const handleResume = () => {
-        setShowEndWorkoutModal(false);
     };
 
     // puts the active exercise to the end of the restOfSets
@@ -191,9 +186,50 @@ const WorkoutScreen = ({ navigation, route }) => {
             setActiveSet(nextActiveSet);
             setUpNextSets(newUpNextSets);
             setRestOfSets(updatedRestOfSets);
+            showNotification('Set requeued to the end of workout', theme.warningColor);
         }
     };
 
+    // when next button is clicked set doesn't get added to score calculations
+    const handleNext = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        if (upNextSets.length > 0) {
+            const nextActiveSet = upNextSets[0] || null;
+            let newUpNextSets = [...upNextSets];
+            if (restOfSets.length > 0) {
+                newUpNextSets.push(restOfSets[0]);
+                setRestOfSets(restOfSets.slice(1));
+            }
+            const updatedUpNext = [...newUpNextSets.slice(1)];
+            setUpNextSets(updatedUpNext);
+            setActiveSet(nextActiveSet);
+            setSetsCompleted(prevCompleted => prevCompleted + 1);
+            showNotification('Set skipped and will not affect your score', theme.dangerColor);
+        } else if(activeSet != null) {
+            setActiveSet(null);
+            showNotification('Set skipped and will not affect your score', theme.dangerColor);
+        } 
+    };
+
+    const handleEnd = () => {
+        //console.log(completedExercises);
+        navigation.navigate('Home', { completedWorkout: false });
+        setShowEndWorkoutModal(false);
+    };
+
+    const handleResume = () => {
+        setShowEndWorkoutModal(false);
+    };
+
+    const showNotification = (message, color) => {
+        if (notificationTimeoutRef.current) {
+            clearTimeout(notificationTimeoutRef.current);
+        }
+        setNotification({ message, visible: true, color });
+        notificationTimeoutRef.current = setTimeout(() => {
+            setNotification({ message: '', visible: false, color: theme.primaryColor });
+        }, 5000);
+    };
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
@@ -237,14 +273,14 @@ const WorkoutScreen = ({ navigation, route }) => {
                             <MaterialCommunityIcons name="reload" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
                         </TouchableOpacity>
                         }
-                        <TouchableOpacity style={styles.largeButton} onPress={handleFeedback}>
+                        <TouchableOpacity style={styles.largeButton} onPress={handleNext}>
                             <Feather name="skip-forward" size={getResponsiveFontSize(30)} color={theme.backgroundColor} />
                         </TouchableOpacity>
-                        {/*
+                        {
                         <TouchableOpacity style={styles.smallButton} onPress={handleFeedback}>
-                            <Feather name="award" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
+                            <Octicons name="thumbsup" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
                         </TouchableOpacity>
-                        */}
+                        }
                     </View>
                     <View style={styles.buttonContainer}>
                         <WorkoutButtonComponent text="End Workout" onPress={handleEndWorkout} />
@@ -260,6 +296,11 @@ const WorkoutScreen = ({ navigation, route }) => {
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color="#fff" />
                     <Text style={styles.loadingText}>Updating your scores...</Text>
+                </View>
+            )}
+            {notification.visible && (
+                <View style={[styles.notificationContainer, { backgroundColor: notification.color }]}>
+                    <Text style={styles.notificationText}>{notification.message}</Text>
                 </View>
             )}
           
@@ -349,7 +390,6 @@ const createStyles = (theme) => StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginVertical: 30,
-        left: -width * 0.1
     },
     smallButton: {
         width: width * 0.1,
@@ -396,7 +436,21 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(20),
         color: theme.textColor,
         paddingTop: 20
-    }
+    },
+    notificationContainer: {
+        position: 'absolute',
+        width: width,
+        paddingTop: 50,
+        padding: 10,
+        backgroundColor: theme.primaryColor,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    notificationText: {
+        color: theme.textColor,
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
 
 });
 

@@ -36,6 +36,7 @@ To-Do list
 - prevent keyboard from blocking input boxes (done)
 - onboarding scores (done)
 - remove friend (done)
+- workout screen improvements (done)
 
 - dropdown select exercise
 - update score manually (setting - select exercise name (dropdown) -> enter weight and reps -> update score button)
