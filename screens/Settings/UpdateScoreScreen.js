@@ -26,8 +26,10 @@ const UpdateScoreScreen = () => {
     ]);
     const [warningModalVisible, setWarningModalVisible] = useState(false);
     const [exerciseWarningModalVisible, setExerciseWarningModalVisible] = useState(false);
+
     
-    const handleHome = async () => {
+    
+    const handleSettings = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         if (areFieldsComplete()) {
             try {
@@ -37,7 +39,7 @@ const UpdateScoreScreen = () => {
                     await updateExerciseStats(exercises);
                     await updateOverallStats();
                     await syncScores();
-                    navigation.navigate('Settings');
+                    navigation.navigate('Settings',  { showNotification: { message: "Scores successfully updated!", color: theme.primaryColor } });
                 }
                 
             } catch (error) {
@@ -56,7 +58,7 @@ const UpdateScoreScreen = () => {
                 await updateOverallStats();
                 await syncScores();
                 setExerciseWarningModalVisible(false);
-                navigation.navigate('Settings');
+                navigation.navigate('Settings',  { showNotification: { message: "Scores successfully updated!", color: theme.primaryColor } });
             } catch (error) {
                 console.error('Error in handleHome: ', error);
             }
@@ -110,7 +112,7 @@ const UpdateScoreScreen = () => {
                 <View>
                     <View style={styles.header}>
                         <Text style={styles.greetingText}>Update Scores</Text>
-                        <TouchableOpacity onPress={handleHome} style={styles.saveButton}>
+                        <TouchableOpacity onPress={handleSettings} style={styles.saveButton}>
                             <Text style={styles.saveText}>save</Text>
                         </TouchableOpacity>
                         <Ionicons name="chevron-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
@@ -176,6 +178,7 @@ const UpdateScoreScreen = () => {
 
             </ScrollView>
             </KeyboardAvoidingView>
+            
         </View>
     );
 };
@@ -189,11 +192,11 @@ const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: theme.backgroundColor,
-        paddingTop: 40,
+        paddingTop: height > 850 ? 50 : 40,
         paddingHorizontal: 30,
     },
     scrollContainer: {
-        marginTop: 10,
+        marginTop: 0,
         paddingBottom: 80,
     },
     header: {
@@ -278,6 +281,7 @@ const createStyles = (theme) => StyleSheet.create({
         position: 'absolute',
         left: 0,
     },
+    
 });
 
 export default UpdateScoreScreen;

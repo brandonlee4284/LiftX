@@ -12,7 +12,7 @@ const AnimatedProgressBar = ({ progress, color, maxValue = 1000 }) => {
 
     useEffect(() => {
         Animated.timing(widthAnim, {
-            toValue: (progress / maxValue) * width * 0.7,
+            toValue: (progress / maxValue) * width * 0.707,
             duration: 3000,
             easing: Easing.linear,
             useNativeDriver: false,
@@ -21,7 +21,9 @@ const AnimatedProgressBar = ({ progress, color, maxValue = 1000 }) => {
 
     return (
         <View style={styles.progressBarWrapper}>
+            <Text style={styles.progressText}>{`${(progress).toFixed(2)}/1000`}</Text>
             <View style={styles.progressBarContainer}>
+                
                 <Animated.View
                     style={[
                         styles.progressBarFill,
@@ -32,7 +34,7 @@ const AnimatedProgressBar = ({ progress, color, maxValue = 1000 }) => {
                     ]}
                 />
             </View>
-            <Text style={styles.progressText}>{`${(progress).toFixed(2)}/1000`}</Text>
+            
         </View>
     );
 };
@@ -44,12 +46,12 @@ const getResponsiveFontSize = (baseFontSize) => {
 
 const createStyles = (theme) => StyleSheet.create({
     progressBarWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center',
+        //flexDirection: 'row',
+        //alignItems: 'center',
     },
     progressBarContainer: {
         height: width * 0.015,
-        width: '75%',
+        width: '100%',
         backgroundColor: theme.textColor,
         borderRadius: 10,
         overflow: 'hidden',
@@ -57,13 +59,15 @@ const createStyles = (theme) => StyleSheet.create({
     },
     progressBarFill: {
         height: '100%',
+        //width: '15%',
         borderRadius: 10,
     },
     progressText: {
-        marginLeft: 10,
+        //marginLeft: 10,
         fontSize: getResponsiveFontSize(12),
         color: theme.textColor,
-        marginTop: 7,
+        marginTop: 5,
+        textAlign: 'right'
     },
 });
 

@@ -29,16 +29,6 @@ const ProfileScreen = ({ navigation, route }) => {
     const categories = ["overall", "chest", "back", "shoulders", "arms", "legs"];
     const [modalVisible, setModalVisible] = useState(false);
 
-    const stats = {
-        overall: 85,
-        chest: 75,
-        back: 80,
-        shoulders: 78,
-        arms: 76,
-        legs: 82
-    } // placeholder stats
-    
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -46,6 +36,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 const userData = await fetchPublicUserData();
                 if (userData) {
                     setPublicUserData(userData);
+                    
                 }
     
                 // Fetch active split day names
@@ -60,6 +51,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 if (fetchedUserScores && fetchedUserScores.displayScores) {
                     setUserScores(fetchedUserScores.displayScores);
                 }
+
                 
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -78,8 +70,8 @@ const ProfileScreen = ({ navigation, route }) => {
             <ScoreCard 
                 key={index}
                 category={capitalize(category)}
-                score={userScores[category]}
-                stat={stats[category]}
+                score={userScores[category].score}
+                change={userScores[category].change}
             />
         ));
     };
@@ -98,7 +90,9 @@ const ProfileScreen = ({ navigation, route }) => {
         <View style={styles.container}>
             <NavBar activeRoute="ProfileNav"/>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
+                {/*
                 <ImageBackground source={backgroundImage} style={styles.backgroundImage} resizeMode="contain"/>
+                */}
                 <Header page="Profile" />
                 <View style={styles.body}>
                     {/* User info */}
@@ -120,13 +114,15 @@ const ProfileScreen = ({ navigation, route }) => {
                         {activeSplitDays.length > 0 ? (
                             <Carousel
                                 width={width}
-                                height={width * 0.5}
+                                // height={width * 0.5}
+                                height={width * 0.6}
                                 data={activeSplitDays.map(day => day.dayName)}
                                 renderItem={({ item }) => <DayCard name={item} onPress={() => handleSelectDay(item, activeSplit)} />}
                                 mode="parallax"
                                 modeConfig={{
                                     parallaxScrollingScale: 1,
-                                    parallaxScrollingOffset: getResponsiveFontSize(250),
+                                    parallaxScrollingOffset: getResponsiveFontSize(210),
+                                    //parallaxScrollingOffset: getResponsiveFontSize(250),
                                     parallaxAdjacentItemScale: 0.65,
                                     parallaxAdjacentItemOpacity: 0.8,
                                 }}
@@ -158,7 +154,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 visible={modalVisible}
                 close={() => setModalVisible(false)}
                 msg="Scores"
-                subMsg="write score description."
+                subMsg="Scores, out of 1000, reflect your strength across different muscle groups and update automatically after workouts. Your overall score is a composite of all muscle group scores."
             />
         </View>
     );
@@ -172,7 +168,7 @@ const getResponsiveFontSize = (baseFontSize) => {
 const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        paddingTop: 40,
+        paddingTop: height > 850 ? 40 : 30,
         backgroundColor: theme.backgroundColor
     },
     backgroundImage: {

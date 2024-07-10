@@ -5,8 +5,9 @@ import { useTheme } from "../ThemeProvider";
 import { fetchPublicUserData, updateUserProfile } from "../../api/profile";
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const ProfileEditScreen = ({ navigation }) => {
     const { theme } = useTheme();
@@ -15,6 +16,7 @@ const ProfileEditScreen = ({ navigation }) => {
     const [profilePicture, setProfilePicture] = useState("");
     const [displayName, setDisplayName] = useState("");
     const [bio, setBio] = useState("");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -55,12 +57,67 @@ const ProfileEditScreen = ({ navigation }) => {
         }
     };
 
+    /*
     const handleSaveProfile = async () => {
         // Save profile logic here
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         await updateUserProfile(profilePicture, displayName, bio);
+        navigation.navigate('Settings',  { showNotification: { message: "Profile Saved!", color: theme.primaryColor } });
+    };
 
-        navigation.goBack();
+    rules_version = '2';
+
+    // Craft rules based on data in your Firestore database
+    // allow write: if firestore.get(
+    //    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
+    service firebase.storage {
+    match /b/{bucket}/o {
+
+        // This rule allows anyone with your Storage bucket reference to view, edit,
+        // and delete all data in your Storage bucket. It is useful for getting
+        // started, but it is configured to expire after 30 days because it
+        // leaves your app open to attackers. At that time, all client
+        // requests to your Storage bucket will be denied.
+        //
+        // Make sure to write security rules for your app before that time, or else
+        // all client requests to your Storage bucket will be denied until you Update
+        // your rules
+        match /{allPaths=**} {
+        allow read, write: if request.time < timestamp.date(2024, 6, 20);
+        }
+    }
+    }
+    */
+
+    const handleSaveProfile = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        setLoading(true);
+
+        try {
+            let imageUrl = profilePicture;
+            if (profilePicture && profilePicture.startsWith("file://")) {
+                const response = await fetch(profilePicture);
+                const blob = await response.blob();
+
+                const storage = getStorage();
+                if (publicUserData.username) {
+                    const storageRef = ref(storage, `profile_pictures/${publicUserData.username}.jpg`);
+                    await uploadBytes(storageRef, blob);
+
+                    imageUrl = await getDownloadURL(storageRef);
+                } else {
+                    console.error('Username is undefined');
+                    throw new Error('Username is undefined');
+                }
+            }
+            await updateUserProfile(imageUrl, displayName, bio);
+            navigation.navigate('Settings',  { showNotification: { message: "Profile Saved!", color: theme.primaryColor } });
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            alert('Failed to save profile. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -120,7 +177,7 @@ const createStyles = (theme) => StyleSheet.create({
         backgroundColor: theme.backgroundColor
     },
     headerContainer: {
-        marginTop: 60,
+        marginTop: height > 850 ? 60 : 50,
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
@@ -200,7 +257,7 @@ const createStyles = (theme) => StyleSheet.create({
     buttonContainer: {
         width: '100%',
         alignItems: 'center',
-        paddingTop: 250
+        paddingTop: getResponsiveFontSize(250)
     }
 });
 

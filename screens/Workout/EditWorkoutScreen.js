@@ -91,7 +91,7 @@ const EditWorkoutScreen = ({ navigation, route }) => {
             dayName: updatedDayName,
             exercises: exercises
         };
-        navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName });
+        navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName, showNotification: { message: "Workout Saved!", color: theme.primaryColor }  });
     };
 
     const handleForceSaveWorkout = async () => {
@@ -139,7 +139,7 @@ const EditWorkoutScreen = ({ navigation, route }) => {
             exercises: exercises
         };
         setExerciseWarningModalVisible(false);
-        navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName });
+        navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName, showNotification: { message: "Workout Saved!", color: theme.primaryColor } });
     };
 
     const handleDeleteWorkout = async () => {
@@ -148,7 +148,7 @@ const EditWorkoutScreen = ({ navigation, route }) => {
             await deleteDayActive(updatedDayName);
             await deleteDayPrivate(splitName, updatedDayName);
         }
-        navigation.navigate("Home");
+        navigation.navigate("Home", {showNotification: { message: "Workout deleted!", color: theme.dangerColor }});
         setShowEndWorkoutModal(false);
     };
 

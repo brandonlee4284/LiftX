@@ -95,13 +95,18 @@ export const updateOverallStats = async () => {
     let overallScore = workoutData.overallScore;
 
     const muscleGroups = ['chest', 'back', 'legs', 'arms', 'shoulders', 'core'];
-    let totalOverallScore = 0;
+    let totalOverallChestScore = 0;
+    let totalOverallBackScore = 0;
+    let totalOverallShoulderScore = 0;
+    let totalOverallArmScore = 0;
+    let totalOverallLegScore = 0;
+    let totalOverallScoreWeighted = 0;
 
     const now = dayjs();
     const oneMonthAgo = now.subtract(1, 'month');
 
     if (!overallScore.overall) {
-        overallScore.overall = { change: 0, score: 0, stats: 0};
+        overallScore.overall = { change: 0, score: 0};
     }
     
     // Calculate the overall score for each muscle group
@@ -120,6 +125,8 @@ export const updateOverallStats = async () => {
                 totalScore += exercise.score * setsInLastMonth;
                 totalSets += setsInLastMonth;
             }
+            
+            
 
             // Error handling
             if (totalSets > 0) {
@@ -131,16 +138,28 @@ export const updateOverallStats = async () => {
             score = 0;
         }
 
-        
-        totalOverallScore += score;
+        if(muscleGroup === 'chest'){
+            totalOverallChestScore += score;
+        } else if (muscleGroup === 'back'){
+            totalOverallBackScore += score;
+        } else if (muscleGroup === 'shoulders'){
+            totalOverallShoulderScore += score;
+        } else if (muscleGroup === 'arms'){
+            totalOverallArmScore += score;
+        } else if (muscleGroup === 'legs'){
+            totalOverallLegScore += score;
+        }
         overallScore[muscleGroup].change = score - overallScore[muscleGroup].score;
         overallScore[muscleGroup].score = score;
     });
 
     // Update the overall score
-    
-    overallScore.overall.change = totalOverallScore - overallScore.overall.score;
-    overallScore.overall.score = totalOverallScore;
+    // weighted average of all muscle groups 
+    // Chest: 0.1, Back: 0.25, Shoulders: 0.1, Arms: 0.25, Legs: 0.3,
+    totalOverallScoreWeighted = totalOverallChestScore*0.1 + totalOverallBackScore*0.25 + totalOverallShoulderScore*0.1 + totalOverallArmScore*0.25 + totalOverallLegScore*0.3
+
+    overallScore.overall.change = (totalOverallScoreWeighted) - overallScore.overall.score;
+    overallScore.overall.score = totalOverallScoreWeighted; 
 
     workoutData.overallScore = overallScore;
     await createPrivateWorkout(workoutData);
@@ -173,7 +192,8 @@ export const syncScores = async () => {
         const muscleGroups = ['arms', 'chest', 'back', 'shoulders', 'legs', 'overall'];
         muscleGroups.forEach(group => {
             if (overallScore[group]) {
-                publicUserData.displayScore[group] = overallScore[group].score;
+                publicUserData.displayScore[group].score = overallScore[group].score;
+                publicUserData.displayScore[group].change = overallScore[group].change;
             } else {
                 console.warn(`Score for muscle group ${group} not found in workout data.`);
             }

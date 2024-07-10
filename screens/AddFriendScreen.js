@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, TextInput, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, TextInput, ActivityIndicator, Image, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "./ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,6 +19,7 @@ const AddFriendScreen = () => {
     const [friendRequests, setFriendRequests] = useState([]);
     const [notification, setNotification] = useState({ message: '', visible: false, color: theme.primaryColor });
     const notificationTimeoutRef = useRef(null);
+    const slideAnim = useRef(new Animated.Value(-100)).current;
     // Fetch friend requests on component mount
     useEffect(() => {
         const synchronizeAndFetchRequests = async () => {
@@ -49,20 +50,29 @@ const AddFriendScreen = () => {
         }
     };
 
-    /*
-    const showNotification = (message, color) => {
-        setNotification({ message, visible: true, color });
-        setTimeout(() => setNotification({ message: '', visible: false, color: theme.primaryColor }), 5000);
-    };
-    */
 
     const showNotification = (message, color) => {
         if (notificationTimeoutRef.current) {
             clearTimeout(notificationTimeoutRef.current);
         }
         setNotification({ message, visible: true, color });
+
+        // Slide the notification in
+        Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+
         notificationTimeoutRef.current = setTimeout(() => {
-            setNotification({ message: '', visible: false, color: theme.primaryColor });
+            // Slide the notification out
+            Animated.timing(slideAnim, {
+                toValue: -100,
+                duration: 300,
+                useNativeDriver: true,
+            }).start(() => {
+                setNotification({ message: '', visible: false, color: theme.primaryColor });
+            });
         }, 5000);
     };
 
@@ -127,7 +137,7 @@ const AddFriendScreen = () => {
 
     return (
         <View style={styles.container}>
-            <ScrollView>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.headerContainer}>
                     <Ionicons name="chevron-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon} />
                     <Text style={styles.header}>Add Friends</Text>
@@ -190,9 +200,9 @@ const AddFriendScreen = () => {
                 </View>
             )}
             {notification.visible && (
-                <View style={[styles.notificationContainer, { backgroundColor: notification.color }]}>
+                <Animated.View style={[styles.notificationContainer, { backgroundColor: notification.color, transform: [{ translateY: slideAnim }] }]}>
                     <Text style={styles.notificationText}>{notification.message}</Text>
-                </View>
+                </Animated.View>
             )}
         </View>
     );
@@ -206,10 +216,15 @@ const getResponsiveFontSize = (baseFontSize) => {
 const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
+        paddingTop: height > 850 ? 50 : 40,
         backgroundColor: theme.backgroundColor,
     },
+    scrollContainer: {
+        marginTop: 10,
+        paddingBottom: 80,
+    },
     headerContainer: {
-        marginTop: 60,
+        //marginTop: 50,
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
@@ -316,7 +331,23 @@ const createStyles = (theme) => StyleSheet.create({
     },
     notificationContainer: {
         position: 'absolute',
-        transform: [{ translateY: 2.04*width }],
+        width: width,
+        paddingTop: 50,
+        padding: 10,
+        backgroundColor: theme.primaryColor,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    notificationText: {
+        color: theme.textColor,
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
+    /*
+    notificationContainer: {
+        position: 'absolute',
+        //bottom: 0,
+        //transform: [{ translateY: 2.04*width }],
         width: width,
         paddingBottom: 30,
         padding: 10,
@@ -329,6 +360,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center'
     },
+    */
 
 });
 

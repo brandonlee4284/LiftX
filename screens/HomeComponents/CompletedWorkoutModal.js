@@ -158,7 +158,7 @@ const createStyles = (theme) => StyleSheet.create({
         width: width * 0.8,
         minHeight: width * 0.8,
         backgroundColor: theme.backdropColor,
-        borderRadius: 0,
+        borderRadius: 10,
         paddingHorizontal: 20,
         paddingVertical: 25
     },

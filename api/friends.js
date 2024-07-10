@@ -479,12 +479,30 @@ export const getUserDetails = async (uid) => {
                 activeSplit: userData.activeSplit || null,
                 displayScores: userData.displayScore
                     ? {
-                        overall: userData.displayScore.overall.toFixed(1),
-                        chest: userData.displayScore.chest.toFixed(1),
-                        back: userData.displayScore.back.toFixed(1),
-                        shoulders: userData.displayScore.shoulders.toFixed(1),
-                        arms: userData.displayScore.arms.toFixed(1),
-                        legs: userData.displayScore.legs.toFixed(1)
+                        overall: {
+                            score: userData.displayScore.overall.score.toFixed(1),
+                            change: userData.displayScore.overall.change.toFixed(2),
+                        },
+                        chest: {
+                            score: userData.displayScore.chest.score.toFixed(1),
+                            change: userData.displayScore.chest.change.toFixed(2),
+                        },
+                        back: {
+                            score: userData.displayScore.back.score.toFixed(1),
+                            change: userData.displayScore.back.change.toFixed(2),
+                        },
+                        shoulders: {
+                            score: userData.displayScore.shoulders.score.toFixed(1),
+                            change: userData.displayScore.shoulders.change.toFixed(2),
+                        },
+                        arms: {
+                            score: userData.displayScore.arms.score.toFixed(1),
+                            change: userData.displayScore.arms.change.toFixed(2),
+                        },
+                        legs: {
+                            score: userData.displayScore.legs.score.toFixed(1),
+                            change: userData.displayScore.legs.change.toFixed(2),
+                        },
                     }
                     : null,
             };

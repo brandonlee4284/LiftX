@@ -59,6 +59,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.grayTextColor,
         marginBottom: 20,
         textAlign: 'center',
+        paddingHorizontal:20
     },
     infoIcon: {
         marginBottom: 10

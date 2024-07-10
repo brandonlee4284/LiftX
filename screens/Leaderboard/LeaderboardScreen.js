@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ActivityIndicator, ScrollView, Dimensions } from 'react-native';
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, LayoutAnimation, ActivityIndicator, ScrollView, Dimensions, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Header } from "../Components/Header";
 import { useTheme } from "../ThemeProvider";
@@ -21,6 +21,9 @@ const LeaderboardScreen = ({ navigation, route }) => {
     const [friends, setFriends] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [reload, setReload] = useState(false);
+    const [notification, setNotification] = useState({ message: '', visible: false, color: theme.primaryColor });
+    const notificationTimeoutRef = useRef(null);
+    const slideAnim = useRef(new Animated.Value(-100)).current;
 
     useFocusEffect(
         useCallback(() => {
@@ -52,7 +55,7 @@ const LeaderboardScreen = ({ navigation, route }) => {
                                 username: "You",
                                 profilePicture: userData?.profilePicture,
                                 displayScores: {
-                                    overall: userData?.displayScore?.overall.toFixed(1) || '-'
+                                    overall: {score: userData?.displayScore?.overall.score.toFixed(1)}
                                 }
                             };
         
@@ -106,7 +109,7 @@ const LeaderboardScreen = ({ navigation, route }) => {
                         username: "You",
                         profilePicture: userData?.profilePicture,
                         displayScores: {
-                            overall: userData?.displayScore?.overall.toFixed(1) || '-'
+                            overall: {score: userData?.displayScore?.overall.score.toFixed(1)}
                         }
                     };
 
@@ -129,6 +132,39 @@ const LeaderboardScreen = ({ navigation, route }) => {
         synchronizeAndFetchFriends();
     }, []);
 
+
+    useEffect(() => {
+        if (route.params?.showNotification) {
+            const { message, color } = route.params.showNotification;
+            showNotification(message, color);
+        }
+    }, [route.params]);
+
+    const showNotification = (message, color) => {
+        if (notificationTimeoutRef.current) {
+            clearTimeout(notificationTimeoutRef.current);
+        }
+        setNotification({ message, visible: true, color });
+
+        // Slide the notification in
+        Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+
+        notificationTimeoutRef.current = setTimeout(() => {
+            // Slide the notification out
+            Animated.timing(slideAnim, {
+                toValue: -100,
+                duration: 300,
+                useNativeDriver: true,
+            }).start(() => {
+                setNotification({ message: '', visible: false, color: theme.primaryColor });
+            });
+        }, 5000);
+    };
+
     const handleFriendProfile = async (friend) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         navigation.navigate("FriendProfile", { friend })
@@ -137,8 +173,8 @@ const LeaderboardScreen = ({ navigation, route }) => {
     // sort friends by overall score descending
     const handleLeaderboardRanks = (friendsArray) => {
         const sortedFriends = friendsArray.sort((a, b) => {
-            const scoreA = parseFloat(a.displayScores?.overall) || 0;
-            const scoreB = parseFloat(b.displayScores?.overall) || 0;
+            const scoreA = parseFloat(a.displayScores?.overall.score) || 0;
+            const scoreB = parseFloat(b.displayScores?.overall.score) || 0;
             return scoreB - scoreA;
         });
         setFriends(sortedFriends);
@@ -162,7 +198,7 @@ const LeaderboardScreen = ({ navigation, route }) => {
                             rank={index + 1}
                             username={friend.username}
                             profilePicture={friend.profilePicture}
-                            score={friend.displayScores?.overall || '-'}
+                            score={friend.displayScores?.overall.score || '-'}
                         />
                     </View>
                 );
@@ -173,7 +209,7 @@ const LeaderboardScreen = ({ navigation, route }) => {
                         rank={index + 1}
                         username={friend.username}
                         profilePicture={friend.profilePicture}
-                        score={friend.displayScores?.overall || '-'}
+                        score={friend.displayScores?.overall.score || '-'}
                         onPress={() => handleFriendProfile(friend)}
                     />
                 );
@@ -207,8 +243,13 @@ const LeaderboardScreen = ({ navigation, route }) => {
                 visible={modalVisible}
                 close={() => setModalVisible(false)}
                 msg="Leaderboard"
-                subMsg="This is a brief explanation of the leaderboard, how scores are calculated, and how you can improve your rank."
+                subMsg="Connect with friends and compete to reach the top of the leaderboard! Your rank is determined by your overall score, which is shown next to your name and the names of other lifters."
             />
+            {notification.visible && (
+                <Animated.View style={[styles.notificationContainer, { backgroundColor: notification.color, transform: [{ translateY: slideAnim }] }]}>
+                    <Text style={styles.notificationText}>{notification.message}</Text>
+                </Animated.View>
+            )}
         </View>
     );
 };
@@ -222,7 +263,7 @@ const getResponsiveFontSize = (baseFontSize) => {
 const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        paddingTop: 40,
+        paddingTop: height > 850 ? 40 : 30,
         backgroundColor: theme.backgroundColor
     },
     body: {
@@ -230,7 +271,7 @@ const createStyles = (theme) => StyleSheet.create({
         paddingHorizontal: 23
     },
     scrollViewContent: {
-        paddingBottom: 110, 
+        paddingBottom: 120, 
         marginTop: 23, 
     },
     title: {
@@ -251,6 +292,20 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.grayTextColor,
         fontSize: getResponsiveFontSize(18),
         marginTop: 20
+    },
+    notificationContainer: {
+        position: 'absolute',
+        width: width,
+        paddingTop: height > 850 ? 50 : 45,
+        padding: 5,
+        backgroundColor: theme.primaryColor,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    notificationText: {
+        color: theme.textColor,
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
     
 });

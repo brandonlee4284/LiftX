@@ -28,16 +28,6 @@ const FriendProfileScreen = ({ navigation, route }) => {
     const [removeFriendWarningModalVisible, setRemoveFriendWarningModalVisible] = useState(false);
     const [isLoading, setLoading] = useState(false);
 
-
-    const stats = {
-        overall: 85,
-        chest: 75,
-        back: 80,
-        shoulders: 78,
-        arms: 76,
-        legs: 82
-    } // placeholder stats
-
     if (!friend) {
         return (
             <View style={styles.container}>
@@ -67,7 +57,7 @@ const FriendProfileScreen = ({ navigation, route }) => {
             setLoading(false); 
             navigation.navigate('HomeNav', {
                 screen: 'Home',
-                //params: { workoutDay, splitName: friend.activeSplit.splitName, user: friend.displayName },
+                params: { showNotification: { message: "Split Added!", color: theme.primaryColor } },
             });
         } catch (error) {
             setLoading(false);
@@ -92,8 +82,8 @@ const FriendProfileScreen = ({ navigation, route }) => {
             <ScoreCard 
                 key={index}
                 category={capitalize(category)}
-                score={friend.displayScores[category]}
-                stat={stats[category]}
+                score={friend.displayScores[category].score}
+                change={friend.displayScores[category].change}
             />
         ));
     };
@@ -108,7 +98,7 @@ const FriendProfileScreen = ({ navigation, route }) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         await removeFriend(friend.uid);
         setRemoveFriendWarningModalVisible(false);
-        navigation.navigate('Leaderboard', { reload: true });
+        navigation.navigate('Leaderboard', { reload: true, showNotification: { message: `${friend.username} removed!`, color: theme.dangerColor } });
     }
 
     return (
@@ -142,13 +132,13 @@ const FriendProfileScreen = ({ navigation, route }) => {
                         {friend.activeSplit.days.length > 0 ? (
                             <Carousel
                                 width={width}
-                                height={width * 0.5}
+                                height={width * 0.6}
                                 data={friend.activeSplit.days.map(day => day.dayName)}
                                 renderItem={({ item }) => <DayCard name={item} onPress={() => handleSelectDay(item, friend.activeSplit)} />}
                                 mode="parallax"
                                 modeConfig={{
                                     parallaxScrollingScale: 1,
-                                    parallaxScrollingOffset: getResponsiveFontSize(250),
+                                    parallaxScrollingOffset: getResponsiveFontSize(210),
                                     parallaxAdjacentItemScale: 0.65,
                                     parallaxAdjacentItemOpacity: 0.8,
                                 }}
@@ -186,7 +176,7 @@ const FriendProfileScreen = ({ navigation, route }) => {
                 onRequestClose={() => {}}>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
-                        <Ionicons name="warning" size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.warningIcon}/>
+                        <AntDesign name="deleteuser" size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.warningIcon}/>
                         <Text style={styles.modalText}>Remove '{friend.username}'?</Text>
                         <Text style={styles.modalSubText}>You can always add them back.</Text>
                         <View style={styles.buttonContainer}>

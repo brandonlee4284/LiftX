@@ -31,10 +31,12 @@ const getResponsiveFontSize = (baseFontSize) => {
 
 const createStyles = (theme) => StyleSheet.create({
     card: {
-        width: width * 0.4,
-        height: width * 0.4,
+        width: width * 0.5,
+        height: width * 0.5,
+        //width: width * 0.4,
+        //height: width * 0.4,
         backgroundColor: theme.backdropColor,
-        borderRadius: 38,
+        borderRadius: 30,
         justifyContent: 'center',
         alignItems: 'center',
         shadowColor: "#E1EDF4",
@@ -42,12 +44,14 @@ const createStyles = (theme) => StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 15,
         elevation: 5,
-        marginHorizontal: 130,
+        // marginHorizontal: 130,
+        marginHorizontal: 110,
         marginVertical: 10,
+
     },
     cardText: {
         color: theme.textColor,
-        fontSize: getResponsiveFontSize(14),
+        fontSize: getResponsiveFontSize(16),
         fontWeight: 'bold',
     },
     cardImage: {
@@ -58,8 +62,8 @@ const createStyles = (theme) => StyleSheet.create({
     },
     cardTextContainer: {
         position: 'absolute',
-        top: width*0.058,
-        left: width*0.046,
+        top: width*0.08,
+        left: width*0.05,
     },
 });
 

@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ScrollView, Animated } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import ExerciseComponent from "./WorkoutComponents/ExerciseComponent";
@@ -9,13 +9,49 @@ import { getActiveSplit } from "../../api/profile";
 import { getWorkoutDay } from "../../api/workout";
 import * as Haptics from 'expo-haptics';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const PreviewWorkoutScreen = ({ navigation, route }) => {
     const { workoutDay, splitName, updatedWorkoutDay } = route.params;
     const { theme } = useTheme();
     const styles = createStyles(theme); 
     const currentWorkoutDay = updatedWorkoutDay ? updatedWorkoutDay : workoutDay;
+
+    const [notification, setNotification] = useState({ message: '', visible: false, color: theme.primaryColor });
+    const notificationTimeoutRef = useRef(null);
+    const slideAnim = useRef(new Animated.Value(-100)).current;
+
+    useEffect(() => {
+        if (route.params?.showNotification) {
+            const { message, color } = route.params.showNotification;
+            showNotification(message, color);
+        }
+    }, [route.params]);
+
+    const showNotification = (message, color) => {
+        if (notificationTimeoutRef.current) {
+            clearTimeout(notificationTimeoutRef.current);
+        }
+        setNotification({ message, visible: true, color });
+
+        // Slide the notification in
+        Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+
+        notificationTimeoutRef.current = setTimeout(() => {
+            // Slide the notification out
+            Animated.timing(slideAnim, {
+                toValue: -100,
+                duration: 300,
+                useNativeDriver: true,
+            }).start(() => {
+                setNotification({ message: '', visible: false, color: theme.primaryColor });
+            });
+        }, 3000);
+    };
     
     const handleWorkout = (workoutDay) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -63,6 +99,11 @@ const PreviewWorkoutScreen = ({ navigation, route }) => {
                     )}
                 </View>
             </ScrollView>
+            {notification.visible && (
+                <Animated.View style={[styles.notificationContainer, { backgroundColor: notification.color, transform: [{ translateY: slideAnim }] }]}>
+                    <Text style={styles.notificationText}>{notification.message}</Text>
+                </Animated.View>
+            )}
         </View>
     );
 };
@@ -82,7 +123,7 @@ const createStyles = (theme) => StyleSheet.create({
         flexGrow: 1,
         justifyContent: 'space-between',
         paddingBottom: 40,
-        marginTop: 23
+        marginTop: 30
     },
     headerContainer: {
         width: '100%',
@@ -121,6 +162,20 @@ const createStyles = (theme) => StyleSheet.create({
         fontWeight: '400',
         textAlign: 'center',
         marginTop: 20,
+    },
+    notificationContainer: {
+        position: 'absolute',
+        width: width,
+        paddingTop: height*0.055,
+        padding: 5,
+        backgroundColor: theme.primaryColor,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    notificationText: {
+        color: theme.textColor,
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
 });
 

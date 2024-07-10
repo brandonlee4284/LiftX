@@ -57,6 +57,8 @@ export const calculateScore = async (weight, reps, exerciseName) => {
 
     let repMax = calculate1rm(weight, reps)
     let score = await calculatePercentile(repMax, gender, age, bodyweight, exerciseName)
-    
-    return score
+    if(score > 100){
+        score = 100;
+    }
+    return score*10
 }

@@ -94,14 +94,32 @@ export const getUserScores = async () => {
             return {
                 displayScores: publicUserData.displayScore
                     ? {
-                        overall: publicUserData.displayScore.overall.toFixed(1),
-                        chest: publicUserData.displayScore.chest.toFixed(1),
-                        back: publicUserData.displayScore.back.toFixed(1),
-                        shoulders: publicUserData.displayScore.shoulders.toFixed(1),
-                        arms: publicUserData.displayScore.arms.toFixed(1),
-                        legs: publicUserData.displayScore.legs.toFixed(1)
+                        overall: {
+                            score: publicUserData.displayScore.overall.score.toFixed(1),
+                            change: publicUserData.displayScore.overall.change.toFixed(2),
+                        },
+                        chest: {
+                            score: publicUserData.displayScore.chest.score.toFixed(1),
+                            change: publicUserData.displayScore.chest.change.toFixed(2),
+                        },
+                        back: {
+                            score: publicUserData.displayScore.back.score.toFixed(1),
+                            change: publicUserData.displayScore.back.change.toFixed(2),
+                        },
+                        shoulders: {
+                            score: publicUserData.displayScore.shoulders.score.toFixed(1),
+                            change: publicUserData.displayScore.shoulders.change.toFixed(2),
+                        },
+                        arms: {
+                            score: publicUserData.displayScore.arms.score.toFixed(1),
+                            change: publicUserData.displayScore.arms.change.toFixed(2),
+                        },
+                        legs: {
+                            score: publicUserData.displayScore.legs.score.toFixed(1),
+                            change: publicUserData.displayScore.legs.change.toFixed(2),
+                        },
                     }
-                    : null
+                    : null,
             }
         } else {
             console.warn('DisplayScore data is not in the expected format or is missing');

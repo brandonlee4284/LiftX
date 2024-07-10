@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback  } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Modal, ScrollView } from 'react-native';
+import React, { useState, useEffect, useCallback, useRef  } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Modal, ScrollView, Animated } from 'react-native';
 import { Header } from "./Components/Header";
 import { useTheme } from "./ThemeProvider";
 import NavBar from "./Components/Navbar";
@@ -41,13 +41,16 @@ To-Do list
 - apply drop down (muscle specific) for onboarding names (done)
 - warning message if exercise is inputed not in exercise.json (done)
 - update score manually (done)
+- notifications for updated scores, updated profile, save workout, dowload another persons split, etc. (done)
+- fix scores calculations/display percentiles/stats (done)
+- fix profile pictures (done)
 
-- notifications for updated scores, updated profile, save workout, dowload another persons split, etc.
-- fix scores calculations/display percentiles/stats
-- privacy settings
-- fix persistence
-- email verification
-- change password/forgot password login screen
+- fix persistence (nirav)
+- email verification (nirav)
+- change password/forgot password login screen (nirav)
+
+
+- privacy settings (me)
 
 */
 
@@ -65,6 +68,9 @@ const HomeScreen = ({ navigation, route }) => {
     const [deleteSplitName, setDeleteSplitName] = useState("");
     const { theme } = useTheme();
     const styles = createStyles(theme);
+    const [notification, setNotification] = useState({ message: '', visible: false, color: theme.primaryColor });
+    const notificationTimeoutRef = useRef(null);
+    const slideAnim = useRef(new Animated.Value(-100)).current;
 
     const {
         completedWorkout = false,
@@ -73,6 +79,7 @@ const HomeScreen = ({ navigation, route }) => {
         dayName = 'Unknown',
         scoreChanges = {}
     } = route.params || {};
+    
 
     useEffect(() => {
         //synchronizeFriends();
@@ -82,7 +89,13 @@ const HomeScreen = ({ navigation, route }) => {
         }
     }, [route.params?.completedWorkout]);
 
-  
+    useEffect(() => {
+        if (route.params?.showNotification) {
+            const { message, color } = route.params.showNotification;
+            showNotification(message, color);
+        }
+    }, [route.params]);
+
 
     useFocusEffect(
         useCallback(() => {
@@ -126,7 +139,10 @@ const HomeScreen = ({ navigation, route }) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setActiveSplitDays(split.days);
         setActiveSplitState(split);
+        showNotification(`${split.splitName} set active!`, theme.primaryColor);
         await setActiveSplit(split); // set the active split in backend
+        
+        //console.log(split.splitName);
         
         
     };
@@ -170,6 +186,7 @@ const HomeScreen = ({ navigation, route }) => {
             if(fetchedSplitDescriptions){
                 setSplitDescription(fetchedSplitDescriptions);  
             }
+            showNotification(`New split added!`, theme.primaryColor);
         } catch (error) {
             console.error('Error adding new split:', error);
         }
@@ -199,6 +216,7 @@ const HomeScreen = ({ navigation, route }) => {
                 setSplitDescription(fetchedSplitDescriptions);
             }
             setShowEndWorkoutModal(false);
+            showNotification(`${splitName} removed!`, theme.dangerColor);
         } catch (error) {
             console.error('Error deleting split:', error);
         }
@@ -218,6 +236,7 @@ const HomeScreen = ({ navigation, route }) => {
         if(fetchedSplits){
             setSplits(fetchedSplits);
         }
+        showNotification(`Split saved!`, theme.primaryColor);
     };
 
     // display split cards (2 cards in a row)
@@ -287,8 +306,31 @@ const HomeScreen = ({ navigation, route }) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setShowSameSplitNameWarningModal(false);
     }
+    const showNotification = (message, color) => {
+        if (notificationTimeoutRef.current) {
+            clearTimeout(notificationTimeoutRef.current);
+        }
+        setNotification({ message, visible: true, color });
 
-  
+        // Slide the notification in
+        Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+
+        notificationTimeoutRef.current = setTimeout(() => {
+            // Slide the notification out
+            Animated.timing(slideAnim, {
+                toValue: -100,
+                duration: 300,
+                useNativeDriver: true,
+            }).start(() => {
+                setNotification({ message: '', visible: false, color: theme.primaryColor });
+            });
+        }, 3000);
+    };
+
     return (
         <View style={styles.container}>
             <NavBar activeRoute="HomeNav" />
@@ -353,6 +395,11 @@ const HomeScreen = ({ navigation, route }) => {
                 subMsg={"Try a different name"}
                 close={handleClose}
             />
+            {notification.visible && (
+                <Animated.View style={[styles.notificationContainer, { backgroundColor: notification.color, transform: [{ translateY: slideAnim }] }]}>
+                    <Text style={styles.notificationText}>{notification.message}</Text>
+                </Animated.View>
+            )}
         </View>
     );
 };
@@ -373,7 +420,7 @@ const formatTime = (seconds) => {
 const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
-        paddingTop: 40,
+        paddingTop: height > 850 ? 40 : 30,
         backgroundColor: theme.backgroundColor,
     },
     body: {
@@ -421,6 +468,20 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         fontSize: getResponsiveFontSize(50),
         fontWeight: '300',
+    },
+    notificationContainer: {
+        position: 'absolute',
+        width: width,
+        paddingTop: height > 850 ? 50 : 45,
+        padding: 5,
+        backgroundColor: theme.primaryColor,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    notificationText: {
+        color: theme.textColor,
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
 });
 

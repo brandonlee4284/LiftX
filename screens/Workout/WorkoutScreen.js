@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, FlatList, Dimensions, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Dimensions, ImageBackground, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import WorkoutButtonComponent from "./WorkoutComponents/WorkoutButtonComponent";
 import { MaterialCommunityIcons, Feather, Octicons } from '@expo/vector-icons';
@@ -59,6 +59,7 @@ const WorkoutScreen = ({ navigation, route }) => {
 
     const [notification, setNotification] = useState({ message: '', visible: false, color: theme.primaryColor });
     const notificationTimeoutRef = useRef(null);
+    const slideAnim = useRef(new Animated.Value(-100)).current;
 
     useEffect(() => {
         // Start the stopwatch interval
@@ -221,6 +222,7 @@ const WorkoutScreen = ({ navigation, route }) => {
         setShowEndWorkoutModal(false);
     };
 
+    /*
     const showNotification = (message, color) => {
         if (notificationTimeoutRef.current) {
             clearTimeout(notificationTimeoutRef.current);
@@ -230,6 +232,33 @@ const WorkoutScreen = ({ navigation, route }) => {
             setNotification({ message: '', visible: false, color: theme.primaryColor });
         }, 5000);
     };
+    */
+
+    const showNotification = (message, color) => {
+        if (notificationTimeoutRef.current) {
+            clearTimeout(notificationTimeoutRef.current);
+        }
+        setNotification({ message, visible: true, color });
+
+        // Slide the notification in
+        Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+
+        notificationTimeoutRef.current = setTimeout(() => {
+            // Slide the notification out
+            Animated.timing(slideAnim, {
+                toValue: -100,
+                duration: 300,
+                useNativeDriver: true,
+            }).start(() => {
+                setNotification({ message: '', visible: false, color: theme.primaryColor });
+            });
+        }, 5000);
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
@@ -273,12 +302,12 @@ const WorkoutScreen = ({ navigation, route }) => {
                             <MaterialCommunityIcons name="reload" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
                         </TouchableOpacity>
                         }
-                        <TouchableOpacity style={styles.largeButton} onPress={handleNext}>
-                            <Feather name="skip-forward" size={getResponsiveFontSize(30)} color={theme.backgroundColor} />
+                        <TouchableOpacity style={styles.largeButton} onPress={handleFeedback}>
+                            <Feather name="check" size={getResponsiveFontSize(30)} color={theme.backgroundColor} />
                         </TouchableOpacity>
                         {
-                        <TouchableOpacity style={styles.smallButton} onPress={handleFeedback}>
-                            <Octicons name="thumbsup" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
+                        <TouchableOpacity style={styles.smallButton} onPress={handleNext}>
+                            <Feather name="skip-forward" size={getResponsiveFontSize(20)} color={theme.backgroundColor} />
                         </TouchableOpacity>
                         }
                     </View>
@@ -299,9 +328,9 @@ const WorkoutScreen = ({ navigation, route }) => {
                 </View>
             )}
             {notification.visible && (
-                <View style={[styles.notificationContainer, { backgroundColor: notification.color }]}>
+                <Animated.View style={[styles.notificationContainer, { backgroundColor: notification.color, transform: [{ translateY: slideAnim }] }]}>
                     <Text style={styles.notificationText}>{notification.message}</Text>
-                </View>
+                </Animated.View>
             )}
           
         </View>
