@@ -46,11 +46,9 @@ To-Do list
 - fix profile pictures (done)
 - privacy settings (done)
 - change password/forgot password login screen (done)
+- email verification (done)
 
 - fix persistence
-- email verification
-    - store user data in db when account is created (before email verification) to prevent duplicate usernames
-
 
 
 */

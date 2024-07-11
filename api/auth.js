@@ -7,7 +7,7 @@ import { createPrivateFriends } from './friends';
 import { createPrivateWorkout } from './workout';
 import { clearAsyncStorage } from "./helperFuncs";
 import dayjs from "dayjs";
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore'; // Import Firestore utilities
+import { getFirestore, collection, query, where, getDocs, addDoc } from 'firebase/firestore'; // Import Firestore utilities
 
 
 // Login user with email and password
@@ -46,7 +46,7 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
   }
 
   // Check if the username already exists
-  const usernamesRef = collection(db, 'users'); // Adjust this to your actual collection name
+  const usernamesRef = collection(db, 'usernames'); // Adjust this to your actual collection name
   const usernameQuery = query(usernamesRef, where('username', '==', username));
   const querySnapshot = await getDocs(usernameQuery);
   if (!querySnapshot.empty) {
@@ -54,6 +54,15 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
     return;
   }
 
+  try {
+    await addDoc(usernamesRef, { username: username });
+  } catch (error) {
+    console.log(error);
+    setErrorMessage("Error saving username. Please try again.");
+    return;
+  }
+
+  navigation.navigate("Login");
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       sendEmailVerification(userCredential.user); // Send verification email
