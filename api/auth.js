@@ -11,7 +11,7 @@ import { getFirestore, collection, query, where, getDocs, addDoc } from 'firebas
 
 
 // Login user with email and password
-export const loginUser = async (email, password, setErrorMessage) => {
+export const loginUser = async (email, password, setErrorMessage, showNotification) => {
   const auth = FIREBASE_AUTH;
   
   try {
@@ -20,6 +20,7 @@ export const loginUser = async (email, password, setErrorMessage) => {
 
     // Check if the email is verified
     if (!userCredential.user.emailVerified) {
+      showNotification("Please verify your email before logging in.", "rgb(114, 47, 55)");
       setErrorMessage("Please verify your email before logging in.");
       await auth.signOut(); // Sign out the user
       return;
@@ -31,16 +32,51 @@ export const loginUser = async (email, password, setErrorMessage) => {
     // Get user data from Firestore and save to local storage
     await fetchPublicUserData();
   } catch (error) {
+    showNotification(error.message, "rgb(114, 47, 55)");
     setErrorMessage(error.message);
   }
 };
 
-export const createNewUser = async (gender = "male", weight = 135, age, name, username, email, password, setErrorMessage, navigation) => {
+export const createNewUser = async (gender = "male", weight = 135, age, name, username, email, password, setErrorMessage, navigation, showNotification) => {
   const auth = FIREBASE_AUTH;
   const db = getFirestore();
 
+  // Check if any required field is empty
+  if (!username.trim() || !email.trim() || !password.trim() || !name.trim()) {
+    showNotification("All fields are required", "rgb(114, 47, 55)");
+    setErrorMessage("All fields are required");
+    return;
+  }
+
+  if (username.length > 30) {
+    showNotification("Username cannot exceed 30 characters", "rgb(114, 47, 55)");
+    setErrorMessage("Username cannot exceed 30 characters");
+    return;
+  }
+
+  // Check if the name contains only letters
+  if (!/^[a-zA-Z]+$/.test(name)) {
+    showNotification("Name can only contain letters", "rgb(114, 47, 55)");
+    setErrorMessage("Name can only contain letters");
+    return;
+  }
+  
+  if (name.length > 30) {
+    showNotification("Display name cannot exceed 30 characters", "rgb(114, 47, 55)");
+    setErrorMessage("Display name cannot exceed 30 characters");
+    return;
+  }
+
+  // Check if the username contains only lowercase letters, numbers, periods, and underscores
+  if (!/^[a-z0-9._]+$/.test(username)) {
+    showNotification("Username can only contain lowercase letters, numbers, periods, and underscores", "rgb(114, 47, 55)");
+    setErrorMessage("Username can only contain lowercase letters, numbers, periods, and underscores");
+    return;
+  }
+
   // Check if the username contains white spaces
   if (/\s/.test(username)) {
+    showNotification("Username has invalid characters", "rgb(114, 47, 55)");
     setErrorMessage("Username has invalid characters");
     return;
   }
@@ -50,6 +86,7 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
   const usernameQuery = query(usernamesRef, where('username', '==', username));
   const querySnapshot = await getDocs(usernameQuery);
   if (!querySnapshot.empty) {
+    showNotification("Username already exists! Please try another one.", "rgb(114, 47, 55)");
     setErrorMessage("Username already exists! Please try another one.");
     return;
   }
@@ -58,11 +95,12 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
     await addDoc(usernamesRef, { username: username });
   } catch (error) {
     console.log(error);
+    showNotification("Error saving username. Please try again.", "rgb(114, 47, 55)");
     setErrorMessage("Error saving username. Please try again.");
     return;
   }
 
-  navigation.navigate("Login");
+  navigation.navigate("Login", {showNotification: {message: "Email Verification Sent! Please check your email", color: "#50C878"}});
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       sendEmailVerification(userCredential.user); // Send verification email

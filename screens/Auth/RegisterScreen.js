@@ -64,7 +64,7 @@ const RegisterScreen = ({ navigation }) => {
     const handleSignUp = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setErrorMessage("");
-        await createNewUser(gender, weight, age, displayName, username, email, password, setErrorMessage, navigation);
+        await createNewUser(gender, weight, age, displayName, username, email, password, setErrorMessage, navigation, showNotification);
         
     };
 
@@ -79,9 +79,6 @@ const RegisterScreen = ({ navigation }) => {
                     <View style={styles.innerContainer}>
                         <View style={styles.circle} />
                         <GreetingMsg msg="Create Account" />
-                        <View style={styles.errorContainer}>
-                            {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-                        </View>
 
                         <View style={styles.inputContainer}>
                             <Input
@@ -181,7 +178,7 @@ const createStyles = (theme) => StyleSheet.create({
     notificationContainer: {
         position: 'absolute',
         width: width,
-        paddingTop: height*0.057,
+        paddingTop: height*0.055,
         padding: 5,
         backgroundColor: theme.primaryColor,
         borderRadius: 20,

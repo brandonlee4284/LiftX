@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, Dimensions, Animated } from 'react-native';
 import { loginUser, resetPassword } from "../../api/auth";
 import { GreetingMsg } from "./Components/GreetingMsg";
 import { Input } from "./Components/Input";
 import { SignInButton } from "./Components/SignInButton";
 import { Footer } from "./Components/Footer";
-
+import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
 import * as Haptics from 'expo-haptics';
 
@@ -15,14 +15,51 @@ const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState(null);    
+    const route = useRoute();
 
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
+    const [notification, setNotification] = useState({ message: '', visible: false, color: theme.primaryColor });
+    const notificationTimeoutRef = useRef(null);
+    const slideAnim = useRef(new Animated.Value(-100)).current;
+
+    useEffect(() => {
+        if (route.params?.showNotification) {
+            const { message, color } = route.params.showNotification;
+            showNotification(message, color);
+        }
+    }, [route.params]);
+
+    const showNotification = (message, color) => {
+        if (notificationTimeoutRef.current) {
+            clearTimeout(notificationTimeoutRef.current);
+        }
+        setNotification({ message, visible: true, color });
+
+        // Slide the notification in
+        Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+
+        notificationTimeoutRef.current = setTimeout(() => {
+            // Slide the notification out
+            Animated.timing(slideAnim, {
+                toValue: -100,
+                duration: 300,
+                useNativeDriver: true,
+            }).start(() => {
+                setNotification({ message: '', visible: false, color: theme.primaryColor });
+            });
+        }, 5000);
+    };
+
     const handleLogin = () => {
         setErrorMessage("");
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        loginUser(email, password, setErrorMessage);
+        loginUser(email, password, setErrorMessage, showNotification);
     };
 
     const handleForgotPassword = () => {
@@ -36,9 +73,6 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.container}>
                 <View style={styles.circle}/>
                 <GreetingMsg msg="Welcome Back"></GreetingMsg>
-                <View style={styles.errorContainer}>
-                    {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
-                </View>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
                     style={styles.keyboardAvoidingView}
@@ -74,6 +108,11 @@ const LoginScreen = ({ navigation }) => {
                 <View style={styles.footerContainer}>
                     <Footer msg="New to LiftX?" button="Sign Up" whenClicked="Register" />
                 </View>
+                {notification.visible && (
+                    <Animated.View style={[styles.notificationContainer, { backgroundColor: notification.color, transform: [{ translateY: slideAnim }] }]}>
+                        <Text style={styles.notificationText}>{notification.message}</Text>
+                    </Animated.View>
+                )}
             </View>
         </TouchableWithoutFeedback>
     );
@@ -132,6 +171,20 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(12),
         textDecorationLine: 'underline',
         textAlign: 'right',
+    },
+    notificationContainer: {
+        position: 'absolute',
+        width: width,
+        paddingTop: height*0.055,
+        padding: 5,
+        backgroundColor: theme.primaryColor,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    notificationText: {
+        color: theme.textColor,
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
 });
 

@@ -123,7 +123,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     body: {
         marginTop: 50,
-        paddingHorizontal: 45
+        paddingHorizontal: 50
     },
     inputContainer: {
         alignItems: 'center',

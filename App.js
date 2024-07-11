@@ -154,15 +154,18 @@ function RootNavigator() {
               // Handle the case where the document does not exist
               setUser(null);
             }
+            setIsLoading(false);
           });
 
           return () => unsubscribeUserDoc(); // Clean up the listener when the component unmounts
         } else {
           FIREBASE_AUTH.signOut(); // Sign out if email is not verified
           setUser(null);
+          setIsLoading(false);
         }
       } else {
         setUser(null);
+        setIsLoading(false);
       }
       setIsLoading(false);
     });
