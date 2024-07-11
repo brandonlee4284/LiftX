@@ -21,6 +21,7 @@ import PreviewProfileWorkoutScreen from './screens/Profile/PreviewProfileWorkout
 import { ThemeProvider } from './screens/ThemeProvider';
 
 import { onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { FIREBASE_AUTH } from './FirebaseConfig';
 import OnboardingScreen from './screens/Onboarding/Onboarding';
 import OnboardingQuestionsScreen from './screens/Onboarding/OnboardingQuestions';
@@ -31,6 +32,7 @@ import FriendProfileScreen from './screens/Leaderboard/FriendProfileScreen';
 import OnboardingInitializeScores from './screens/Onboarding/OnboardingInitializeScores';
 import UpdateScoreScreen from './screens/Settings/UpdateScoreScreen';
 import ForgotPasswordScreen from './screens/Auth/ForgotPasswordScreen';
+import { fetchPublicUserData } from './api/profile';
 
 AppRegistry.registerComponent('main', () => MainApp);
 
@@ -125,13 +127,49 @@ function AuthNavigator() {
 function RootNavigator() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
 
+  /*
   useEffect(() => {
     onAuthStateChanged(FIREBASE_AUTH, (user) => {
       setUser(user);
       setIsLoading(false);
     });
   }, []);
+  */
+
+  useEffect(() => {
+    const unsubscribeAuth = onAuthStateChanged(FIREBASE_AUTH, async (currentUser) => {
+      if (currentUser) {
+        if (currentUser.emailVerified) {
+          const db = getFirestore();
+          const userDoc = doc(db, 'users', currentUser.uid); // Adjust this to your actual collection name
+          const unsubscribeUserDoc = onSnapshot(userDoc, (doc) => {
+            if (doc.exists()) {
+              const publicUserData = doc.data();
+              console.log(publicUserData.onboardingCompleted);
+              setOnboardingCompleted(publicUserData.onboardingCompleted);
+              setUser(currentUser);
+            } else {
+              // Handle the case where the document does not exist
+              setUser(null);
+            }
+          });
+
+          return () => unsubscribeUserDoc(); // Clean up the listener when the component unmounts
+        } else {
+          FIREBASE_AUTH.signOut(); // Sign out if email is not verified
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+      setIsLoading(false);
+    });
+
+    return () => unsubscribeAuth(); // Clean up the auth listener when the component unmounts
+  }, []);
+
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -140,21 +178,21 @@ function RootNavigator() {
   return (
     <RootStack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
-        <>
-          {/*<RootStack.Screen name="App" component={AppTabNavigator} />*/}
-          
-          <RootStack.Screen name="HomeNav" component={HomeStack} options={{ animationEnabled: false }}/>
-          <RootStack.Screen name="LeaderboardNav" component={LeaderboardStack} options={{ animationEnabled: false }}/>
-          <RootStack.Screen name="ProfileNav" component={ProfileStack} options={{ animationEnabled: false }}/>
+          onboardingCompleted ? (
+            <>
+              <RootStack.Screen name="HomeNav" component={HomeStack} options={{ animationEnabled: false }}/>
+              <RootStack.Screen name="LeaderboardNav" component={LeaderboardStack} options={{ animationEnabled: false }}/>
+              <RootStack.Screen name="ProfileNav" component={ProfileStack} options={{ animationEnabled: false }}/>
 
-          <RootStack.Screen name="Setting" component={SettingStack} />
-          <RootStack.Screen name="AddFriend" component={AddFriendStack} />
-          <RootStack.Screen name="Onboarding" component={OnboardingStack} />
-          {/* ADD DMS????? <-?, FRIENDS TAB */}
-        </>
-      ) : (
-        <RootStack.Screen name="Auth" component={AuthNavigator} />
-      )}
+              <RootStack.Screen name="Setting" component={SettingStack} />
+              <RootStack.Screen name="AddFriend" component={AddFriendStack} />
+            </>
+          ) : (
+            <RootStack.Screen name="Onboarding" component={OnboardingStack} />
+          )
+        ) : (
+          <RootStack.Screen name="Auth" component={AuthNavigator} />
+        )}
     </RootStack.Navigator>
   );
 }

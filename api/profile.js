@@ -1,8 +1,9 @@
-import { getDoc, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { getDoc, doc, setDoc, updateDoc, getFirestore } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../FirebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchAsyncCloud, setAsyncCloud } from './helperFuncs';
 import { set } from 'firebase/database';
+
 
 // Create the user's public data in the cloud (Firestore), store it in local storage
 export const createPublicUser = async (data) => {
@@ -202,3 +203,11 @@ export const togglePrivateScoreMode = async () => {
     }
     await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
 }; 
+
+// sets onboarding to true
+export const completeOnboarding = async () => {
+    let publicUserData = await fetchPublicUserData();
+    publicUserData.onboardingCompleted = true;
+    await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
+    
+};

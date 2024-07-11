@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail  } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createPublicUser, createPrivateUser, fetchPublicUserData } from './profile';
@@ -13,15 +13,26 @@ import { getFirestore, collection, query, where, getDocs } from 'firebase/firest
 // Login user with email and password
 export const loginUser = async (email, password, setErrorMessage) => {
   const auth = FIREBASE_AUTH;
-  signInWithEmailAndPassword(auth, email, password).then(async () => {
+  
+  try {
+    // Sign in with email and password
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+    // Check if the email is verified
+    if (!userCredential.user.emailVerified) {
+      setErrorMessage("Please verify your email before logging in.");
+      await auth.signOut(); // Sign out the user
+      return;
+    }
+
     // Delete user data from local storage
     await clearAsyncStorage();
 
-    // Get user data from firestore and save to local storage
-    await fetchPublicUserData()
-    await fetchPublicUserData()
+    // Get user data from Firestore and save to local storage
+    await fetchPublicUserData();
+  } catch (error) {
+    setErrorMessage(error.message);
   }
-  ).catch(error => setErrorMessage(error.message));
 };
 
 export const createNewUser = async (gender = "male", weight = 135, age, name, username, email, password, setErrorMessage, navigation) => {
@@ -44,12 +55,12 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
   }
 
   createUserWithEmailAndPassword(auth, email, password)
-    .then(() => {
+    .then((userCredential) => {
+      sendEmailVerification(userCredential.user); // Send verification email
       try {
-        // Initalize schema for new user
+        // Initialize schema for new user
 
-        let initPublicUser =
-        {
+        let initPublicUser = {
           displayName: name,
           username: username,
           bio: "This is a sample bio.", // Placeholder bio
@@ -86,19 +97,18 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
             ],
           },
           privateActiveSplitMode: false, // Controls display active split
-          privateScoreMode: false, // Controls dispaly scores
-        }
+          privateScoreMode: false, // Controls display scores
+          onboardingCompleted: false,
+        };
 
-        let initPrivateUserData =
-        {
+        let initPrivateUserData = {
           gender: gender,
           weight: weight,
           age: age,
           email: email,
-        }
+        };
 
-        let initPrivateUserSplits =
-        {
+        let initPrivateUserSplits = {
           splits: [
             {
               splitName: "PPL",
@@ -152,28 +162,26 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
               ],
             },
           ],
-        }
+        };
 
         let initPrivateFriendsData = {
           friendList: [],
           friendRequestsSent: [],
           friendRequestsReceived: [],
-        }
+        };
 
         let initPrivateWorkoutData = {
-          stats: { 
-            
-          },
+          stats: {},
           overallScore: {
-            overall: {score:0, change:0},
-            chest: {score:0, change:0},
-            back: {score:0, change:0},
-            legs: {score:0, change:0},
-            shoulders: {score:0, change:0},
-            arms: {score:0, change:0},
-            core: {score:0, change:0},
+            overall: { score: 0, change: 0 },
+            chest: { score: 0, change: 0 },
+            back: { score: 0, change: 0 },
+            legs: { score: 0, change: 0 },
+            shoulders: { score: 0, change: 0 },
+            arms: { score: 0, change: 0 },
+            core: { score: 0, change: 0 },
           },
-        }
+        };
 
         createPublicUser(initPublicUser).then(
           createPrivateUser(initPrivateUserData).then(
@@ -181,16 +189,12 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
               createPrivateFriends(initPrivateFriendsData).then(
                 createPrivateWorkout(initPrivateWorkoutData).then(() => {
                   console.log('User data saved successfully');
-                  signInWithEmailAndPassword(auth, email, password)
-                  .then(() => {
-                    navigation.navigate('Onboarding');
-                  });
-                }
-                )
+                  //navigation.navigate('Login'); // Redirect to login screen
+                })
               )
             )
           )
-        )
+        );
       } catch (error) {
         console.error('Error saving user data: ', error);
       }
@@ -202,12 +206,12 @@ export const logoutUser = async () => {
   // Delete user data from local storage
   await clearAsyncStorage();
   FIREBASE_AUTH.signOut();
-}
+};
 
 export const resetPassword = async (email) => {
   try {
-      await sendPasswordResetEmail(FIREBASE_AUTH, email);
+    await sendPasswordResetEmail(FIREBASE_AUTH, email);
   } catch (error) {
-      throw error;
+    throw error;
   }
 };

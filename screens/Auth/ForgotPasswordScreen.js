@@ -10,6 +10,7 @@ import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/nativ
 import { useTheme } from "../ThemeProvider";
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const { height, width } = Dimensions.get('window');
 
@@ -58,6 +59,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
     };
 
     const handleForgotPassword = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setErrorMessage("");
         resetPassword(email)
             .then(() => {
@@ -79,18 +81,22 @@ const ForgotPasswordScreen = ({ navigation }) => {
                     <Ionicons name="chevron-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
                     <Text style={styles.header}>Reset Password</Text>
                 </View>
-                <View style={styles.inputContainer}>
-                    <Input 
-                        mode="email" 
-                        backgroundColor={theme.inputBackgroundColor}
-                        onChangeText={setEmail}
-                        value={email}
-                        placeholder="Email"
-                        placeholderTextColor={theme.textColor}
-                    />
-                    <View style={styles.buttonContainer}>
-                        <SignInButton text="Reset Password" onPress={handleForgotPassword}/>
+                <View style={styles.body}>
+                    <Text style={styles.title}>Enter your LiftX email</Text>
+                    <View style={styles.inputContainer}>
+                        <Input 
+                            mode="email" 
+                            backgroundColor={theme.inputBackgroundColor}
+                            onChangeText={setEmail}
+                            value={email}
+                            placeholder="Email"
+                            placeholderTextColor={theme.textColor}
+                        />
+                        
                     </View>
+                    <TouchableOpacity style={styles.buttonContainer} onPress={handleForgotPassword}>
+                        <Text style={styles.buttonText}>Reset Password</Text>
+                    </TouchableOpacity>
                 </View>
                 {notification.visible && (
                     <Animated.View style={[styles.notificationContainer, { backgroundColor: notification.color, transform: [{ translateY: slideAnim }] }]}>
@@ -111,23 +117,31 @@ const createStyles = (theme) => StyleSheet.create({
         backgroundColor: theme.backgroundColor,
         paddingHorizontal: 20,
     },
-    errorContainer: {
-        alignItems: 'center',
-        //marginBottom: 20,
+    title: {
+        fontSize: getResponsiveFontSize(20),
+        color: theme.textColor,
+    },
+    body: {
+        marginTop: 50,
+        paddingHorizontal: 45
     },
     inputContainer: {
         alignItems: 'center',
-        marginTop: 100,
+        marginTop: 20,
     },
     buttonContainer: {
+        height: height * 0.050,
+        width: width * 0.35,
+        borderRadius: 15,
+        backgroundColor: theme.primaryColor,
         alignItems: 'center',
-        marginBottom: 20,
+        justifyContent: 'center',
     },
-    error: {
-        color: "#E9446A", // Error text color
-        fontSize: 13,
-        fontWeight: "600",
-        textAlign: "center"
+    buttonText: {
+        color: theme.backgroundColor,
+        fontSize: getResponsiveFontSize(16),
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
     headerContainer: {
         marginTop: height > 850 ? 60 : 50,

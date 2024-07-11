@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, Keyboa
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import { getDisplayName, setUserWeight, setUserGender, setUserAge } from '../../api/profile';
+import { completeOnboarding } from '../../api/profile';
 import * as Haptics from 'expo-haptics';
 import WarningModal from "../Components/WarningModal";
 import { customExerciseExist, syncScores, updateExerciseStats, updateOverallStats } from "../../api/workout";
@@ -37,6 +37,7 @@ const OnboardingInitializeScores = () => {
                     await updateExerciseStats(exercises);
                     await updateOverallStats();
                     await syncScores();
+                    await completeOnboarding();
                     navigation.navigate('Home');
                 }
                 
@@ -56,6 +57,7 @@ const OnboardingInitializeScores = () => {
                 await updateOverallStats();
                 await syncScores();
                 setExerciseWarningModalVisible(false);
+                await completeOnboarding();
                 navigation.navigate('Home');
             } catch (error) {
                 console.error('Error in handleHome: ', error);
@@ -74,7 +76,8 @@ const OnboardingInitializeScores = () => {
         );
     };
 
-    const handleSkip = () => {
+    const handleSkip = async () => {
+        await completeOnboarding();
         navigation.navigate('Home');
     };
 

@@ -26,6 +26,7 @@ const LoginScreen = ({ navigation }) => {
     };
 
     const handleForgotPassword = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setErrorMessage("");
         navigation.navigate("ForgotPassword");
     };

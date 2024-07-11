@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Dimensions, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
+import React, { useState, useRef, useEffect } from "react";
+import { View, Text, StyleSheet, Dimensions, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, Animated } from 'react-native';
+import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
 import { createNewUser } from "../../api/auth";
 import { GreetingMsg } from "./Components/GreetingMsg";
 import { Input } from "./Components/Input";
@@ -19,13 +20,52 @@ const RegisterScreen = ({ navigation }) => {
     const [age, setAge] = useState("");
     const [displayName, setDisplayName] = useState("");
     const [errorMessage, setErrorMessage] = useState(null);
+    const route = useRoute();
 
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
-    const handleSignUp = () => {
+    const [notification, setNotification] = useState({ message: '', visible: false, color: theme.primaryColor });
+    const notificationTimeoutRef = useRef(null);
+    const slideAnim = useRef(new Animated.Value(-100)).current;
+
+    useEffect(() => {
+        if (route.params?.showNotification) {
+            const { message, color } = route.params.showNotification;
+            showNotification(message, color);
+        }
+    }, [route.params]);
+
+    const showNotification = (message, color) => {
+        if (notificationTimeoutRef.current) {
+            clearTimeout(notificationTimeoutRef.current);
+        }
+        setNotification({ message, visible: true, color });
+
+        // Slide the notification in
+        Animated.timing(slideAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+
+        notificationTimeoutRef.current = setTimeout(() => {
+            // Slide the notification out
+            Animated.timing(slideAnim, {
+                toValue: -100,
+                duration: 300,
+                useNativeDriver: true,
+            }).start(() => {
+                setNotification({ message: '', visible: false, color: theme.primaryColor });
+            });
+        }, 5000);
+    };
+
+    const handleSignUp = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        createNewUser(gender, weight, age, displayName, username, email, password, setErrorMessage, navigation);
+        setErrorMessage("");
+        await createNewUser(gender, weight, age, displayName, username, email, password, setErrorMessage, navigation);
+        
     };
 
     return (
@@ -87,6 +127,11 @@ const RegisterScreen = ({ navigation }) => {
                     </View>
                 </TouchableWithoutFeedback>
             </ScrollView>
+            {notification.visible && (
+                <Animated.View style={[styles.notificationContainer, { backgroundColor: notification.color, transform: [{ translateY: slideAnim }] }]}>
+                    <Text style={styles.notificationText}>{notification.message}</Text>
+                </Animated.View>
+            )}
         </KeyboardAvoidingView>
     );
 };
@@ -132,6 +177,20 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: 13,
         fontWeight: "600",
         textAlign: "center",
+    },
+    notificationContainer: {
+        position: 'absolute',
+        width: width,
+        paddingTop: height*0.057,
+        padding: 5,
+        backgroundColor: theme.primaryColor,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    notificationText: {
+        color: theme.textColor,
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
 });
 

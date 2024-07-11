@@ -47,8 +47,9 @@ To-Do list
 - privacy settings (done)
 - change password/forgot password login screen (done)
 
-- fix persistence (nirav)
-- email verification (nirav)
+- fix persistence
+- email verification
+    - store user data in db when account is created (before email verification) to prevent duplicate usernames
 
 
 
