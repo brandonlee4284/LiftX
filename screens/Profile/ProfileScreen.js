@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions, ImageBackground  } from 'react-native';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { fetchPublicUserData, getActiveSplit, getUserScores } from "../../api/profile";
@@ -15,6 +15,8 @@ import * as Haptics from 'expo-haptics';
 import { getWorkoutDay } from "../../api/workout";
 import InformationModal from "../Components/InformationModal";
 import { synchronizeFriends } from "../../api/friends";
+import { useFocusEffect } from '@react-navigation/native';
+
 
 
 const { height, width } = Dimensions.get('window');
@@ -29,6 +31,41 @@ const ProfileScreen = ({ navigation, route }) => {
     const categories = ["overall", "chest", "back", "shoulders", "arms", "legs"];
     const [modalVisible, setModalVisible] = useState(false);
 
+    useFocusEffect(
+        useCallback(() => {
+            const fetchData = async () => {
+                try {
+                    // Fetch public user data
+                    const userData = await fetchPublicUserData();
+                    if (userData) {
+                        setPublicUserData(userData);
+                        
+                    }
+        
+                    // Fetch active split day names
+                    const fetchedActiveSplit = await getActiveSplit();
+                    if (fetchedActiveSplit) {
+                        setActiveSplitDays(fetchedActiveSplit.days);
+                        setActiveSplitState(fetchedActiveSplit); 
+                    }
+        
+                    // Fetch user scores
+                    const fetchedUserScores = await getUserScores();
+                    if (fetchedUserScores && fetchedUserScores.displayScores) {
+                        setUserScores(fetchedUserScores.displayScores);
+                    }
+    
+                    
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            };
+        
+            fetchData();
+        }, [])
+    );
+
+    /*
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -60,6 +97,7 @@ const ProfileScreen = ({ navigation, route }) => {
     
         fetchData();
     }, []); 
+    */
 
     const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
     const renderScoreCards = () => {

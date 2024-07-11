@@ -30,6 +30,7 @@ import AddFriendScreen from './screens/AddFriendScreen';
 import FriendProfileScreen from './screens/Leaderboard/FriendProfileScreen';
 import OnboardingInitializeScores from './screens/Onboarding/OnboardingInitializeScores';
 import UpdateScoreScreen from './screens/Settings/UpdateScoreScreen';
+import ForgotPasswordScreen from './screens/Auth/ForgotPasswordScreen';
 
 AppRegistry.registerComponent('main', () => MainApp);
 
@@ -113,6 +114,7 @@ function AuthNavigator() {
   return (
     <AuthStack.Navigator screenOptions={{ headerShown: false }}>
       <AuthStack.Screen name="Login" component={LoginScreen} />
+      <AuthStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       <AuthStack.Screen name="Register" component={RegisterScreen} />
     </AuthStack.Navigator>
   );

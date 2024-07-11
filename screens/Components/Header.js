@@ -1,21 +1,42 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from "../ThemeProvider";
 import { getUsername } from '../../api/profile';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import GradientText from './GradientText';
 import * as Haptics from 'expo-haptics';
+import { getFriendRequests } from '../../api/friends';
 
 const { height, width } = Dimensions.get('window');
 
 export function Header(props) {
     const [username, setUsername] = useState('');
+    const [friendRequestNum, setFriendRequestNum] = useState(0);
     const navigation = useNavigation();
     const { theme } = useTheme();
     const styles = createStyles(theme);
     
+
+    useFocusEffect(
+        useCallback(() => {
+            const fetchData = async () => {
+                try {
+                    // Fetch friend requests
+                    const friendRequestsData = await getFriendRequests();
+                    if (friendRequestsData) {
+                        setFriendRequestNum(friendRequestsData.length);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            };
+
+            fetchData();
+        }, [])
+    );
 
     useEffect(() => {
         async function fetchData() {
@@ -23,6 +44,8 @@ export function Header(props) {
             if (data) {
                 setUsername(data);
             }
+
+            
         }
 
         fetchData();
@@ -38,7 +61,6 @@ export function Header(props) {
         navigation.navigate('Setting');
     };
     
-
     return (
         <View style={styles.container}>
             <View style={styles.leftContainer}>
@@ -55,6 +77,11 @@ export function Header(props) {
             <View style={styles.rightContainer}>
                 <TouchableOpacity onPress={handleAddProfile} style={styles.iconButton}>
                     <Ionicons name="person-add-outline" size={getResponsiveFontSize(24)} color={theme.textColor} />
+                    {friendRequestNum > 0 && (
+                        <View style={styles.notificationDot}>
+                            <Text style={styles.notificationText}>{friendRequestNum}</Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleSettings} style={styles.iconButton}>
                     <Ionicons name="settings-outline" size={getResponsiveFontSize(24)} color={theme.textColor} />
@@ -99,7 +126,25 @@ const createStyles = (theme) => StyleSheet.create({
     iconButton: {
         marginLeft: 15,
     },
-    
+    notificationDot: {
+        minWidth: 0.042*width,
+        height: 0.042*width,
+        borderRadius: 9,
+        backgroundColor: theme.primaryColor,
+        position: 'absolute',
+        top: -0.0054*height,
+        right: -0.023*width,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 3,
+    },
+    notificationText: {
+        color: theme.textColor,
+        fontSize: getResponsiveFontSize(10),
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+
     
   
 });

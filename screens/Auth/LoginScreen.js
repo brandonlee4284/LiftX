@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
-import { loginUser } from "../../api/auth";
+import { loginUser, resetPassword } from "../../api/auth";
 import { GreetingMsg } from "./Components/GreetingMsg";
 import { Input } from "./Components/Input";
 import { SignInButton } from "./Components/SignInButton";
@@ -20,8 +20,14 @@ const LoginScreen = ({ navigation }) => {
     const styles = createStyles(theme);
 
     const handleLogin = () => {
+        setErrorMessage("");
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         loginUser(email, password, setErrorMessage);
+    };
+
+    const handleForgotPassword = () => {
+        setErrorMessage("");
+        navigation.navigate("ForgotPassword");
     };
     
     return (
@@ -54,7 +60,13 @@ const LoginScreen = ({ navigation }) => {
                             placeholderTextColor={theme.textColor}
                         />
                     </View>
+                    <View style={styles.forgotPasswordContainer}>
+                        <TouchableWithoutFeedback onPress={handleForgotPassword}>
+                            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                        </TouchableWithoutFeedback>
+                    </View>
                 </KeyboardAvoidingView>
+                
                 <View style={styles.buttonContainer}>
                     <SignInButton text="Log In" onPress={handleLogin}/>
                 </View>
@@ -65,7 +77,10 @@ const LoginScreen = ({ navigation }) => {
         </TouchableWithoutFeedback>
     );
 };
-
+const getResponsiveFontSize = (baseFontSize) => {
+    const scale = width / 425; 
+    return Math.round(baseFontSize * scale);
+};
 const createStyles = (theme) => StyleSheet.create({    
     container: {
         flex: 1,
@@ -78,7 +93,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     errorContainer: {
         alignItems: 'center',
-        marginBottom: 20,
+        //marginBottom: 20,
     },
     inputContainer: {
         alignItems: 'center',
@@ -107,6 +122,15 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: 13,
         fontWeight: "600",
         textAlign: "center"
+    },
+    forgotPasswordContainer: {  
+        paddingRight: 50
+    },
+    forgotPasswordText: {
+        color: theme.grayTextColor,
+        fontSize: getResponsiveFontSize(12),
+        textDecorationLine: 'underline',
+        textAlign: 'right',
     },
 });
 

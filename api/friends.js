@@ -464,7 +464,7 @@ export const getUserDetails = async (uid) => {
         const startSync = Date.now();
         const userRef = doc(FIRESTORE_DB, 'users', uid);
         const userDoc = await getDoc(userRef, {
-            fieldMask: ['profilePicture', 'displayName', 'numFriends', 'bio', 'activeSplit', 'displayScore']
+            fieldMask: ['profilePicture', 'displayName', 'numFriends', 'bio', 'activeSplit', 'displayScore', 'privateActiveSplitMode', 'privateScoreMode']
         });
 
         if (userDoc.exists()) {
@@ -476,8 +476,9 @@ export const getUserDetails = async (uid) => {
                 displayName: userData.displayName || null,
                 friendCount: userData.numFriends !== undefined ? userData.numFriends : null,
                 bio: userData.bio || null,
-                activeSplit: userData.activeSplit || null,
-                displayScores: userData.displayScore
+                activeSplit: userData.privateActiveSplitMode ? null : (userData.activeSplit || null),
+                displayScores: userData.privateScoreMode ? null : (
+                    userData.displayScore
                     ? {
                         overall: {
                             score: userData.displayScore.overall.score.toFixed(1),
@@ -504,9 +505,9 @@ export const getUserDetails = async (uid) => {
                             change: userData.displayScore.legs.change.toFixed(2),
                         },
                     }
-                    : null,
+                    : null
+                ),
             };
-            
         } else {
             return null;
         }

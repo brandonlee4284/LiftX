@@ -40,10 +40,19 @@ const FriendProfileScreen = ({ navigation, route }) => {
     const handleSelectDay = async (dayName, activeSplit) => { 
         try {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-            const workoutDay = await getWorkoutDay(dayName, activeSplit);
-            navigation.navigate('PreviewProfileWorkout', {
-                workoutDay, splitName: friend.activeSplit.splitName, user: friend.displayName
-            });
+    
+            // Check if activeSplit is not null
+            if (activeSplit) {
+                const workoutDay = await getWorkoutDay(dayName, activeSplit);
+                navigation.navigate('PreviewProfileWorkout', {
+                    workoutDay,
+                    splitName: friend.activeSplit.splitName,
+                    user: friend.displayName
+                });
+            } else {
+                console.log('Active split is null.');
+                // Handle the case where activeSplit is null
+            }
         } catch (error) {
             console.error(error);
         }
@@ -78,6 +87,14 @@ const FriendProfileScreen = ({ navigation, route }) => {
 
     const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
     const renderScoreCards = () => {
+        if (!friend.displayScores) {
+            return (
+                <Text style={styles.privateScoresText}>
+                    {friend.username}'s scores are private
+                </Text>
+            );
+        }
+    
         return categories.map((category, index) => (
             <ScoreCard 
                 key={index}
@@ -124,12 +141,15 @@ const FriendProfileScreen = ({ navigation, route }) => {
 
                     <View style={styles.activeSplitTextContainer}>
                         <Text style={styles.title}>Active Split</Text>
-                        <TouchableOpacity onPress={handleDownloadFriendSplit}>
-                            <MaterialIcons name="save-alt" size={getResponsiveFontSize(25)} color={theme.textColor} />
-                        </TouchableOpacity>
+                        {friend.activeSplit && (
+                            <TouchableOpacity onPress={handleDownloadFriendSplit}>
+                                <MaterialIcons name="save-alt" size={getResponsiveFontSize(25)} color={theme.textColor} />
+                            </TouchableOpacity>
+                        )}
                     </View>
                     <View style={styles.carouselContainer}>
-                        {friend.activeSplit.days.length > 0 ? (
+                    {friend.activeSplit ? (
+                        friend.activeSplit.days.length > 0 ? (
                             <Carousel
                                 width={width}
                                 height={width * 0.6}
@@ -148,9 +168,14 @@ const FriendProfileScreen = ({ navigation, route }) => {
                             />
                         ) : (
                             <Text style={styles.noWorkoutsText}>
-                                {friend.displayName} has no workouts in their active split
+                                {friend.username}'s active split is empty
                             </Text>
-                        )}
+                        )
+                    ) : (
+                        <Text style={styles.noWorkoutsText}>
+                            {friend.username}'s active split is private
+                        </Text>
+                    )}
                     </View>
                     {/* Scores */}
                     <View style={styles.scoresContainer}>
@@ -163,12 +188,14 @@ const FriendProfileScreen = ({ navigation, route }) => {
                     </View>
                 </View>
             </ScrollView>
-            <WarningModal
-                visible={warningModalVisible}
-                msg={"Split Already Exists"}
-                subMsg={"Change the split name before downloading another one"}
-                close={handleClose}
-            />
+            {friend.activeSplit && (
+                <WarningModal
+                    visible={warningModalVisible}
+                    msg={"Split Already Exists"}
+                    subMsg={`Change the split name '${friend.activeSplit.splitName}' before downloading another one`}
+                    close={handleClose}
+                />
+            )}
             <Modal
                 transparent={true}
                 animationType="fade"
@@ -272,7 +299,14 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(18),
         textAlign: 'center',
         paddingHorizontal: 40,
-        marginVertical: 90,
+        marginVertical: 20,
+    },
+    privateScoresText: {
+        color: theme.grayTextColor,
+        fontSize: getResponsiveFontSize(18),
+        textAlign: 'center',
+        paddingHorizontal: 40,
+        marginVertical: 20,
     },
     loadingContainer: {
         ...StyleSheet.absoluteFillObject,

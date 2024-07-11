@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeProvider";
@@ -6,6 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { clearAsyncStorage } from '../../../api/helperFuncs';
 import { calculateScore } from '../../../api/score';
+import { fetchPublicUserData, togglePrivateActiveSplitMode, togglePrivateScoreMode } from '../../../api/profile';
 
 const { height, width } = Dimensions.get('window');
 
@@ -15,6 +16,30 @@ const AccountComponent = () => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
     const navigation = useNavigation();
+
+    const activeSplitRef = useRef(false);
+    const scoresRef = useRef(false);
+    const isSwitchTogglingRef = useRef(false);
+
+    const [activeSplitCooldown, setActiveSplitCooldown] = useState(false);
+    const [scoresCooldown, setScoresCooldown] = useState(false);
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const publicUserData = await fetchPublicUserData();
+                if(publicUserData){
+                    setShowActiveSplit(publicUserData.privateActiveSplitMode);
+                    setShowScores(publicUserData.privateScoreMode);
+                }
+                
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+        fetchData();
+    }, []);
 
     const handleProfileEdit = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -30,6 +55,42 @@ const AccountComponent = () => {
         navigation.navigate("UpdateScores");
     }
 
+    const toggleSwitch = async (type) => {
+        if (isSwitchTogglingRef.current || (type === 'activeSplit' && activeSplitCooldown) || (type === 'scores' && scoresCooldown)) {
+            return;
+        }
+
+        isSwitchTogglingRef.current = true; // Lock toggling
+
+        try {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+
+            if (type === 'activeSplit') {
+                setShowActiveSplit(prevState => {
+                    const newState = !prevState;
+                    activeSplitRef.current = newState; // Update ref with new state
+                    return newState;
+                });
+                await togglePrivateActiveSplitMode();
+                setActiveSplitCooldown(true); // Set cooldown
+                setTimeout(() => setActiveSplitCooldown(false), 1); // Cooldown period (0.01 second)
+            } else if (type === 'scores') {
+                setShowScores(prevState => {
+                    const newState = !prevState;
+                    scoresRef.current = newState; // Update ref with new state
+                    return newState;
+                });
+                await togglePrivateScoreMode();
+                setScoresCooldown(true); // Set cooldown
+                setTimeout(() => setScoresCooldown(false), 1); // Cooldown period (1 second)
+            }
+
+        } catch (error) {
+            console.error(`Error toggling ${type} mode:`, error);
+        } finally {
+            isSwitchTogglingRef.current = false; // Unlock toggling
+        }
+    };
 
     return (
         <View>
@@ -47,7 +108,8 @@ const AccountComponent = () => {
                     <Text style={styles.subText}>Show active split on profile</Text>
                     <Switch
                         value={showActiveSplit}
-                        onValueChange={setShowActiveSplit}
+                        onValueChange={() => toggleSwitch('activeSplit')}
+                        disabled={isSwitchTogglingRef.current || scoresCooldown}
                         trackColor={{ false: theme.grayTextColor, true: theme.primaryColor }}
                         thumbColor={showActiveSplit ? theme.textColor : theme.textColor}
                         style={styles.switch}
@@ -57,16 +119,13 @@ const AccountComponent = () => {
                     <Text style={styles.subText}>Show scores on profile</Text>
                     <Switch
                         value={showScores}
-                        onValueChange={setShowScores}
+                        onValueChange={() => toggleSwitch('scores')}
+                        disabled={isSwitchTogglingRef.current || activeSplitCooldown}
                         trackColor={{ false: theme.grayTextColor, true: theme.primaryColor }}
-                        thumbColor={showActiveSplit ? theme.textColor : theme.textColor}
+                        thumbColor={showScores ? theme.textColor : theme.textColor}
                         style={styles.switch}
                     />
                 </View>
-                <TouchableOpacity style={styles.row}>
-                    <Ionicons name="key-outline" size={getResponsiveFontSize(24)} style={styles.icon} />
-                    <Text style={styles.text}>Change Password</Text>
-                </TouchableOpacity>
                 <TouchableOpacity style={styles.row} onPress={handleUpdateScores}>
                     <MaterialCommunityIcons name="update" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Update Scores</Text>

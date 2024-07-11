@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, TextInput, ActivityIndicator, Image, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from "./ThemeProvider";
-import { Ionicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, Octicons } from "@expo/vector-icons";
 import { getUserUIDByUsername, sendFriendRequest, getFriendRequests, acceptFriendRequest, denyFriendRequest, synchronizeFriends, usernameRecieved } from '../api/friends';
 import * as Haptics from 'expo-haptics';
 import WarningModal from "./Components/WarningModal";
@@ -80,10 +80,11 @@ const AddFriendScreen = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setLoading(true);
         try {
-            const uid = await getUserUIDByUsername(username);
+            const sanitizedUsername = username.trim();
+            const uid = await getUserUIDByUsername(sanitizedUsername);
             if (uid) {
-                await usernameRecieved(username);
-                await sendFriendRequest(uid, username);
+                await usernameRecieved(sanitizedUsername);
+                await sendFriendRequest(uid, sanitizedUsername);
                 showNotification('Friend request sent!', theme.primaryColor);
             } else {
                 showNotification('Username not found!', theme.dangerColor);
@@ -156,41 +157,56 @@ const AddFriendScreen = () => {
                 </View>
                 <View style={styles.friendRequestsContainer}>
                     <Text style={styles.friendRequestsTitle}>Pending Requests</Text>
-                    {friendRequests.map((request, index) => (
-                        <View key={index} style={styles.friendRequestRow}>
-                            {request.senderPFP ? (
-                                <Image
-                                    source={{ uri: request.senderPFP }}
-                                    style={styles.profilePicture}
-                                />
-                            ) : (
-                                <Ionicons
-                                    name="person-circle"
-                                    size={getResponsiveFontSize(50)}
-                                    color={theme.textColor}
-                                    style={styles.defaultIcon}
-                                />
-                            )}
-                            <View style={styles.textContainer}>
-                                <Text style={styles.friendDisplayName}>{request.senderDisplayName}</Text>
-                                <Text style={styles.friendRequestText}>{request.senderUsername}</Text>
+                    {friendRequests.length === 0 ? (
+                        <Text style={styles.noRequestsText}>No new friend requests</Text>
+                    ) : (
+                        friendRequests.map((request, index) => (
+                            <View key={index} style={styles.friendRequestRow}>
+                                {request.senderPFP ? (
+                                    <Image
+                                        source={{ uri: request.senderPFP }}
+                                        style={styles.profilePicture}
+                                    />
+                                ) : (
+                                    <Ionicons
+                                        name="person-circle"
+                                        size={getResponsiveFontSize(50)}
+                                        color={theme.textColor}
+                                        style={styles.defaultIcon}
+                                    />
+                                )}
+                                <View style={styles.textContainer}>
+                                    <Text style={styles.friendDisplayName}>{request.senderDisplayName}</Text>
+                                    <Text style={styles.friendRequestText}>{request.senderUsername}</Text>
+                                </View>
+                                <View style={styles.buttonsContainer}>
+                                    <TouchableOpacity
+                                        style={[styles.actionButton, styles.acceptButton]}
+                                        onPress={() => handleAcceptRequest(request.senderUid, request.senderUsername)}
+                                    >
+                                        <AntDesign
+                                            name="adduser"
+                                            size={getResponsiveFontSize(20)}
+                                            color={theme.backgroundColor}
+                                            style={styles.addIcon}
+                                        />
+                                        <Text style={styles.buttonText}>Accept</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.actionButton, styles.rejectButton]}
+                                        onPress={() => handleRejectRequest(request.senderUid)}
+                                    >
+                                        <Octicons
+                                            name="x"
+                                            size={getResponsiveFontSize(18)}
+                                            color={theme.grayTextColor}
+                                            style={styles.addIcon}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                            <View style={styles.buttonsContainer}>
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.acceptButton]}
-                                    onPress={() => handleAcceptRequest(request.senderUid, request.senderUsername)}
-                                >
-                                    <Text style={styles.buttonText}>Accept</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.rejectButton]}
-                                    onPress={() => handleRejectRequest(request.senderUid)}
-                                >
-                                    <Text style={styles.buttonRemoveText}>Remove</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    ))}
+                        ))
+                    )}
                 </View>
                 
             </ScrollView>
@@ -295,10 +311,14 @@ const createStyles = (theme) => StyleSheet.create({
         height: width*0.116,
         marginRight: 10,
     },
+    addIcon: {
+        marginRight: 5,
+    },
     friendDisplayName: {
         color: theme.textColor,
-        fontSize: getResponsiveFontSize(18),
+        fontSize: getResponsiveFontSize(16),
         fontWeight: 'bold',
+        paddingBottom: 5
     },
     textContainer: {
         flex: 1,
@@ -306,22 +326,25 @@ const createStyles = (theme) => StyleSheet.create({
     },
     friendRequestText: {
         color: theme.textColor,
-        fontSize: getResponsiveFontSize(18),
+        fontSize: getResponsiveFontSize(12),
     },
     buttonsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
     actionButton: {
-        padding: 10,
-        borderRadius: 10,
+        flexDirection: 'row',
+        paddingHorizontal: 8,
+        paddingVertical: 5,
+        borderRadius: 20,
         marginLeft: 10,
     },
     acceptButton: {
         backgroundColor: theme.primaryColor,
+        alignItems: 'center'
     },
     rejectButton: {
-        backgroundColor: theme.dangerColor,
+        backgroundColor: theme.backgroundColor,
     },
     loadingContainer: {
         ...StyleSheet.absoluteFillObject,
@@ -343,24 +366,12 @@ const createStyles = (theme) => StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center'
     },
-    /*
-    notificationContainer: {
-        position: 'absolute',
-        //bottom: 0,
-        //transform: [{ translateY: 2.04*width }],
-        width: width,
-        paddingBottom: 30,
-        padding: 10,
-        backgroundColor: theme.primaryColor,
-        borderRadius: 20,
-        alignItems: 'center',
+    noRequestsText: {
+        color: theme.grayTextColor,
+        fontSize: getResponsiveFontSize(16),
+        textAlign: 'center',
+        marginTop: 30,
     },
-    notificationText: {
-        color: theme.textColor,
-        fontWeight: 'bold',
-        textAlign: 'center'
-    },
-    */
 
 });
 

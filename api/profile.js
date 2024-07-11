@@ -180,3 +180,25 @@ export const updateUserProfile = async (newPFP, newDisplayName, newBio) => {
     }
     
 };
+
+// toggle the private mode of active split of a user
+export const togglePrivateActiveSplitMode = async () => {
+    let publicUserData = await fetchPublicUserData();
+    if(publicUserData.privateActiveSplitMode){
+        publicUserData.privateActiveSplitMode = false;
+    } else {
+        publicUserData.privateActiveSplitMode = true;
+    }
+    await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
+}; 
+
+// toggle the private mode of active split of a user
+export const togglePrivateScoreMode = async () => {
+    let publicUserData = await fetchPublicUserData();
+    if(publicUserData.privateScoreMode){
+        publicUserData.privateScoreMode = false;
+    } else {
+        publicUserData.privateScoreMode = true;
+    }
+    await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
+}; 

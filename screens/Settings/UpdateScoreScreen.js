@@ -18,11 +18,11 @@ const UpdateScoreScreen = () => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
     const [exercises, setExercises] = useState([
-        { muscle: 'Chest', name: "", reps: "", sets: 1, weight: "" },
-        { muscle: 'Back', name: "", reps: "", sets: 1, weight: "" },
-        { muscle: 'Shoulders', name: "", reps: "", sets: 1, weight: "" },
-        { muscle: 'Arms', name: "", reps: "", sets: 1, weight: "" },
-        { muscle: 'Legs', name: "", reps: "", sets: 1, weight: "" },
+        { muscle: 'Chest', name: "", reps: "", sets: "", weight: "" },
+        { muscle: 'Back', name: "", reps: "", sets: "", weight: "" },
+        { muscle: 'Shoulders', name: "", reps: "", sets: "", weight: "" },
+        { muscle: 'Arms', name: "", reps: "", sets: "", weight: "" },
+        { muscle: 'Legs', name: "", reps: "", sets: "", weight: "" },
     ]);
     const [warningModalVisible, setWarningModalVisible] = useState(false);
     const [exerciseWarningModalVisible, setExerciseWarningModalVisible] = useState(false);
@@ -54,6 +54,7 @@ const UpdateScoreScreen = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         if (areFieldsComplete()) {
             try {
+                console.log(exercises);
                 await updateExerciseStats(exercises);
                 await updateOverallStats();
                 await syncScores();
@@ -72,27 +73,20 @@ const UpdateScoreScreen = () => {
         return exercises.every(exercise =>
             exercise.name.trim() !== "" &&
             exercise.reps.trim() !== "" &&
+            exercise.sets.trim() !== "" &&
             exercise.weight.trim() !== ""
         );
     };
 
-    const handleSkip = () => {
-        navigation.navigate('Home');
-    };
-
     const handleInputChange = (index, field, value) => {
         const newExercises = [...exercises];
-        if(field === "name"){
-            newExercises[index][field] = value;
-        } else {
-            newExercises[index][field] = value;
-        }
+        newExercises[index][field] = value;
         
         setExercises(newExercises);
     };
 
     const leftContent = exercises.map(exercise => exercise.name).join(", ");
-    const rightContent = exercises.map(exercise => `${exercise.reps} reps, ${exercise.weight}lb`).join(", ");
+    const rightContent = exercises.map(exercise => `${exercise.sets} sets, ${exercise.reps} reps @ ${exercise.weight}lb`).join(", ");
     
     const estimatedLeftWidth = leftContent.length * getResponsiveFontSize(10) * 0.5; // Rough estimate
     const estimatedRightWidth = rightContent.length * getResponsiveFontSize(10) * 0.5; // Rough estimate
@@ -131,6 +125,16 @@ const UpdateScoreScreen = () => {
                                         />
                                     </View>
                                     <View style={styles.rightContainer}>
+                                        <TextInput
+                                            style={[styles.setsReps, styles.editFont]}
+                                            keyboardType="numeric"
+                                            placeholder={"0"}
+                                            placeholderTextColor={theme.grayTextColor}
+                                            maxLength={4}
+                                            value={exercise.sets}
+                                            onChangeText={(text) => handleInputChange(index, 'sets', text)}
+                                        />
+                                        <Text style={styles.setsReps}> sets,  </Text>
                                         <TextInput
                                             style={[styles.setsReps, styles.editFont]}
                                             keyboardType="numeric"

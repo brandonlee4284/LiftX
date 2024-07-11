@@ -44,13 +44,13 @@ To-Do list
 - notifications for updated scores, updated profile, save workout, dowload another persons split, etc. (done)
 - fix scores calculations/display percentiles/stats (done)
 - fix profile pictures (done)
+- privacy settings (done)
+- change password/forgot password login screen (done)
 
 - fix persistence (nirav)
 - email verification (nirav)
-- change password/forgot password login screen (nirav)
 
 
-- privacy settings (me)
 
 */
 

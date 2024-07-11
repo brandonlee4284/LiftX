@@ -1,4 +1,4 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail  } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createPublicUser, createPrivateUser, fetchPublicUserData } from './profile';
@@ -27,6 +27,12 @@ export const loginUser = async (email, password, setErrorMessage) => {
 export const createNewUser = async (gender = "male", weight = 135, age, name, username, email, password, setErrorMessage, navigation) => {
   const auth = FIREBASE_AUTH;
   const db = getFirestore();
+
+  // Check if the username contains white spaces
+  if (/\s/.test(username)) {
+    setErrorMessage("Username has invalid characters");
+    return;
+  }
 
   // Check if the username already exists
   const usernamesRef = collection(db, 'users'); // Adjust this to your actual collection name
@@ -79,8 +85,8 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
               }
             ],
           },
-          privateMode: false, // Controls display stats & active split
-          autoUpdateWeight: true, // Controls whether to update weight automatically
+          privateActiveSplitMode: false, // Controls display active split
+          privateScoreMode: false, // Controls dispaly scores
         }
 
         let initPrivateUserData =
@@ -198,6 +204,10 @@ export const logoutUser = async () => {
   FIREBASE_AUTH.signOut();
 }
 
-export const changePassword = async () => {
-  // change users password
-}
+export const resetPassword = async (email) => {
+  try {
+      await sendPasswordResetEmail(FIREBASE_AUTH, email);
+  } catch (error) {
+      throw error;
+  }
+};
