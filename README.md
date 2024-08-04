@@ -11,7 +11,7 @@ Our mission for building this app was to create a user-friendly platform for the
 While we did not deploy this app, we conducted a beta test with a close group of about 20 friends to gather feedback. Nearly all testers reported a positive experience, and approximately 80% of them found the strength algorithm to be accurate, validating our approach and encouraging us to continue refining the app.
 
 ## Strength Algorithm
-To calculate a user's strength score we considered their one-rep max percentile, determmined using [Bryzcki Formula](https://www.vcalc.com/wiki/brzycki), along with their body weight. This data was then inputed into a polynomial regression model to calculate the user's respective strength score.
+To calculate a user's strength score we considered their one-rep max percentile, determmined using [Bryzcki Formula](https://www.vcalc.com/wiki/brzycki), along with their body weight. This data was then inputed into a polynomial regression model to calculate the user's respective strength score. The score was subsequently normalized to fall within a range of 0 to 1000.
 
 ![strengthGraph](https://github.com/user-attachments/assets/5e3ab2cd-6ba4-4dfb-95b2-93aaa54754fe)
 
