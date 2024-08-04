@@ -2,10 +2,11 @@
 
 ## UI
 
-
 ## Installation
 
 ## Description
+
+### User Authentication
 
 ### Strength Calculation Algorithm
 
