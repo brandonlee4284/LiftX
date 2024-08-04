@@ -48,22 +48,22 @@ npm run android
 
 To improve the performance and user experience of our app, we've pinpointed several key areas for adjustments:
 
-- Speed Up Backend API Calls:
-  - Caching: Store frequently accessed user data locally to reduce API calls and speed up data retrieval.
-  - Batch Writing: Combine multiple write operations into a single batch to minimize overhead and increase efficiency.
-  - Lazy Loading: Load data only when needed to reduce initial load times and improve perceived performance.
-  - Optimizing Database Queries: Ensure database queries are efficient and well-indexed to reduce data fetching time.
+- **Speed Up Backend API Calls:**
+  - **Caching:** Store frequently accessed user data locally to reduce API calls and speed up data retrieval.
+  - **Batch Writing:** Combine multiple write operations into a single batch to minimize overhead and increase efficiency.
+  - **Lazy Loading:** Load data only when needed to reduce initial load times and improve perceived performance.
+  - **Optimizing Database Queries:** Ensure database queries are efficient and well-indexed to reduce data fetching time.
  
-- Transition to a More Flexible Database Service:
-  - Flexible Schema: Moving away from Firebase to a service like AWS DynamoDB, MongoDB, or PostgreSQL could offer greater flexibility and scalability.
-  - Simplified Friend System: A more flexible backend would allow for a simpler design of the friend system, reducing the complexity of maintaining multiple arrays for friend requests and friends lists.
+- **Transition to a More Flexible Database Service:**
+  - **Flexible Schema:** Moving away from Firebase to a service like AWS DynamoDB, MongoDB, or PostgreSQL could offer greater flexibility and scalability.
+  - **Simplified Friend System:** A more flexible backend would allow for a simpler design of the friend system, reducing the complexity of maintaining multiple arrays for friend requests and friends lists.
   
-- Improve UI:
-  - User Testing and Feedback: Continuously gather user feedback to identify and address pain points.
-  - Visual Enhancements: Improve the visual design to make the app more appealing and easier to use.
+- **Improve UI:**
+  - **User Testing and Feedback:** Continuously gather user feedback to identify and address pain points.
+  - **Visual Enhancements:** Improve the visual design to make the app more appealing and easier to use.
 
-- Deployment:
-  - Deploy on TestFlight: Gather comprehensive feedback from a wider audience to identify potential issues.
-  - App Store Deployment: After incorporating feedback, deploy the app on the App Store to reach a broader audience.
+- **Deployment:**
+  - **Deploy on TestFlight:** Gather comprehensive feedback from a wider audience to identify potential issues.
+  - **App Store Deployment:** After incorporating feedback, deploy the app on the App Store to reach a broader audience.
  
     
