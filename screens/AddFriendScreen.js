@@ -152,7 +152,7 @@ const AddFriendScreen = () => {
                         onChangeText={setUsername}
                     />
                     <TouchableOpacity style={styles.button} onPress={handleFindUser} disabled={loading}>
-                        <Text style={styles.buttonText}>Send request</Text>
+                        <Text style={styles.buttonText}>Add</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.friendRequestsContainer}>
@@ -265,14 +265,15 @@ const createStyles = (theme) => StyleSheet.create({
     input: {
         flex: 1,
         padding: 10,
-        borderWidth: 1,
+        borderWidth: 2,
         borderColor: theme.textColor,
         borderRadius: 10,
         color: theme.textColor,
         marginRight: 10,
     },
     button: {
-        padding: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
         backgroundColor: theme.primaryColor,
         borderRadius: 10,
     },

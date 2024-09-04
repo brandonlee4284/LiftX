@@ -154,7 +154,7 @@ const createStyles = (theme) => StyleSheet.create({
     leftContainer: {
         flex: 1,
         alignItems: 'flex-start',
-        marginBottom: 80
+        marginBottom: 50
     },
     rightContainer: {
         alignItems: 'center',

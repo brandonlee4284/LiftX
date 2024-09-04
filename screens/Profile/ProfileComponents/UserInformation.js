@@ -38,14 +38,15 @@ const createStyles = (theme) => StyleSheet.create({
         height: width*0.3,
         borderRadius: width*0.3 / 2,
         borderColor: theme.textColor,
-        borderWidth: 3
+        borderWidth: 3,
+        marginBottom: 10
     },
     displayName: {
         fontSize: getResponsiveFontSize(24),
         fontWeight: "800",
         color: theme.textColor,
-        marginTop: 10,
-        marginBottom: 5,
+        marginTop: 20,
+        marginBottom: 8,
     },
     username: {
         fontSize: getResponsiveFontSize(16),

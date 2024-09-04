@@ -32,8 +32,11 @@ export const loginUser = async (email, password, setErrorMessage, showNotificati
     // Get user data from Firestore and save to local storage
     await fetchPublicUserData();
   } catch (error) {
-    showNotification(error.message, "rgb(114, 47, 55)");
-    setErrorMessage(error.message);
+    const customMessage = "Invalid email or password. Try again.";
+    showNotification(customMessage, "rgb(114, 47, 55)");
+    setErrorMessage(customMessage);
+    //showNotification(error.message, "rgb(114, 47, 55)");
+    //setErrorMessage(error.message);
   }
 };
 
@@ -55,9 +58,9 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
   }
 
   // Check if the name contains only letters
-  if (!/^[a-zA-Z]+$/.test(name)) {
-    showNotification("Name can only contain letters", "rgb(114, 47, 55)");
-    setErrorMessage("Name can only contain letters");
+  if (!/^[a-zA-Z\s]+$/.test(name)) {
+    showNotification("Display name can only contain letters and/or a space", "rgb(114, 47, 55)");
+    setErrorMessage("Display name can only contain letters and/or a space");
     return;
   }
   
@@ -108,9 +111,9 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
         // Initialize schema for new user
 
         let initPublicUser = {
-          displayName: name,
+          displayName: name.trim(),
           username: username,
-          bio: "This is a sample bio.", // Placeholder bio
+          bio: "Add a bio", // Placeholder bio
           profilePicture: null, // Placeholder image
           numFriends: 0,
           displayScore: { overall: {score: 0, change: 0}, chest: {score: 0, change: 0}, back: {score: 0, change: 0}, legs: {score: 0, change: 0}, shoulders: {score: 0, change: 0}, arms: {score: 0, change: 0} },
@@ -118,27 +121,36 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
             splitName: "PPL",
             days: [
               {
-                dayName: "push",
+                dayName: "Push",
                 exercises: [
-                  { name: "bench", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
-                  { name: "overhead press", sets: 3, reps: 12, weight: 95, notes: "on cables" },
-                  { name: "tricep pushdown", sets: 3, reps: 12, weight: 50, notes: "on cables" },
+                  { name: "Bench", sets: 3, reps: 5, weight: 165, notes: "Working sets only" },
+                  { name: "Incline Dumbbell Press", sets: 3, reps: 8, weight: 70, notes: "" },
+                  { name: "Dumbbell Shoulder Press", sets: 2, reps: 6, weight: 55, notes: "" },
+                  { name: "Cable Lateral Raise", sets: 3, reps: 6, weight: 15, notes: "To failure" },
+                  { name: "JM Press", sets: 3, reps: 6, weight: 105, notes: "On smith machine" },
+                  { name: "Tricep Pressdown", sets: 3, reps: 12, weight: 50, notes: "On cables" },
                 ]
               },
               {
-                dayName: "pull",
+                dayName: "Pull",
                 exercises: [
-                  { name: "deadlift", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
-                  { name: "pullups", sets: 3, reps: 12, weight: 0, notes: "on bar" },
-                  { name: "rows", sets: 3, reps: 12, weight: 95, notes: "use barbells" },
+                  { name: "Lat Pulldown", sets: 3, reps: 6, weight: 145, notes: "" },
+                  { name: "One Arm Seated Cable Row", sets: 2, reps: 8, weight: 55, notes: "Working sets" },
+                  { name: "One Arm Lat Pulldown", sets: 2, reps: 8, weight: 155, notes: "Machine" },
+                  { name: "Preacher Curl", sets: 2, reps: 8, weight: 100, notes: "Machine" },
+                  { name: "Dumbbell Hammer Curl", sets: 2, reps: 8, weight: 35, notes: "" },
+                  { name: "Reverse Curl", sets: 2, reps: 8, weight: 27.5, notes: "Cable" },
                 ]
               },
               {
-                dayName: "legs",
+                dayName: "Legs",
                 exercises: [
-                  { name: "squats", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
-                  { name: "leg press", sets: 3, reps: 12, weight: 180, notes: "on machine"  },
-                  { name: "leg curls", sets: 3, reps: 12, weight: 50, notes: "on machine"  },
+                  { name: "Machine Calf Raise", sets: 3, reps: 8, weight: 100, notes: "" },
+                  { name: "Hamstring Curl", sets: 3, reps: 8, weight: 130, notes: ""  },
+                  { name: "Squat", sets: 2, reps: 6, weight: 225, notes: "Working sets"  },
+                  { name: "Hip Abduction", sets: 2, reps: 6, weight: 215, notes: ""  },
+                  { name: "Leg Extension", sets: 2, reps: 6, weight: 160, notes: ""  },
+                  { name: "Cable Crunches", sets: 3, reps: 10, weight: 70, notes: ""  },
                 ]
               }
             ],
@@ -161,53 +173,42 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
               splitName: "PPL",
               days: [
                 {
-                  dayName: "push",
+                  dayName: "Push",
                   exercises: [
-                    { name: "bench", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
-                    { name: "overhead press", sets: 3, reps: 12, weight: 95, notes: "on cables" },
-                    { name: "tricep pushdown", sets: 3, reps: 12, weight: 50, notes: "on cables" },
+                    { name: "Bench", sets: 3, reps: 5, weight: 165, notes: "Working sets only" },
+                    { name: "Incline Dumbbell Press", sets: 3, reps: 8, weight: 70, notes: "" },
+                    { name: "Dumbbell Shoulder Press", sets: 2, reps: 6, weight: 55, notes: "" },
+                    { name: "Cable Lateral Raise", sets: 3, reps: 6, weight: 15, notes: "To failure" },
+                    { name: "JM Press", sets: 3, reps: 6, weight: 105, notes: "On smith machine" },
+                    { name: "Tricep Pressdown", sets: 3, reps: 12, weight: 50, notes: "On cables" },
                   ]
                 },
                 {
-                  dayName: "pull",
+                  dayName: "Pull",
                   exercises: [
-                    { name: "deadlift", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
-                    { name: "pullups", sets: 3, reps: 12, weight: 0, notes: "on bar" },
-                    { name: "rows", sets: 3, reps: 12, weight: 95, notes: "using barbell" },
+                    { name: "Lat Pulldown", sets: 3, reps: 6, weight: 145, notes: "" },
+                    { name: "One Arm Seated Cable Row", sets: 2, reps: 8, weight: 55, notes: "Working sets" },
+                    { name: "One Arm Lat Pulldown", sets: 2, reps: 8, weight: 155, notes: "Machine" },
+                    { name: "Preacher Curl", sets: 2, reps: 8, weight: 100, notes: "Machine" },
+                    { name: "Dumbbell Hammer Curl", sets: 2, reps: 8, weight: 35, notes: "" },
+                    { name: "Reverse Curl", sets: 2, reps: 8, weight: 27.5, notes: "Cable" },
                   ]
                 },
                 {
-                  dayName: "legs",
+                  dayName: "Legs",
                   exercises: [
-                    { name: "squats", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
-                    { name: "leg press", sets: 3, reps: 12, weight: 180, notes: "on machine" },
-                    { name: "leg curls", sets: 3, reps: 12, weight: 50, notes: "on machine" },
+                    { name: "Machine Calf Raise", sets: 3, reps: 8, weight: 100, notes: "" },
+                    { name: "Hamstring Curl", sets: 3, reps: 8, weight: 130, notes: ""  },
+                    { name: "Squat", sets: 2, reps: 6, weight: 225, notes: "Working sets"  },
+                    { name: "Hip Abduction", sets: 2, reps: 6, weight: 215, notes: ""  },
+                    { name: "Leg Extension", sets: 2, reps: 6, weight: 160, notes: ""  },
+                    { name: "Cable Crunches", sets: 3, reps: 10, weight: 70, notes: ""  },
                   ]
                 }
               ],
             },
 
-            {
-              splitName: "Upper/Lower",
-              days: [
-                {
-                  dayName: "upper",
-                  exercises: [
-                    { name: "bench", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
-                    { name: "overhead press", sets: 3, reps: 12, weight: 95, notes: "on cable" },
-                    { name: "tricep pushdown", sets: 3, reps: 12, weight: 50, notes: "on cable" },
-                  ]
-                },
-                {
-                  dayName: "lower",
-                  exercises: [
-                    { name: "deadlift", sets: 3, reps: 12, weight: 135, notes: "working sets only" },
-                    { name: "pullups", sets: 3, reps: 12, weight: 0, notes: "on bar" },
-                    { name: "rows", sets: 3, reps: 12, weight: 95, notes: "using barbell" },
-                  ]
-                },
-              ],
-            },
+           
           ],
         };
 
@@ -235,7 +236,7 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
             createPrivateSplits(initPrivateUserSplits).then(
               createPrivateFriends(initPrivateFriendsData).then(
                 createPrivateWorkout(initPrivateWorkoutData).then(() => {
-                  console.log('User data saved successfully');
+                  //console.log('User data saved successfully');
                   //navigation.navigate('Login'); // Redirect to login screen
                 })
               )

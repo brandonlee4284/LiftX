@@ -64,7 +64,7 @@ const LeaderboardScreen = ({ navigation, route }) => {
                             setFriends(allFriends);
                             
                             const endSync = Date.now();
-                            console.log(`Fetching and synchronizing all friend data took ${endSync - startSync} ms`);
+                            //console.log(`Fetching and synchronizing all friend data took ${endSync - startSync} ms`);
                         } else {
                             console.log("friend list is null");
                         }
@@ -118,7 +118,7 @@ const LeaderboardScreen = ({ navigation, route }) => {
                     setFriends(allFriends);
                     
                     const endSync = Date.now();
-                    console.log(`Fetching and synchronizing all friend data took ${endSync - startSync} ms`);
+                    //console.log(`Fetching and synchronizing all friend data took ${endSync - startSync} ms`);
                 } else {
                     console.log("friend list is null");
                 }

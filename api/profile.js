@@ -174,7 +174,7 @@ export const updateUserProfile = async (newPFP, newDisplayName, newBio) => {
 
         // Update public user data with active split
         await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
-        console.log("updated user profile");
+        //console.log("updated user profile");
 
     } catch (error) {
         console.error("Error setting active split: ", error);

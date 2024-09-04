@@ -151,7 +151,7 @@ export const synchronizeFriends = async () => {
 
         await batch.commit();
         const endSync = Date.now();
-        console.log(`Synchronization took ${endSync - startSync} ms`);
+        //console.log(`Synchronization took ${endSync - startSync} ms`);
     } catch (error) {
         console.error('Error synchronizing friends:', error);
     }
@@ -220,7 +220,7 @@ export const sendFriendRequest = async (receiverUid, receiverUsername) => {
             friendRequests: arrayUnion(friendRequest)
         });
 
-        console.log('Friend request sent');
+        //console.log('Friend request sent');
     } catch (error) {
         //console.error('Error sending friend request:', error);
         throw error;
@@ -267,7 +267,7 @@ export const acceptFriendRequest = async (senderUid, senderUsername) => {
             await updateDoc(receiverRef, { friends: updatedFriendList });
             publicUserData.numFriends = publicUserData.numFriends - 1;
             await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
-            console.log('Existing friend removed from the list');
+            //console.log('Existing friend removed from the list');
         }
 
         // Continue with accepting the friend request
@@ -308,7 +308,7 @@ export const denyFriendRequest = async (senderUid) => {
             console.log('cannot write recieverRef');
         }
         
-        console.log('Friend request denied');
+        //console.log('Friend request denied');
     } catch (error) {
         console.error('Error denying friend request:', error);
     }
@@ -339,7 +339,7 @@ export const removeFriend = async (friendUID) => {
 
         // Remove the friend from the friend list
         const updatedFriendList = friendList.filter(friend => friend.uid !== friendUID);
-        console.log(updatedFriendList);
+        //console.log(updatedFriendList);
         // Update the user's document with the modified friend list
         try {
             await updateDoc(userRef, {
@@ -347,7 +347,7 @@ export const removeFriend = async (friendUID) => {
             });
             publicUserData.numFriends = publicUserData.numFriends - 1;
             await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
-            console.log('Friend removed successfully');
+            //console.log('Friend removed successfully');
         } catch (error) {
             console.error('Error removing friend:', error);
         }
@@ -402,7 +402,7 @@ export const getFriendList = async () => {
             }
         }
         const endSync = Date.now();
-        console.log(`Fetching Friend List took ${endSync - startSync} ms`);
+        //console.log(`Fetching Friend List took ${endSync - startSync} ms`);
         return friendListDoc.data().friends || [];
     } catch (error) {
         console.error('Error fetching friend list: ', error);
@@ -470,7 +470,7 @@ export const getUserDetails = async (uid) => {
         if (userDoc.exists()) {
             const userData = userDoc.data();
             const endSync = Date.now();
-            console.log(`Fetching User Data took ${endSync - startSync} ms`);
+            //console.log(`Fetching User Data took ${endSync - startSync} ms`);
             return {
                 profilePicture: userData.profilePicture || null,
                 displayName: userData.displayName || null,
@@ -563,7 +563,7 @@ export const downloadFriendSplit = async (friendUID) => {
         const updatedSplits = { splits: currentSplits };
         await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', updatedSplits);
 
-        console.log('Friend\'s split downloaded and added to your private splits');
+        //console.log('Friend\'s split downloaded and added to your private splits');
         
     } catch (error) {
         throw error;

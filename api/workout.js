@@ -85,7 +85,7 @@ export const updateExerciseStats = async (workouDetails) => {
     workoutData.stats = stats;
     //console.log('Updated workout data stats:', workoutData.stats);
     await createPrivateWorkout(workoutData);
-    console.log('Workout data saved.');
+    //console.log('Workout data saved.');
 }
 
 export const updateOverallStats = async () => {
@@ -169,18 +169,18 @@ export const updateOverallStats = async () => {
 export const syncScores = async () => {
     try {
         // Fetch the private workout data
-        console.log('Fetching private workout data...');
+        //console.log('Fetching private workout data...');
         let workoutData = await fetchPrivateWorkout();
-        console.log('Private workout data fetched:', workoutData);
+        //console.log('Private workout data fetched:', workoutData);
 
         // Fetch the public user data
-        console.log('Fetching public user data...');
+        //console.log('Fetching public user data...');
         const publicUserData = await fetchPublicUserData();
-        console.log('Public user data fetched:', publicUserData);
+        //console.log('Public user data fetched:', publicUserData);
 
         // Extract the overall scores from the private workout data
         let overallScore = workoutData.overallScore;
-        console.log('Overall scores:', overallScore);
+        //console.log('Overall scores:', overallScore);
 
         // Ensure overallScore is present in the private workout data
         if (!overallScore) {
@@ -200,9 +200,9 @@ export const syncScores = async () => {
         });
 
         // Save the updated public user data back to Firestore
-        console.log('Saving updated public user data to Firestore:', publicUserData);
+        //console.log('Saving updated public user data to Firestore:', publicUserData);
         await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid), '@PublicUserData', publicUserData);
-        console.log('Public user data successfully saved.');
+        //console.log('Public user data successfully saved.');
     } catch (error) {
         console.error('Error syncing scores:', error);
     }

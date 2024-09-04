@@ -64,7 +64,7 @@ const createStyles = (theme) => StyleSheet.create({
         flexGrow: 1,
         justifyContent: 'space-between',
         paddingBottom: 40,
-        marginTop: 23
+        marginTop: 10
     },
     headerContainer: {
         width: '100%',

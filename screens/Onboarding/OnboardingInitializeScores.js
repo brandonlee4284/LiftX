@@ -238,7 +238,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontWeight: '700'
     },
     muscleGroup: {
-        marginBottom: 100,
+        marginBottom: 50,
     },
     muscleText: {
         fontSize: getResponsiveFontSize(18),

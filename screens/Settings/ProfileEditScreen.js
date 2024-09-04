@@ -209,7 +209,7 @@ const createStyles = (theme) => StyleSheet.create({
     label: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(18),
-        fontWeight: '600',
+        fontWeight: '700',
         alignSelf: 'flex-start',
         marginBottom: 10,
         paddingTop: 10
@@ -218,7 +218,7 @@ const createStyles = (theme) => StyleSheet.create({
         width: '100%',
         height: width*0.0926,
         borderColor: theme.textColor,
-        borderWidth: 1,
+        borderWidth: 2,
         borderRadius: 10,
         paddingHorizontal: 10,
         marginBottom: 20,
@@ -228,7 +228,7 @@ const createStyles = (theme) => StyleSheet.create({
         width: '100%',
         height: 0.23 * width,
         borderColor: theme.textColor,
-        borderWidth: 1,
+        borderWidth: 2,
         borderRadius: 10,
         paddingHorizontal: 10,
         marginBottom: 20,

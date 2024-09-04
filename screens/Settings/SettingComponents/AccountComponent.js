@@ -105,7 +105,7 @@ const AccountComponent = () => {
                     <Text style={styles.text}>Privacy</Text>
                 </View>
                 <View style={styles.subRow}>
-                    <Text style={styles.subText}>Show active split on profile</Text>
+                    <Text style={styles.subText}>Hide active split on profile</Text>
                     <Switch
                         value={showActiveSplit}
                         onValueChange={() => toggleSwitch('activeSplit')}
@@ -116,7 +116,7 @@ const AccountComponent = () => {
                     />
                 </View>
                 <View style={styles.subRow}>
-                    <Text style={styles.subText}>Show scores on profile</Text>
+                    <Text style={styles.subText}>Hide scores on profile</Text>
                     <Switch
                         value={showScores}
                         onValueChange={() => toggleSwitch('scores')}
@@ -129,10 +129,6 @@ const AccountComponent = () => {
                 <TouchableOpacity style={styles.row} onPress={handleUpdateScores}>
                     <MaterialCommunityIcons name="update" size={getResponsiveFontSize(24)} style={styles.icon} />
                     <Text style={styles.text}>Update Scores</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.row} onPress = {handleOnboard}>
-                    <MaterialCommunityIcons name="ab-testing" size={getResponsiveFontSize(24)} style={styles.icon} />
-                    <Text style={styles.text}>Onboard Testing</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -153,7 +149,7 @@ const createStyles = (theme) => StyleSheet.create({
         marginLeft: 10
     },
     container: {
-        paddingHorizontal: 26,
+        paddingHorizontal: 16,
         paddingVertical: 16,
         backgroundColor: theme.backdropColor,
         borderRadius: 12,

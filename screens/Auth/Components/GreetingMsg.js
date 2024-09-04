@@ -43,7 +43,7 @@ const createStyles = (theme) => StyleSheet.create({
     fontFamily: 'Outfit',
     fontSize: getResponsiveFontSize(38),
     fontStyle: 'normal',
-    fontWeight: '600',
+    fontWeight: '700',
   },
   x: {
     height: getResponsiveFontSize(38),

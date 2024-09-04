@@ -12,7 +12,7 @@ export const fetchAsyncCloud = async (docRef, asyncTag) => {
             throw new Error('No public user data in local storage');
         }
     } catch (e) {
-        console.log("Reverting to cloud backup for ", asyncTag, "; Error: ", e);
+        //console.log("Reverting to cloud backup for ", asyncTag, "; Error: ", e);
         const user = FIREBASE_AUTH.currentUser;
         if (user) {
             try {

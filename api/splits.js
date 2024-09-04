@@ -214,7 +214,7 @@ export const dayExist = async (splitName, dayName) => {
             return false;
         }
     } else {
-        console.log('Split not found');
+        //console.log('Split not found');
         return false;
     }
 };
@@ -252,7 +252,7 @@ export const addDayNamePrivate = async (splitName, dayName) => {
         currentSplits[splitIndex].days.push(newDay);
         
     } else {
-        console.log('Split not found');
+        //console.log('Split not found');
     }
     const updatedSplits = { splits: currentSplits };
     await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', updatedSplits);
@@ -274,7 +274,7 @@ export const addSplitPrivate = async (newSplitName) => {
         const updatedSplits = { splits: currentSplits };
         await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', updatedSplits);
         
-        console.log(`New split '${newSplitName}' added to private splits`);
+        //console.log(`New split '${newSplitName}' added to private splits`);
     } catch (error) {
         console.error('Error adding new split to private splits:', error);
         throw error;
@@ -336,7 +336,7 @@ export const editSplitNamePrivate = async (oldSplitName, newSplitName) => {
         const updatedSplits = { splits: currentSplits };
         await setAsyncCloud(doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid, 'private', 'splits'), '@PrivateUserSplits', updatedSplits);
 
-        console.log(`Split name updated from "${oldSplitName}" to "${newSplitName}" successfully.`);
+        //console.log(`Split name updated from "${oldSplitName}" to "${newSplitName}" successfully.`);
     } catch (error) {
         console.error('Failed to edit split name:', error);
     }

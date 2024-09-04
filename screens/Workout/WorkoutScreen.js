@@ -81,7 +81,7 @@ const WorkoutScreen = ({ navigation, route }) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         if (activeSet === null) {
             setIsLoading(true); // Start loading
-            console.log(completedExercises);
+            //console.log(completedExercises);
             try {
                 await updateExerciseStats(completedExercises);
                 //console.log("Exercise stats updated.");

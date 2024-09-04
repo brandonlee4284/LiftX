@@ -241,6 +241,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         fontSize: getResponsiveFontSize(25),
         fontWeight: 'bold'
+        
     },
     carouselContainer: {
         marginTop: 20,
@@ -259,6 +260,7 @@ const createStyles = (theme) => StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
+        paddingTop: 20
     },
     noWorkoutsText: {
         color: theme.grayTextColor,
