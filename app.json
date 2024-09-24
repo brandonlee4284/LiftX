@@ -12,7 +12,6 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
       "bundleIdentifier": "com.brandonlee4284.LiftX"
     },
     "android": {
@@ -31,14 +30,14 @@
     },
     "plugins": [
       [
-        "expo-camera",
+        "expo-build-properties",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-          "recordAudioAndroid": true
+          "ios": {
+            "useFrameworks": "static"
+          }
         }
       ],
-      "expo-video"
+      "expo-font"
     ],
     "extra": {
       "eas": {

@@ -183,7 +183,7 @@ const LeaderboardScreen = ({ navigation, route }) => {
 
     const renderFriends = () => {
         if (loading) {
-            return <ActivityIndicator size="medium" color={theme.textColor} style={{ padding: 100 }}/>;
+            return <ActivityIndicator size="auto" color={theme.textColor} style={{ padding: 100 }}/>;
         }
 
         if (friends.length === 0) {

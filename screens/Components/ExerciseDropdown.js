@@ -20,11 +20,19 @@ const ExerciseDropdown = ({ value, onChangeText }) => {
     const filterExercises = (query, group) => {
         let results = Object.keys(exerciseData);
 
+        // Filter by muscle group if selected
         if (group !== 'All') {
             results = results.filter(exercise => exerciseData[exercise].group === group);
         }
 
+        // Filter by query text
         results = results.filter(exercise => exercise.toLowerCase().includes(query.toLowerCase()));
+
+        // Add custom search term if not already in the list
+        if (query && !results.includes(query)) {
+            results.push(query); // Add the custom query term at the end
+        }
+
         setFilteredData(results);
     };
 
@@ -88,10 +96,12 @@ const ExerciseDropdown = ({ value, onChangeText }) => {
                         />
                         {renderGroupButtons()}
                         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-                            {filteredData.map((item) => (
-                                <TouchableOpacity key={item} onPress={() => handleSelect(item)} style={styles.item}>
+                            {filteredData.map((item, index) => (
+                                <TouchableOpacity key={index} onPress={() => handleSelect(item)} style={styles.item}>
                                     <Text style={styles.itemText}>{item}</Text>
-                                    <Text style={styles.groupText}>{exerciseData[item].group}</Text>
+                                    <Text style={styles.groupText}>
+                                        {exerciseData[item]?.group || 'Custom'}
+                                    </Text>
                                 </TouchableOpacity>
                             ))}
                         </ScrollView>
@@ -144,7 +154,7 @@ const createStyles = (theme) => StyleSheet.create({
         marginTop: 50
     },
     scrollView: {
-        maxHeight: height*0.55,
+        maxHeight: height * 0.55,
         marginBottom: 0,
     },
     item: {
@@ -152,7 +162,7 @@ const createStyles = (theme) => StyleSheet.create({
         paddingVertical: getResponsiveFontSize(20),
         borderBottomWidth: 1,
         borderBottomColor: theme.grayTextColor,
-        width: width*0.8
+        width: width * 0.8
     },
     itemText: {
         color: theme.textColor,

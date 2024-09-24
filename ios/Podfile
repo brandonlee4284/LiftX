@@ -1,0 +1,9 @@
+use_modular_headers!
+
+target 'LiftX' do
+  # Pods for YourApp
+  pod 'FirebaseCoreInternal'
+  pod 'FirebaseStorage'
+  pod 'GoogleUtilities'
+  # Add other Firebase dependencies as needed
+en

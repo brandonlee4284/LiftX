@@ -323,8 +323,7 @@ const WorkoutScreen = ({ navigation, route }) => {
             />
             {isLoading && (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#fff" />
-                    <Text style={styles.loadingText}>Updating your scores...</Text>
+                    <ActivityIndicator size="auto" color="#fff" />
                 </View>
             )}
             {notification.visible && (

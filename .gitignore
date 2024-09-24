@@ -35,7 +35,7 @@ yarn-error.*
 *.tsbuildinfo
 
 # for eas build
-app.json
+# app.json
 
 .venv
 *.ipynb

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { View, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform  } from 'react-native';
+import { View, ActivityIndicator, Text, StyleSheet, Dimensions, ScrollView, TouchableOpacity, TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform  } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import EditExerciseComponent from "./WorkoutComponents/EditExerciseComponent";
@@ -42,6 +42,9 @@ const EditWorkoutScreen = ({ navigation, route }) => {
 
     const swipeableRefs = useRef([]);
 
+    const [loading, setLoading] = useState(false);
+
+    /*
     const handleSaveWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         // check if there are any empty exercises inputs (name, sets, reps, weight)
@@ -93,7 +96,70 @@ const EditWorkoutScreen = ({ navigation, route }) => {
         };
         navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName, showNotification: { message: "Workout Saved!", color: theme.primaryColor }  });
     };
+    */
 
+    const handleSaveWorkout = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        try {
+            setLoading(true); // Start loading
+            // Your save workout logic
+            // check if there are any empty exercises inputs (name, sets, reps, weight)
+            for (let exercise of exercises) {
+                if (
+                    !exercise.name || 
+                    exercise.sets === '' || 
+                    exercise.reps === '' || 
+                    exercise.weight === ''
+                ) {
+                    handleIncompleteExerciseWarningModal();
+                    return;
+                }
+            }
+
+            if(await customExerciseExist(exercises)){
+                setExerciseWarningModalVisible(true);
+                return;
+            }
+
+            // checks if the day already exists
+            if(await dayExist(splitName, updatedDayName) && updatedDayName != oldDayName) {
+                // do not allow duplicate daynames
+                handleWarningModal();
+                return;
+            } else if(await dayExist(splitName, oldDayName)){
+                // update day
+                // update dayName for active split
+                await editActiveSplitDayName(oldDayName, updatedDayName);
+                // update dayName for private split
+                await editDayName(splitName, oldDayName, updatedDayName);
+            } else {
+                // create new day (add updatedDayName to split)
+                await addDayNameActive(updatedDayName);
+                await addDayNamePrivate(splitName, updatedDayName);
+            }
+            
+            // update exercise active split
+            updateActiveSplitExercises(updatedDayName, exercises);
+
+            const exercisesWithoutId = exercises.map(({ id, ...rest }) => rest);
+            // update exercises private splits
+            updateExercises(splitName, updatedDayName, exercisesWithoutId);
+
+            // update workoutDay and pass to previous screen
+            const newWorkoutDay = {
+                dayName: updatedDayName,
+                exercises: exercises
+            };
+            navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName, showNotification: { message: "Workout Saved!", color: theme.primaryColor }  });
+        } catch (error) {
+            console.error('Error saving workout:', error);
+        } finally {
+            setLoading(false); // End loading
+        }
+
+    };
+
+    /*
     const handleForceSaveWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         // check if there are any empty exercises inputs (name, sets, reps, weight)
@@ -140,6 +206,65 @@ const EditWorkoutScreen = ({ navigation, route }) => {
         };
         setExerciseWarningModalVisible(false);
         navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName, showNotification: { message: "Workout Saved!", color: theme.primaryColor } });
+    };
+    */
+
+    const handleForceSaveWorkout = async () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        // check if there are any empty exercises inputs (name, sets, reps, weight)
+        try {
+            setExerciseWarningModalVisible(false);
+            setLoading(true); // Start loading
+            // Your save workout logic
+            for (let exercise of exercises) {
+                if (
+                    !exercise.name || 
+                    exercise.sets === '' || 
+                    exercise.reps === '' || 
+                    exercise.weight === ''
+                ) {
+                    handleIncompleteExerciseWarningModal();
+                    return;
+                }
+            }
+    
+            // checks if the day already exists
+            if(await dayExist(splitName, updatedDayName) && updatedDayName != oldDayName) {
+                // do not allow duplicate daynames
+                handleWarningModal();
+                return;
+            } else if(await dayExist(splitName, oldDayName)){
+                // update day
+                // update dayName for active split
+                await editActiveSplitDayName(oldDayName, updatedDayName);
+                // update dayName for private split
+                await editDayName(splitName, oldDayName, updatedDayName);
+            } else {
+                // create new day (add updatedDayName to split)
+                await addDayNameActive(updatedDayName);
+                await addDayNamePrivate(splitName, updatedDayName);
+            }
+            
+            // update exercise active split
+            updateActiveSplitExercises(updatedDayName, exercises);
+    
+            const exercisesWithoutId = exercises.map(({ id, ...rest }) => rest);
+            // update exercises private splits
+            updateExercises(splitName, updatedDayName, exercisesWithoutId);
+    
+            // update workoutDay and pass to previous screen
+            const newWorkoutDay = {
+                dayName: updatedDayName,
+                exercises: exercises
+            };
+            
+            navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName, showNotification: { message: "Workout Saved!", color: theme.primaryColor } });
+        } catch (error) {
+            console.error('Error saving workout:', error);
+        } finally {
+            setLoading(false); // End loading
+        }
+        
     };
 
     const handleDeleteWorkout = async () => {
@@ -345,6 +470,11 @@ const EditWorkoutScreen = ({ navigation, route }) => {
                     </TouchableWithoutFeedback>
                 </ScrollView>
             </KeyboardAvoidingView>
+            {loading && (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="auto" color="#fff" />
+                </View>
+            )}
         </View>
 
     );
@@ -428,6 +558,12 @@ const createStyles = (theme) => StyleSheet.create({
     addButtonText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(30),
+    },
+    loadingContainer: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

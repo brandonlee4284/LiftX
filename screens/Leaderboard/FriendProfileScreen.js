@@ -219,8 +219,7 @@ const FriendProfileScreen = ({ navigation, route }) => {
             </Modal>
             {isLoading && (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="medium" color="#fff" />
-                    <Text style={styles.loadingText}>Downloading Split...</Text>
+                    <ActivityIndicator size="auto" color="#fff" />
                 </View>
             )}
         </View>

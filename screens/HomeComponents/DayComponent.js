@@ -4,10 +4,12 @@ import { View, Text, ImageBackground, StyleSheet, Dimensions, TouchableOpacity }
 import { useTheme } from '../ThemeProvider';
 
 const { width } = Dimensions.get('window');
+
 const DayComponent = ({ name, onPress }) => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
 
+  
     return (
         <TouchableOpacity onPress={onPress}>
             <ImageBackground 
@@ -21,6 +23,7 @@ const DayComponent = ({ name, onPress }) => {
             </ImageBackground>
         </TouchableOpacity>
     );
+    
 };
 
 const getResponsiveFontSize = (baseFontSize) => {

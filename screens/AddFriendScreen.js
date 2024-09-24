@@ -7,7 +7,6 @@ import { getUserUIDByUsername, sendFriendRequest, getFriendRequests, acceptFrien
 import * as Haptics from 'expo-haptics';
 import WarningModal from "./Components/WarningModal";
 
-
 const { height, width } = Dimensions.get('window');
 
 const AddFriendScreen = () => {
@@ -212,7 +211,7 @@ const AddFriendScreen = () => {
             </ScrollView>
             {loading && (
                 <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="medium" color="#fff" />
+                    <ActivityIndicator size="auto" color="#fff" />
                 </View>
             )}
             {notification.visible && (
