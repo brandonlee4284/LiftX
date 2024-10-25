@@ -71,6 +71,9 @@ const HomeScreen = ({ navigation, route }) => {
     const notificationTimeoutRef = useRef(null);
     const slideAnim = useRef(new Animated.Value(-100)).current;
 
+    const carouselRef = useRef(null);
+    const [carouselKey, setCarouselKey] = useState(0); 
+
     const {
         completedWorkout = false,
         stopwatch = '00:00:00',
@@ -142,8 +145,12 @@ const HomeScreen = ({ navigation, route }) => {
         await setActiveSplit(split); // set the active split in backend
         
         //console.log(split.splitName);
-        
-        
+         // Reset the carousel to the first item
+        //console.log(carouselRef.current)
+        if (carouselRef.current) {
+            carouselRef.current.scrollTo({ index: 0, animated: true });
+        }
+        setCarouselKey(prevKey => prevKey + 1); 
     };
 
     // handles selecting a day to preview a workout
@@ -341,6 +348,8 @@ const HomeScreen = ({ navigation, route }) => {
                         {/* Split Carousel */}
                         <View style={styles.carouselContainer}>
                             <Carousel
+                                key={carouselKey}
+                                ref={carouselRef}
                                 width={width}
                                 height={width*0.7}
                                 data={[...activeSplitDays.map(day => day.dayName), 'Add Day']}

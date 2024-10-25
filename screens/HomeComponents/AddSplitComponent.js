@@ -25,7 +25,7 @@ const createStyles = (theme) => StyleSheet.create({
     splitCard: {
         width: width * 0.435,
         height: width * 0.28,
-        backgroundColor: "rgba(217, 217, 217, 0.1)",
+        backgroundColor: 'rgba(135, 150, 159, 0.1)',
         borderRadius: 25,
         justifyContent: 'center',
         alignItems: 'center',

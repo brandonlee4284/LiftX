@@ -1,5 +1,5 @@
 // SplitComponent.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { useTheme } from '../ThemeProvider';
 import Feather from '@expo/vector-icons/Feather';
@@ -14,6 +14,12 @@ const SplitComponent = ({ name: initialName, subtext, isActive, onPress, onRemov
     const styles = createStyles(theme, isActive);
     const [showEditSplitModal, setShowEditSplitModal] = useState(false);
     const [splitName, setSplitName] = useState(initialName);
+
+    //console.log(splitName)
+    // Sync state with props
+    useEffect(() => {
+        setSplitName(initialName);
+    }, [initialName]);
 
     const handleSave = async (updatedName) => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);

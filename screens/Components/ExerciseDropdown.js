@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Text, Modal, Dimensions, TextInput } from 'react-native';
 import { useTheme } from "../ThemeProvider";
 import exerciseData from '../../exercise_data.json';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -85,7 +86,7 @@ const ExerciseDropdown = ({ value, onChangeText }) => {
                             style={styles.closeButton}
                             onPress={() => setShowModal(false)}
                         >
-                            <Text style={styles.closeButtonText}>close</Text>
+                            <Ionicons name="exit-outline" size={getResponsiveFontSize(24)} style={styles.closeButtonText} />
                         </TouchableOpacity>
                         <TextInput
                             style={styles.modalInput}
@@ -147,7 +148,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         marginBottom: 10,
         borderColor: theme.textColor,
-        borderWidth: 2,
+        borderWidth: 1,
         borderRadius: 10,
         padding: 10,
         width: width * 0.8,
@@ -176,8 +177,7 @@ const createStyles = (theme) => StyleSheet.create({
         zIndex: 1,
     },
     closeButtonText: {
-        fontSize: getResponsiveFontSize(16),
-        color: theme.grayTextColor,
+        color: theme.textColor,
     },
     groupText: {
         color: theme.grayTextColor,
@@ -193,10 +193,10 @@ const createStyles = (theme) => StyleSheet.create({
     groupButton: {
         backgroundColor: theme.backdropColor,
         paddingVertical: 10,
-        paddingHorizontal: 20,
+        paddingHorizontal: 15,
         borderRadius: 10,
         margin: 5,
-        minWidth: width * 0.25,
+        width: width * 0.25,
         alignItems: 'center',
         borderWidth: 1,
         borderColor: theme.textColor

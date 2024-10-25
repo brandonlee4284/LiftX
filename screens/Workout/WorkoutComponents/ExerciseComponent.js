@@ -26,7 +26,11 @@ const ExerciseComponent = ({ exerciseName, numSets, numReps, weight, notes }) =>
         <View style={[styles.container, shouldWrap ? styles.wrapContainer : null]}>
             <View style={styles.leftContainer}>
                 <Text style={styles.exerciseName}>{exerciseName}</Text>
-                <Text style={styles.notes}>est. 1rm: {one_rm.toFixed(0)}lb</Text>
+                {
+                /*
+                <Text style={styles.notes}>Est. 1 RM: {one_rm.toFixed(0)}lb</Text>
+                */
+                }
                 {notes ? <Text style={styles.notes}>{notes}</Text> : null}
             </View>
             <View style={styles.rightContainer}>
@@ -45,7 +49,7 @@ const createStyles = (theme) => StyleSheet.create({
     container: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingVertical: 10,
+        paddingVertical: 20,
         paddingHorizontal: 20,
         backgroundColor: theme.backgroundColor,
     },

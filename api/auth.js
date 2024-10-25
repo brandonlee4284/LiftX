@@ -113,7 +113,7 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
         let initPublicUser = {
           displayName: name.trim(),
           username: username,
-          bio: "Add a bio", // Placeholder bio
+          bio: "Bio", // Placeholder bio
           profilePicture: null, // Placeholder image
           numFriends: 0,
           displayScore: { overall: {score: 0, change: 0}, chest: {score: 0, change: 0}, back: {score: 0, change: 0}, legs: {score: 0, change: 0}, shoulders: {score: 0, change: 0}, arms: {score: 0, change: 0} },

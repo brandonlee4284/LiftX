@@ -9,7 +9,7 @@ import WarningModal from "../Components/WarningModal";
 import { customExerciseExist, syncScores, updateExerciseStats, updateOverallStats } from "../../api/workout";
 import ExerciseDropdown from "../Components/ExerciseDropdown";
 import SafteyModal from "../Components/SafteyModal";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 
 const { height, width } = Dimensions.get('window');
 
@@ -54,7 +54,7 @@ const UpdateScoreScreen = () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         if (areFieldsComplete()) {
             try {
-                console.log(exercises);
+                //console.log(exercises);
                 await updateExerciseStats(exercises);
                 await updateOverallStats();
                 await syncScores();
@@ -107,7 +107,7 @@ const UpdateScoreScreen = () => {
                     <View style={styles.header}>
                         <Text style={styles.greetingText}>Update Scores</Text>
                         <TouchableOpacity onPress={handleSettings} style={styles.saveButton}>
-                            <Text style={styles.saveText}>save</Text>
+                            <Feather name="check-square" size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.saveText}/>
                         </TouchableOpacity>
                         <Ionicons name="chevron-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
                     </View>
@@ -220,8 +220,6 @@ const createStyles = (theme) => StyleSheet.create({
     },
     saveText: {
         position: 'absolute',
-        fontSize: getResponsiveFontSize(16),
-        color: theme.textColor,
         
     },
     subText: {

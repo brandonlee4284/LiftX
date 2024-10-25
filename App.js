@@ -147,7 +147,7 @@ function RootNavigator() {
           const unsubscribeUserDoc = onSnapshot(userDoc, (doc) => {
             if (doc.exists()) {
               const publicUserData = doc.data();
-              console.log(publicUserData.onboardingCompleted);
+              //console.log(publicUserData.onboardingCompleted);
               setOnboardingCompleted(publicUserData.onboardingCompleted);
               setUser(currentUser);
             } else {

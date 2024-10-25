@@ -36,7 +36,7 @@ const createStyles = (theme) => StyleSheet.create({
         marginLeft: 10
     },
     container: {
-        paddingVertical: 7,
+        paddingVertical: 5,
         paddingHorizontal: 16,
         backgroundColor: theme.backdropColor,
         borderRadius: 12,
