@@ -240,7 +240,7 @@ const createStyles = (theme) => StyleSheet.create({
     title: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(25),
-        fontWeight: 'bold'
+        fontFamily: theme.fontBold,
         
     },
     carouselContainer: {
@@ -268,6 +268,7 @@ const createStyles = (theme) => StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 40,
         marginVertical: 90,
+        fontFamily: theme.fontExtraLight,
     },
    
 });

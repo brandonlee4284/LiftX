@@ -211,7 +211,7 @@ const createStyles = (theme) => StyleSheet.create({
     greetingText: {
         fontSize: getResponsiveFontSize(26),
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontExtraBold,
         marginVertical: 10,
     },
     saveButton: {
@@ -226,6 +226,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(22),
         color: theme.textColor,
         marginBottom: 20,
+        fontFamily: theme.fontMedium,
     },
     body: {
         marginTop: 30
@@ -235,7 +236,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         marginBottom: 20,
         textAlign: 'left',
-        fontWeight: '700'
+        fontFamily: theme.fontSemiBold,
     },
     muscleGroup: {
         marginBottom: 50,
@@ -245,7 +246,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         marginBottom: 10,
         textAlign: 'left',
-        fontWeight: '800'
+        fontFamily: theme.fontMedium,
     },
     exerciseContainer: {
         flexDirection: 'row',
@@ -267,7 +268,8 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
         textAlign: 'right',
-        bottom: 0.0069*width
+        bottom: 0.0069*width,
+        fontFamily: theme.fontLight,
     },
     exerciseName: {
         fontSize: getResponsiveFontSize(16),

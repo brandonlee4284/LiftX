@@ -10,6 +10,7 @@ import WarningModal from "../Components/WarningModal";
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import SafteyModal from "../Components/SafteyModal";
 import { customExerciseExist } from "../../api/workout";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 /*
 To-Do list
@@ -43,60 +44,6 @@ const EditWorkoutScreen = ({ navigation, route }) => {
     const swipeableRefs = useRef([]);
 
     const [loading, setLoading] = useState(false);
-
-    /*
-    const handleSaveWorkout = async () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        // check if there are any empty exercises inputs (name, sets, reps, weight)
-        for (let exercise of exercises) {
-            if (
-                !exercise.name || 
-                exercise.sets === '' || 
-                exercise.reps === '' || 
-                exercise.weight === ''
-            ) {
-                handleIncompleteExerciseWarningModal();
-                return;
-            }
-        }
-
-        if(await customExerciseExist(exercises)){
-            setExerciseWarningModalVisible(true);
-            return;
-        }
-
-        // checks if the day already exists
-        if(await dayExist(splitName, updatedDayName) && updatedDayName != oldDayName) {
-            // do not allow duplicate daynames
-            handleWarningModal();
-            return;
-        } else if(await dayExist(splitName, oldDayName)){
-            // update day
-            // update dayName for active split
-            await editActiveSplitDayName(oldDayName, updatedDayName);
-            // update dayName for private split
-            await editDayName(splitName, oldDayName, updatedDayName);
-        } else {
-            // create new day (add updatedDayName to split)
-            await addDayNameActive(updatedDayName);
-            await addDayNamePrivate(splitName, updatedDayName);
-        }
-        
-        // update exercise active split
-        updateActiveSplitExercises(updatedDayName, exercises);
-
-        const exercisesWithoutId = exercises.map(({ id, ...rest }) => rest);
-        // update exercises private splits
-        updateExercises(splitName, updatedDayName, exercisesWithoutId);
-
-        // update workoutDay and pass to previous screen
-        const newWorkoutDay = {
-            dayName: updatedDayName,
-            exercises: exercises
-        };
-        navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName, showNotification: { message: "Workout Saved!", color: theme.primaryColor }  });
-    };
-    */
 
     const handleSaveWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -159,55 +106,7 @@ const EditWorkoutScreen = ({ navigation, route }) => {
 
     };
 
-    /*
-    const handleForceSaveWorkout = async () => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        // check if there are any empty exercises inputs (name, sets, reps, weight)
-        for (let exercise of exercises) {
-            if (
-                !exercise.name || 
-                exercise.sets === '' || 
-                exercise.reps === '' || 
-                exercise.weight === ''
-            ) {
-                handleIncompleteExerciseWarningModal();
-                return;
-            }
-        }
-
-        // checks if the day already exists
-        if(await dayExist(splitName, updatedDayName) && updatedDayName != oldDayName) {
-            // do not allow duplicate daynames
-            handleWarningModal();
-            return;
-        } else if(await dayExist(splitName, oldDayName)){
-            // update day
-            // update dayName for active split
-            await editActiveSplitDayName(oldDayName, updatedDayName);
-            // update dayName for private split
-            await editDayName(splitName, oldDayName, updatedDayName);
-        } else {
-            // create new day (add updatedDayName to split)
-            await addDayNameActive(updatedDayName);
-            await addDayNamePrivate(splitName, updatedDayName);
-        }
-        
-        // update exercise active split
-        updateActiveSplitExercises(updatedDayName, exercises);
-
-        const exercisesWithoutId = exercises.map(({ id, ...rest }) => rest);
-        // update exercises private splits
-        updateExercises(splitName, updatedDayName, exercisesWithoutId);
-
-        // update workoutDay and pass to previous screen
-        const newWorkoutDay = {
-            dayName: updatedDayName,
-            exercises: exercises
-        };
-        setExerciseWarningModalVisible(false);
-        navigation.navigate('PreviewWorkout', { updatedWorkoutDay: newWorkoutDay, splitName, showNotification: { message: "Workout Saved!", color: theme.primaryColor } });
-    };
-    */
+    
 
     const handleForceSaveWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -382,9 +281,8 @@ const EditWorkoutScreen = ({ navigation, route }) => {
                 style={{ flex: 1 }}
             >
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
-                    
                     <TouchableWithoutFeedback onPress={handleOutsideTouch}>
-                    <View>
+                        <View>
                             <View style={styles.headerContainer}>
                                 <Ionicons name="chevron-back" onPress={() => goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
                                 <TextInput 
@@ -415,58 +313,52 @@ const EditWorkoutScreen = ({ navigation, route }) => {
                                             removeExercise={() => removeExercise(index)}
                                             onSwipeableOpen={() => handleSwipeableOpen(index)}
                                         />
-                                    ))}
-                                    {/*
-                                        <DraggableFlatList
-                                        data={exercises}
-                                        renderItem={renderItem}
-                                        keyExtractor={(item) => item.id.toString()}
-                                        onDragEnd={({ data }) => setExercises(data)}
-                                        />
-                                    */}
-                                    
+                                    ))}                                  
+                                </View>
+                                <View style={styles.bottomButtonContainer}>
                                     <View style={styles.addbuttonContainer}>
                                         <TouchableOpacity style={styles.addButton} onPress={() => { addExerciseBoxes(); handleOutsideTouch(); }} >
-                                            <Text style={styles.addButtonText}>+</Text>
+                                            <MaterialIcons name="add" size={getResponsiveFontSize(25)} color={theme.textColor} style={{marginRight: 5}}/>
+                                            <Text style={styles.addButtonText}>Add Exercise</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={styles.buttonContainer}>
+                                        <TouchableOpacity style={styles.button} onPress={deleteWarning}>
+                                            <MaterialIcons name="delete" size={getResponsiveFontSize(25)} color={theme.textColor} style={{marginRight: 5}}/>
+                                            <Text style={styles.addButtonText}>Delete Workout</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
-                                
-                                <View style={styles.buttonContainer}>
-                                    <TouchableOpacity style={styles.button} onPress={deleteWarning}>
-                                        <Text style={styles.buttonText}>Delete Workout</Text>
-                                    </TouchableOpacity>
-                                </View>
                             </View>
-                        <DeleteWorkoutModal
-                            visible={showEndWorkoutModal}
-                            cancel={handleCancel}
-                            del={handleDeleteWorkout}
-                            workoutName={updatedDayName}
-                        />
-                        <WarningModal
-                            visible={showWarningModal}
-                            msg={`${updatedDayName} already exists in this split`}
-                            subMsg={"Please choose another name."}
-                            close={handleClose}
-                        />
-                        <WarningModal
-                            visible={showIncompleteExerciseWarningModal}
-                            msg={"Incomplete exercises"}
-                            subMsg={"Make sure each exercise has a name, set count, rep count, and weight."}
-                            close={handleClose}
-                        />
-                        <SafteyModal
-                            visible={exerciseWarningModalVisible}
-                            close={() => setExerciseWarningModalVisible(false)}
-                            msg={"Invalid Exercises"}
-                            subMsg={"Some exercises are not recognized and won't count towards your score."}
-                            opt1={handleForceSaveWorkout}
-                            opt2={() => setExerciseWarningModalVisible(false)}
-                            opt1Text={"Continue"}
-                            opt2Text={"Go back"}
-                        />
-                    </View>
+                            <DeleteWorkoutModal
+                                visible={showEndWorkoutModal}
+                                cancel={handleCancel}
+                                del={handleDeleteWorkout}
+                                workoutName={updatedDayName}
+                            />
+                            <WarningModal
+                                visible={showWarningModal}
+                                msg={`${updatedDayName} already exists in this split`}
+                                subMsg={"Please choose another name."}
+                                close={handleClose}
+                            />
+                            <WarningModal
+                                visible={showIncompleteExerciseWarningModal}
+                                msg={"Incomplete exercises"}
+                                subMsg={"Make sure each exercise has a name, set count, rep count, and weight."}
+                                close={handleClose}
+                            />
+                            <SafteyModal
+                                visible={exerciseWarningModalVisible}
+                                close={() => setExerciseWarningModalVisible(false)}
+                                msg={"Invalid Exercises"}
+                                subMsg={"Some exercises are not recognized and won't count towards your score."}
+                                opt1={handleForceSaveWorkout}
+                                opt2={() => setExerciseWarningModalVisible(false)}
+                                opt1Text={"Continue"}
+                                opt2Text={"Go back"}
+                            />
+                        </View>
                     </TouchableWithoutFeedback>
                 </ScrollView>
             </KeyboardAvoidingView>
@@ -513,8 +405,8 @@ const createStyles = (theme) => StyleSheet.create({
     },
     header: {
         color: theme.textColor,
-        fontSize: getResponsiveFontSize(42),
-        fontWeight: '600',
+        fontSize: getResponsiveFontSize(40),
+        fontFamily: theme.fontSemiBold,
         textDecorationLine: 'underline'
     },
     contentContainer: {
@@ -533,31 +425,37 @@ const createStyles = (theme) => StyleSheet.create({
         alignItems: 'center',
         marginBottom: 20, // Adds space between button and bottom of ScrollView
     },
+    bottomButtonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 40,
+    },
     button: {
-        width: width * 0.4,
-        height: getResponsiveFontSize(57),
+        flexDirection: 'row',
+        padding: 10,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: theme.dangerColor,
-        borderRadius: 20,
+        borderRadius: 10,
         marginTop: 20
     },
-    buttonText: {
-        color: theme.textColor,
-        fontSize: getResponsiveFontSize(16),
-        fontWeight: 'bold',
-    },
     addButton: {
+        flexDirection: 'row',
         borderRadius: 10,
         backgroundColor: theme.navbarColor,
         justifyContent: 'center',
         alignItems: 'center',
-        width: width*0.69,
-        height: width*0.116,
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        marginRight: 10
+        //width: width*0.37,
+        //height: width*0.1,
     },
     addButtonText: {
         color: theme.textColor,
-        fontSize: getResponsiveFontSize(30),
+        fontSize: getResponsiveFontSize(15),
+        fontFamily: theme.fontSemiBold,
+        marginRight: 5
     },
     loadingContainer: {
         ...StyleSheet.absoluteFillObject,

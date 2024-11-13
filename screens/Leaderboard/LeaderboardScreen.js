@@ -12,6 +12,7 @@ import FriendContainer from "./LeaderboardComponents/FriendContainer";
 import InformationModal from "../Components/InformationModal"; 
 import { useFocusEffect } from '@react-navigation/native';
 
+
 const { height, width } = Dimensions.get('window');
 
 const LeaderboardScreen = ({ navigation, route }) => {
@@ -277,7 +278,7 @@ const createStyles = (theme) => StyleSheet.create({
     title: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(25),
-        fontWeight: 'bold'
+        fontFamily: theme.fontBold
     },
     titleContainer: {
         flexDirection: 'row',
@@ -304,7 +305,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     notificationText: {
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
         textAlign: 'center'
     },
     

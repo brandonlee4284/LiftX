@@ -115,8 +115,8 @@ const createStyles = (theme) => StyleSheet.create({
     },
     pageText: {
         fontSize: getResponsiveFontSize(14),
-        fontWeight: '500',
         color: theme.textColor,
+        fontFamily: theme.fontMedium
     },
     usernameText: {
         fontSize: getResponsiveFontSize(24),
@@ -141,7 +141,7 @@ const createStyles = (theme) => StyleSheet.create({
     notificationText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(10),
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
         textAlign: 'center',
     },
 

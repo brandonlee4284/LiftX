@@ -100,14 +100,14 @@ const createStyles = (theme, isActive) => StyleSheet.create({
     splitCardText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(20),
-        fontWeight: '600',
+        fontFamily: theme.fontMedium,
         paddingHorizontal: 20,
         textAlign: 'center'
     },
     splitCardSubText: {
         color: theme.grayTextColor,
         fontSize: getResponsiveFontSize(16),
-        fontWeight: '300',
+        fontFamily: theme.fontLight,
         marginTop: 5
     },
     removeIcon: {

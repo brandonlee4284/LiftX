@@ -60,10 +60,12 @@ const createStyles = (theme) => StyleSheet.create({
     setsReps: {
         fontSize: getResponsiveFontSize(16),
         color: theme.grayTextColor,
+        fontFamily: theme.fontSemiBold,
     },
     exerciseName: {
         fontSize: getResponsiveFontSize(18),
         color: theme.grayTextColor,
+        fontFamily: theme.fontRegular,
     },
 });
 

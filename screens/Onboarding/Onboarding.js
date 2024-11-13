@@ -143,7 +143,7 @@ const createStyles = (theme) => StyleSheet.create({
     buttonText: {
         color: theme.backgroundColor,
         fontSize: getResponsiveFontSize(18),
-        fontWeight: 'bold',
+        fontFamily: theme.fontMedium
     },
 });
 

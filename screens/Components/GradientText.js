@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Svg, { Text, Defs, LinearGradient, Stop } from 'react-native-svg';
+import { useTheme } from "../ThemeProvider";
 
 const { width } = Dimensions.get('window');
 
@@ -12,6 +13,8 @@ const getResponsiveFontSize = (baseFontSize) => {
 const GradientText = ({ text, gradientColors, style }) => {
     const fontSize = getResponsiveFontSize(24); // base font size of 24
     const svgWidth = width - 90; // make svg width responsive
+    const { theme } = useTheme();
+    const styles = createStyles(theme);
 
     return (
         <View style={styles.container}>
@@ -34,6 +37,7 @@ const GradientText = ({ text, gradientColors, style }) => {
                     fontWeight="800"
                     x="5%"
                     y="70%"
+                    fontFamily={theme.fontExtraBold}
                 >
                     {text}
                 </Text>
@@ -42,7 +46,7 @@ const GradientText = ({ text, gradientColors, style }) => {
     );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme) => StyleSheet.create({    
     container: {
         justifyContent: 'center',
         alignItems: 'center',

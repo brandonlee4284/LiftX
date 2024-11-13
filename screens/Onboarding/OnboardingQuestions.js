@@ -162,13 +162,14 @@ const createStyles = (theme) => StyleSheet.create({
     greetingText: {
         fontSize: getResponsiveFontSize(26),
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontSemiBold,
         marginVertical: 10,
     },
     subText: {
         fontSize: getResponsiveFontSize(22),
         color: theme.textColor,
         marginBottom: 20,
+        fontFamily: theme.fontRegular,
     },
     body: {
         marginTop: 100
@@ -177,7 +178,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(18),
         color: theme.textColor,
         marginBottom: 20,
-        fontWeight: '600',
+        fontFamily: theme.fontMedium,
     },
     genderContainer: {
         flexDirection: 'row',
@@ -210,7 +211,7 @@ const createStyles = (theme) => StyleSheet.create({
         paddingHorizontal: 10,
         color: theme.textColor,
         fontSize: getResponsiveFontSize(30),
-        fontWeight: 'bold',
+        fontFamily: theme.fontRegular,
         width: width * 0.25,
         marginRight: 10,
         textAlign: 'center'
@@ -218,7 +219,7 @@ const createStyles = (theme) => StyleSheet.create({
     weightUnit: {
         fontSize: getResponsiveFontSize(30),
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
         paddingHorizontal: 5
     },
     buttonContainer: {
@@ -244,7 +245,7 @@ const createStyles = (theme) => StyleSheet.create({
     buttonText: {
         color: theme.backgroundColor,
         fontSize: getResponsiveFontSize(18),
-        fontWeight: 'bold',
+        fontFamily: theme.fontMedium,
     },
     
 });

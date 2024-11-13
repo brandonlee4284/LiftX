@@ -49,7 +49,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     modalText: {
         fontSize: getResponsiveFontSize(20),
-        fontWeight: '700',
+        fontFamily: theme.fontBold,
         color: theme.textColor,
         marginBottom: 10,
         textAlign: 'center'
@@ -59,7 +59,8 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.grayTextColor,
         marginBottom: 20,
         textAlign: 'center',
-        paddingHorizontal:20
+        paddingHorizontal:20,
+        fontFamily: theme.fontLight,
     },
     infoIcon: {
         marginBottom: 10

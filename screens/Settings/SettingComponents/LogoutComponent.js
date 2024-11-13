@@ -95,7 +95,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
         textAlign: 'left',
-        fontWeight: 'bold'
+        fontFamily: theme.fontSemiBold,
     },
     modalOverlay: {
         flex: 1,
@@ -112,7 +112,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     modalText: {
         fontSize: getResponsiveFontSize(20),
-        fontWeight: '700',
+        fontFamily: theme.fontSemiBold,
         color: theme.textColor,
         marginBottom: 10,
     },
@@ -121,6 +121,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.grayTextColor,
         marginBottom: 20,
         textAlign: 'center',
+        fontFamily: theme.fontRegular,
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -146,7 +147,7 @@ const createStyles = (theme) => StyleSheet.create({
     buttonText: {
         color: theme.backgroundColor,
         fontSize: getResponsiveFontSize(16),
-        fontWeight: '600',
+        fontFamily: theme.fontMedium,
         textAlign: 'center'
     },
     warningIcon: {

@@ -79,11 +79,11 @@ const createStyles = (theme) => StyleSheet.create({
         borderRadius: 7,
         width: '80%',
         fontSize: getResponsiveFontSize(22),
-        fontWeight: '800',
         color: theme.textColor,
         paddingVertical: 6,
         paddingHorizontal: 15,
         textAlign: 'left',
+        fontFamily: theme.fontSemiBold
         //textDecorationLine: 'underline',
         //marginBottom: 20
     },
@@ -120,7 +120,7 @@ const createStyles = (theme) => StyleSheet.create({
     savebuttonText: {
         color: theme.backgroundColor,
         fontSize: getResponsiveFontSize(16),
-        fontWeight: '600',
+        fontFamily: theme.fontMedium,
         textAlign: 'center'
     },
     removebuttonText: {

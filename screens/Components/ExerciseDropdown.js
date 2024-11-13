@@ -71,7 +71,7 @@ const ExerciseDropdown = ({ value, onChangeText }) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={() => setShowModal(true)} style={styles.touchable}>
-                <Text style={styles.selectedText}>{value || 'Select an exercise'}</Text>
+                <Text style={styles.selectedText}>{value || 'exercise name'}</Text>
             </TouchableOpacity>
 
             <Modal
@@ -122,13 +122,13 @@ const createStyles = (theme) => StyleSheet.create({
         backgroundColor: theme.backgroundColor,
         borderRadius: 10,
         width: '90%',
-        borderWidth: 2,
-        borderColor: theme.textColor
+        borderWidth: 1.5,
+        borderColor: theme.grayTextColor
     },
     selectedText: {
-        fontSize: getResponsiveFontSize(16),
+        fontSize: getResponsiveFontSize(15),
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontMedium,
     },
     modalContainer: {
         flex: 1,
@@ -152,7 +152,8 @@ const createStyles = (theme) => StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         width: width * 0.8,
-        marginTop: 50
+        marginTop: 50,
+        fontFamily: theme.fontLight,
     },
     scrollView: {
         maxHeight: height * 0.55,
@@ -162,13 +163,13 @@ const createStyles = (theme) => StyleSheet.create({
         paddingHorizontal: getResponsiveFontSize(10),
         paddingVertical: getResponsiveFontSize(20),
         borderBottomWidth: 1,
-        borderBottomColor: theme.grayTextColor,
+        borderBottomColor: 'rgba(135, 150, 159, 0.15)',
         width: width * 0.8
     },
     itemText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(16),
-        fontWeight: '700',
+        fontFamily: theme.fontSemiBold,
     },
     closeButton: {
         position: 'absolute',
@@ -183,6 +184,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.grayTextColor,
         fontSize: getResponsiveFontSize(14),
         marginTop: 5,
+        fontFamily: theme.fontLight,
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -207,6 +209,7 @@ const createStyles = (theme) => StyleSheet.create({
     groupButtonText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(14),
+        fontFamily: theme.fontSemiBold,
     },
 });
 

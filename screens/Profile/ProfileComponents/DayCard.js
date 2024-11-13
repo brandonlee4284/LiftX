@@ -52,7 +52,7 @@ const createStyles = (theme) => StyleSheet.create({
     cardText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(15),
-        fontWeight: 'bold',
+        fontFamily: theme.fontMedium,
     },
     cardImage: {
         resizeMode: 'contain',

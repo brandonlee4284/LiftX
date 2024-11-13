@@ -164,20 +164,21 @@ const createStyles = (theme) => StyleSheet.create({
     },
     modalText: {
         fontSize: getResponsiveFontSize(20),
-        fontWeight: '700',
+        fontFamily: theme.fontBold,
         color: theme.textColor,
         marginBottom: 10,
         textAlign: 'center',
     },
     boldText: {
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
     },
     summaryText: {
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
         marginBottom: 10,
         textAlign: 'center',
-        paddingHorizontal: 5
+        paddingHorizontal: 5,
+        fontFamily: theme.fontRegular,
     },
     lottie: {
         width: width,
@@ -198,7 +199,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     scoreTitle: {
         fontSize: getResponsiveFontSize(20),
-        fontWeight: '600',
+        fontFamily: theme.fontSemiBold,
         color: theme.textColor,
         marginBottom: 5,
         textAlign: 'left',
@@ -206,22 +207,23 @@ const createStyles = (theme) => StyleSheet.create({
     scoreText: {
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontMedium,
     },
     oldScoreText: {
         fontSize: getResponsiveFontSize(16),
         color: theme.grayTextColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontSemiBold,
     },
     newScoreText: {
         fontSize: getResponsiveFontSize(16),
         color: theme.primaryColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontSemiBold,
     },
     changeScoreText: {
         fontSize: getResponsiveFontSize(12),
         color: theme.textColor,
-        paddingLeft: 5
+        paddingLeft: 5,
+        fontFamily: theme.fontLight,
     },
     scoreRow: {
         marginBottom: 10,
@@ -231,6 +233,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.grayTextColor,
         textAlign: 'left',
         marginTop: 10,
+        fontFamily: theme.fontLight,
     },
     progressBar: {
         height: width*0.023,

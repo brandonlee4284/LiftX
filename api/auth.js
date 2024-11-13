@@ -51,9 +51,9 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
     return;
   }
 
-  if (username.length > 30) {
-    showNotification("Username cannot exceed 30 characters", "rgb(114, 47, 55)");
-    setErrorMessage("Username cannot exceed 30 characters");
+  if (username.length > 25) {
+    showNotification("Username cannot exceed 25 characters", "rgb(114, 47, 55)");
+    setErrorMessage("Username cannot exceed 25 characters");
     return;
   }
 
@@ -64,9 +64,9 @@ export const createNewUser = async (gender = "male", weight = 135, age, name, us
     return;
   }
   
-  if (name.length > 30) {
-    showNotification("Display name cannot exceed 30 characters", "rgb(114, 47, 55)");
-    setErrorMessage("Display name cannot exceed 30 characters");
+  if (name.length > 25) {
+    showNotification("Display name cannot exceed 25 characters", "rgb(114, 47, 55)");
+    setErrorMessage("Display name cannot exceed 25 characters");
     return;
   }
 

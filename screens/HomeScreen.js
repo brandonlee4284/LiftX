@@ -49,7 +49,8 @@ To-Do list
 - email verification (done)
 
 - fix persistence
-
+- font
+- 
 
 */
 
@@ -442,12 +443,11 @@ const createStyles = (theme) => StyleSheet.create({
     title: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(25),
-        fontWeight: 'bold'
+        fontFamily: theme.fontSemiBold
     },
     carouselContainer: {
         marginTop: 30,
         alignItems: 'center',
-        
     },
     otherSplitContainer: {
         marginTop: 10,
@@ -475,7 +475,7 @@ const createStyles = (theme) => StyleSheet.create({
     addDayText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(50),
-        fontWeight: '300',
+        fontFamily: theme.fontLight
     },
     notificationContainer: {
         position: 'absolute',
@@ -488,7 +488,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     notificationText: {
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
         textAlign: 'center'
     },
 });

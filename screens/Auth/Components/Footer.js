@@ -42,15 +42,13 @@ const createStyles = (theme) => StyleSheet.create({
     },
     msg: {
         color: theme.textColor,
-        fontFamily: 'Outfit',
+        fontFamily: theme.fontExtraLight,
         fontSize: getResponsiveFontSize(12),
-        fontStyle: 'normal',
     },
     buttonText: {
         color: theme.primaryColor,
-        fontFamily: 'Outfit',
+        fontFamily: theme.fontSemiBold,
         fontSize: getResponsiveFontSize(12),
-        fontStyle: 'normal',
         marginLeft: 4,
     }
     

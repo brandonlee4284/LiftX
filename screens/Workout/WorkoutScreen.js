@@ -367,8 +367,8 @@ const createStyles = (theme) => StyleSheet.create({
     },
     header: {
         color: theme.textColor,
-        fontSize: getResponsiveFontSize(42),
-        fontWeight: '600',
+        fontSize: getResponsiveFontSize(40),
+        fontFamily: theme.fontSemiBold,
     },
     contentContainer: {
         flex: 1,
@@ -381,6 +381,7 @@ const createStyles = (theme) => StyleSheet.create({
     stopwatchText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(25),
+        fontFamily: theme.fontLight,
     },
     notesContainer: {
         alignItems: 'center',
@@ -391,7 +392,8 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         fontSize: getResponsiveFontSize(16),
         opacity: 0.7,
-        textAlign: 'center'
+        textAlign: 'center',
+        fontFamily: theme.fontExtraLight,
     },
     exerciseContainer: {
         marginBottom: 60,
@@ -408,6 +410,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(26),
         color: theme.textColor,
         marginBottom: 10,
+        fontFamily: theme.fontMedium,
     },
     buttonContainer: {
         alignItems: 'center',
@@ -476,7 +479,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     notificationText: {
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
         textAlign: 'center'
     },
 

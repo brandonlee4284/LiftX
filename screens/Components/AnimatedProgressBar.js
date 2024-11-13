@@ -67,7 +67,8 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(12),
         color: theme.textColor,
         marginTop: 5,
-        textAlign: 'right'
+        textAlign: 'right',
+        fontFamily: theme.fontExtraLight,
     },
 });
 

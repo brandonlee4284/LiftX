@@ -36,21 +36,21 @@ const createStyles = (theme) => StyleSheet.create({
     },
     category: {
         fontSize: getResponsiveFontSize(20),
-        fontWeight: '600',
+        fontFamily: theme.fontSemiBold,
         textAlign: 'center',
         color: theme.grayTextColor,
         paddingTop: 20,
     },
     score: {
         fontSize: getResponsiveFontSize(36),
-        fontWeight: '800',
+        fontFamily: theme.fontExtraBold,
         paddingVertical: 10,
         textAlign: 'center',
         color: theme.textColor
     },
     change: {
         fontSize: getResponsiveFontSize(14),
-        fontWeight: '200',
+        fontFamily: theme.fontLight,
         textAlign: 'center'
     }
 });

@@ -31,7 +31,7 @@ const createStyles = (theme) => StyleSheet.create({
     header: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(20),
-        fontWeight: '800',
+        fontFamily: theme.fontBold,
         paddingBottom: 20,
         marginLeft: 10
     },
@@ -56,7 +56,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
         textAlign: 'left',
-        fontWeight: 'bold'
+        fontFamily: theme.fontSemiBold,
     },
 });
 

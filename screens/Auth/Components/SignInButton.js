@@ -40,7 +40,7 @@ const createStyles = (theme) => StyleSheet.create({
   buttonText: {
       color: theme.backgroundColor,
       fontSize: getResponsiveFontSize(16),
-      fontWeight: 'bold',
+      fontFamily: theme.fontMedium,
   },
     
   

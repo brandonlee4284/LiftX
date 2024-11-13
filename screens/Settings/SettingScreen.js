@@ -101,7 +101,7 @@ const createStyles = (theme) => StyleSheet.create({
     header: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(26),
-        fontWeight: '800',
+        fontFamily: theme.fontExtraBold,
         left: -0.0347*width
     },
     body: {
@@ -122,7 +122,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     notificationText: {
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
         textAlign: 'center'
     },
     

@@ -40,10 +40,8 @@ const createStyles = (theme) => StyleSheet.create({
   },
   lift: {
     color: theme.textColor,
-    fontFamily: 'Outfit',
     fontSize: getResponsiveFontSize(38),
-    fontStyle: 'normal',
-    fontWeight: '700',
+    fontFamily: theme.fontBlack,
   },
   x: {
     height: getResponsiveFontSize(38),
@@ -51,11 +49,9 @@ const createStyles = (theme) => StyleSheet.create({
   },
   msg: {
     color: theme.textColor,
-    fontFamily: 'Outfit',
     fontSize: getResponsiveFontSize(48),
-    fontStyle: 'normal',
-    fontWeight: '900',
     textAlign: 'left',
+    fontFamily: theme.fontBlack,
   }
 });
 

@@ -95,7 +95,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
                         
                     </View>
                     <TouchableOpacity style={styles.buttonContainer} onPress={handleForgotPassword}>
-                        <Text style={styles.buttonText}>Reset Password</Text>
+                        <Text style={styles.buttonText}>Send</Text>
                     </TouchableOpacity>
                 </View>
                 {notification.visible && (
@@ -120,27 +120,27 @@ const createStyles = (theme) => StyleSheet.create({
     title: {
         fontSize: getResponsiveFontSize(20),
         color: theme.textColor,
+        fontFamily: theme.fontSemiBold,
     },
     body: {
         marginTop: 50,
-        paddingHorizontal: 50
+        paddingHorizontal: 40
     },
     inputContainer: {
         alignItems: 'center',
         marginTop: 20,
     },
     buttonContainer: {
-        height: height * 0.050,
-        width: width * 0.35,
         borderRadius: 15,
         backgroundColor: theme.primaryColor,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'left',
+        padding: 15
     },
     buttonText: {
         color: theme.backgroundColor,
         fontSize: getResponsiveFontSize(16),
-        fontWeight: 'bold',
+        fontFamily: theme.fontMedium,
         textAlign: 'center'
     },
     headerContainer: {
@@ -151,12 +151,12 @@ const createStyles = (theme) => StyleSheet.create({
         justifyContent: 'center',
     },
     backIcon: {
-        right: width*0.15
+        right: width*0.2
     },
     header: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(26),
-        fontWeight: '800',
+        fontFamily: theme.fontExtraBold,
         left: -0.0347*width
     },
     notificationContainer: {
@@ -170,7 +170,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     notificationText: {
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
         textAlign: 'center'
     },
 });

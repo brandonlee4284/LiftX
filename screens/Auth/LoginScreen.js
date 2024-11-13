@@ -171,6 +171,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(12),
         textDecorationLine: 'underline',
         textAlign: 'right',
+        fontFamily: theme.fontRegular,
     },
     notificationContainer: {
         position: 'absolute',
@@ -183,7 +184,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     notificationText: {
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
         textAlign: 'center'
     },
 });

@@ -141,8 +141,8 @@ const createStyles = (theme) => StyleSheet.create({
     },
     header: {
         color: theme.textColor,
-        fontSize: getResponsiveFontSize(42),
-        fontWeight: '600',
+        fontSize: getResponsiveFontSize(40),
+        fontFamily: theme.fontMedium,
     },
     contentContainer: {
         flex: 1,
@@ -159,9 +159,9 @@ const createStyles = (theme) => StyleSheet.create({
     noExerciseText: {
         color: theme.grayTextColor,
         fontSize: getResponsiveFontSize(18),
-        fontWeight: '400',
         textAlign: 'center',
         marginTop: 20,
+        fontFamily: theme.fontExtraLight,
     },
     notificationContainer: {
         position: 'absolute',
@@ -174,7 +174,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     notificationText: {
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
         textAlign: 'center'
     },
 });

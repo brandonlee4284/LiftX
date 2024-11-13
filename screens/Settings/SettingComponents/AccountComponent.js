@@ -144,15 +144,16 @@ const createStyles = (theme) => StyleSheet.create({
     header: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(20),
-        fontWeight: '800',
         paddingBottom: 20,
-        marginLeft: 10
+        marginLeft: 10,
+        fontFamily: theme.fontBold,
     },
     container: {
         paddingHorizontal: 16,
         paddingVertical: 10,
         backgroundColor: theme.backdropColor,
         borderRadius: 12,
+        width: width* 0.88
     },
     row: {
         flexDirection: 'row',
@@ -173,11 +174,12 @@ const createStyles = (theme) => StyleSheet.create({
     text: {
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
-        fontWeight: 'bold'
+        fontFamily: theme.fontSemiBold,
     },
     subText: {
         fontSize: getResponsiveFontSize(14),
         color: theme.textColor,
+        fontFamily: theme.fontRegular,
     },
     switch: {
         marginLeft: 70

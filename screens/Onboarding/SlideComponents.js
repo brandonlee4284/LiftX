@@ -77,7 +77,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     slideTitle: {
         fontSize: getResponsiveFontSize(29),
-        fontWeight: '800',
+        fontFamily: theme.fontBold,
         color: theme.primaryColor,
         textAlign: 'center',
         marginHorizontal: 20,
@@ -85,7 +85,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     slidetext: {
         fontSize: getResponsiveFontSize(18),
-        fontWeight: '100',
+        fontFamily: theme.fontLight,
         color: theme.textColor,
         textAlign: 'center',
         marginHorizontal: 20,

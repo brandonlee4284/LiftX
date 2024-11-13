@@ -46,7 +46,7 @@ const createStyles = (theme) => StyleSheet.create({
     rank: {
         fontSize: getResponsiveFontSize(18),
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontMedium,
         textAlign: 'left',
         paddingHorizontal: 10
     },
@@ -61,11 +61,12 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         flex: 1,
         textAlign: 'left',
+        fontFamily: theme.fontMedium,
     },
     score: {
         fontSize: getResponsiveFontSize(18),
         color: theme.textColor,
-        fontWeight: '400',
+        fontFamily: theme.fontMedium,
         textAlign: 'right',
         paddingHorizontal: 10
     },

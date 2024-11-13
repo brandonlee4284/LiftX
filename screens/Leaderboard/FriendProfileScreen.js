@@ -244,7 +244,7 @@ const createStyles = (theme) => StyleSheet.create({
     headerText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(20),
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
     },
     scrollViewContent: {
         paddingBottom: 120, 
@@ -273,7 +273,7 @@ const createStyles = (theme) => StyleSheet.create({
     title: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(25),
-        fontWeight: 'bold'
+        fontFamily: theme.fontBold,
     },
     carouselContainer: {
         marginTop: 20,
@@ -299,6 +299,7 @@ const createStyles = (theme) => StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 40,
         marginVertical: 20,
+        fontFamily: theme.fontExtraLight,
     },
     privateScoresText: {
         color: theme.grayTextColor,
@@ -306,6 +307,7 @@ const createStyles = (theme) => StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 40,
         marginVertical: 20,
+        fontFamily: theme.fontExtraLight,
     },
     loadingContainer: {
         ...StyleSheet.absoluteFillObject,
@@ -334,7 +336,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     modalText: {
         fontSize: getResponsiveFontSize(20),
-        fontWeight: '700',
+        fontFamily: theme.fontSemiBold,
         color: theme.textColor,
         marginBottom: 10,
     },
@@ -343,6 +345,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.grayTextColor,
         marginBottom: 20,
         textAlign: 'center',
+        fontFamily: theme.fontRegular,
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -368,7 +371,7 @@ const createStyles = (theme) => StyleSheet.create({
     buttonText: {
         color: theme.backgroundColor,
         fontSize: getResponsiveFontSize(16),
-        fontWeight: '600',
+        fontFamily: theme.fontMedium,
         textAlign: 'center'
     },
     warningIcon: {

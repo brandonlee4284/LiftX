@@ -75,6 +75,7 @@ const createStyles = (theme) => StyleSheet.create({
     fontSize: getResponsiveFontSize(16), 
     color: theme.textColor, 
     elevation: 2, 
+    fontFamily: theme.fontLight,
   }
   
   

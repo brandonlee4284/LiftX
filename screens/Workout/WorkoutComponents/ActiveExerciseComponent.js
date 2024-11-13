@@ -62,17 +62,18 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
         textAlign: 'right',
-        fontWeight: 'bold',
+        fontFamily: theme.fontSemiBold,
     },
     exerciseName: {
         fontSize: getResponsiveFontSize(20),
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontSemiBold,
     },
     setNumber: {
         marginTop: 5,
         fontSize: getResponsiveFontSize(14),
         color: theme.grayTextColor,
+        fontFamily: theme.fontMedium,
     }
 });
 

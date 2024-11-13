@@ -5,6 +5,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import ExerciseDropdown from "../../Components/ExerciseDropdown";
 import { Ionicons } from "@expo/vector-icons";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const { width } = Dimensions.get('window');
 
@@ -67,7 +68,7 @@ const EditExerciseComponent = forwardRef(({
 
     const renderRightActions = () => (
         <TouchableOpacity onPress={removeExercise} style={styles.deleteButton}>
-            <Ionicons name="trash-outline" size={getResponsiveFontSize(30)} color={theme.textColor} />
+            <MaterialIcons name="delete" size={getResponsiveFontSize(30)} color={theme.textColor} />
         </TouchableOpacity>
     );
 
@@ -169,6 +170,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
         textAlign: 'right',
+        fontFamily: theme.fontLight,
     },
     notes: {
         fontSize: getResponsiveFontSize(14),
@@ -178,11 +180,13 @@ const createStyles = (theme) => StyleSheet.create({
         //marginTop: 10,
         textAlign: 'right',
         width: '100%',
+        fontFamily: theme.fontExtraLight,
     },
     exerciseName: {
         fontSize: getResponsiveFontSize(18),
         color: theme.textColor,
-        textDecorationLine: 'underline'
+        textDecorationLine: 'underline',
+        fontFamily: theme.fontMedium,
     },
     
     editFont: {
@@ -199,7 +203,7 @@ const createStyles = (theme) => StyleSheet.create({
     deleteButtonText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(16),
-        fontWeight: 'bold',
+        fontFamily: theme.fontMedium,
     },
 });
 

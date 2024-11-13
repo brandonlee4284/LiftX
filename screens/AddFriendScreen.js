@@ -251,8 +251,8 @@ const createStyles = (theme) => StyleSheet.create({
     header: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(26),
-        fontWeight: '800',
         left: -0.03 * width,
+        fontFamily: theme.fontExtraBold
     },
     inputContainer: {
         marginTop: 40,
@@ -269,6 +269,7 @@ const createStyles = (theme) => StyleSheet.create({
         borderRadius: 10,
         color: theme.textColor,
         marginRight: 10,
+        fontFamily: theme.fontMedium
     },
     button: {
         paddingVertical: 10,
@@ -277,7 +278,7 @@ const createStyles = (theme) => StyleSheet.create({
         borderRadius: 10,
     },
     buttonText: {
-        fontWeight: 'bold',
+        fontFamily: theme.fontMedium,
         color: theme.backgroundColor
     },
     buttonRemoveText: {
@@ -291,8 +292,8 @@ const createStyles = (theme) => StyleSheet.create({
     friendRequestsTitle: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(22),
-        fontWeight: 'bold',
         marginBottom: 10,
+        fontFamily: theme.fontBold
     },
     friendRequestRow: {
         flexDirection: 'row',
@@ -317,7 +318,7 @@ const createStyles = (theme) => StyleSheet.create({
     friendDisplayName: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(16),
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
         paddingBottom: 5
     },
     textContainer: {
@@ -327,6 +328,7 @@ const createStyles = (theme) => StyleSheet.create({
     friendRequestText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(12),
+        fontFamily: theme.fontRegular,
     },
     buttonsContainer: {
         flexDirection: 'row',
@@ -363,7 +365,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     notificationText: {
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontBold,
         textAlign: 'center'
     },
     noRequestsText: {
@@ -371,6 +373,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(16),
         textAlign: 'center',
         marginTop: 30,
+        fontFamily: theme.fontLight
     },
 
 });

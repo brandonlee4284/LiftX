@@ -35,7 +35,7 @@ const createStyles = (theme) => StyleSheet.create({
     splitCardText: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(40),
-        fontWeight: '300',
+        fontFamily: theme.fontExtraLight
     },
 });
 

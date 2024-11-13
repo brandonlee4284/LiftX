@@ -69,16 +69,18 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(16),
         color: theme.textColor,
         textAlign: 'right',
+        fontFamily: theme.fontLight,
     },
     exerciseName: {
         fontSize: getResponsiveFontSize(18),
         color: theme.textColor,
-        fontWeight: 'bold',
+        fontFamily: theme.fontMedium,
     },
     notes: {
         fontSize: getResponsiveFontSize(14),
         color: theme.textColor,
         opacity: 0.7,
+        fontFamily: theme.fontLight,
     },
 });
 

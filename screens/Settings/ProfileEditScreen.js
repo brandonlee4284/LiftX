@@ -126,6 +126,9 @@ const ProfileEditScreen = ({ navigation }) => {
                 <View style={styles.headerContainer}>
                     <Ionicons name="chevron-back" onPress={() => navigation.goBack()} size={getResponsiveFontSize(25)} color={theme.textColor} style={styles.backIcon}/>
                     <Text style={styles.header}>Edit Profile</Text>
+                    <TouchableOpacity onPress={handleSaveProfile} style={styles.saveButton}>
+                        <Text style={styles.saveButtonText}>Save</Text>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.body}>
                     <TouchableOpacity onPress={handlePickImage}>
@@ -136,30 +139,30 @@ const ProfileEditScreen = ({ navigation }) => {
                         )}
                     </TouchableOpacity>
                     <View style={styles.textInputContainer}>
-                        <Text style={styles.label}>Display Name</Text>
-                        <TextInput 
-                            style={styles.input} 
-                            value={displayName} 
-                            onChangeText={setDisplayName} 
-                            placeholder="Enter display name"
-                            placeholderTextColor={theme.grayTextColor}
-                        />
-                        <Text style={styles.label}>Bio</Text>
-                        <TextInput 
-                            style={styles.textArea} 
-                            value={bio} 
-                            onChangeText={setBio} 
-                            placeholder="Enter bio"
-                            placeholderTextColor={theme.grayTextColor}
-                            multiline={true}
-                        />
+                        <View style={styles.row}>
+                            <Text style={styles.label}>Display Name</Text>
+                            <TextInput 
+                                style={styles.input} 
+                                value={displayName} 
+                                onChangeText={setDisplayName} 
+                                placeholder="Enter display name"
+                                placeholderTextColor={theme.grayTextColor}
+                                maxLength={25}
+                            />
+                        </View>
+                        <View style={[styles.row, styles.rowTopAlign]}>
+                            <Text style={[styles.label, styles.labelTopAlign]}>Bio</Text>
+                            <TextInput 
+                                style={styles.textArea} 
+                                value={bio} 
+                                onChangeText={setBio} 
+                                placeholder="Enter bio"
+                                placeholderTextColor={theme.grayTextColor}
+                                multiline={true}
+                                maxLength={200}
+                            />
+                        </View>
                     </View>
-                    <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={styles.saveButton} onPress={handleSaveProfile}>
-                            <Text style={styles.saveButtonText}>Save</Text>
-                        </TouchableOpacity>
-                    </View>
-                    
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -181,21 +184,28 @@ const createStyles = (theme) => StyleSheet.create({
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
     },
-    backIcon: {
-        position: 'absolute',
-        left: 0.046*width,
-    },
+    backIcon: {},
     header: {
         color: theme.textColor,
-        fontSize: getResponsiveFontSize(26),
-        fontWeight: '800',
+        fontSize: getResponsiveFontSize(22),
+        fontFamily: theme.fontExtraBold,
+    },
+    saveButton: {
+        paddingVertical: 5,
+        borderRadius: 10,
+    },
+    saveButtonText: {
+        color: theme.textColor,
+        fontSize: getResponsiveFontSize(16),
+        fontFamily: theme.fontMedium,
     },
     body: {
         alignItems: 'center',
-        marginTop: 50,
-        paddingHorizontal: 20,
+        marginTop: 30,
+        paddingHorizontal: 10,
         width: '100%',
     },
     profilePicture: {
@@ -208,57 +218,42 @@ const createStyles = (theme) => StyleSheet.create({
     },
     label: {
         color: theme.textColor,
-        fontSize: getResponsiveFontSize(18),
-        fontWeight: '700',
-        alignSelf: 'flex-start',
-        marginBottom: 10,
-        paddingTop: 10
+        fontSize: getResponsiveFontSize(16),
+        fontFamily: theme.fontSemiBold,
+        width: '35%',
     },
     input: {
-        width: '100%',
-        height: width*0.0926,
-        borderColor: theme.textColor,
-        borderWidth: 2,
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        marginBottom: 20,
+        width: '65%',
         color: theme.textColor,
+        fontSize: getResponsiveFontSize(16),
+        paddingHorizontal: 10,
+        fontFamily: theme.fontLight,
     },
     textArea: {
-        width: '100%',
-        height: 0.23 * width,
-        borderColor: theme.textColor,
-        borderWidth: 2,
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        marginBottom: 20,
+        width: '65%',
         color: theme.textColor,
+        fontSize: getResponsiveFontSize(16),
+        paddingHorizontal: 10,
         textAlignVertical: 'top',
-    },
-    saveButton: {
-        backgroundColor: theme.primaryColor,
-        paddingVertical: 15,
-        paddingHorizontal: 40,
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: width*0.6
-    },
-    saveButtonText: {
-        color: theme.backgroundColor,
-        fontSize: getResponsiveFontSize(18),
-        fontWeight: '600',
+        fontFamily: theme.fontLight,
+
     },
     textInputContainer: {
         width: '100%',
         paddingHorizontal: 20,
-        paddingTop: 30
+        paddingTop: 30,
     },
-    buttonContainer: {
-        width: '100%',
-        alignItems: 'center',
-        paddingTop: getResponsiveFontSize(250)
-    }
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center', // Center items by default
+        marginBottom: 30,
+    },
+    rowTopAlign: {
+        alignItems: 'flex-start', // Override for Bio row
+    },
+    labelTopAlign: {
+        paddingTop: 5, // Adjust top padding to align label visually with multi-line input
+    },
 });
 
 export default ProfileEditScreen;
