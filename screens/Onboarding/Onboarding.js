@@ -34,6 +34,7 @@ const OnboardingScreen = () => {
     };
 
     const slideAnim = useRef(new Animated.Value(height)).current; 
+    /*
     useFocusEffect(
         React.useCallback(() => {
             Animated.timing(slideAnim, {
@@ -43,7 +44,24 @@ const OnboardingScreen = () => {
             }).start();
 
             return () => {
-                slideAnim.setValue(height); // Reset the animation when the screen is unfocused
+=                slideAnim.setValue(height); // Reset the animation when the screen is unfocused
+            };
+        }, [slideAnim])
+    );
+    */
+    useFocusEffect(
+        React.useCallback(() => {
+            const animation = Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 600,
+                useNativeDriver: true,
+            });
+    
+            animation.start();
+    
+            return () => {
+                animation.stop(); // Ensure no animation lingers
+                slideAnim.setValue(height); // Reset the animation value
             };
         }, [slideAnim])
     );

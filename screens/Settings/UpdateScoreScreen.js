@@ -209,14 +209,14 @@ const createStyles = (theme) => StyleSheet.create({
         alignItems: 'center',
     },
     greetingText: {
-        fontSize: getResponsiveFontSize(26),
+        fontSize: getResponsiveFontSize(22),
         color: theme.textColor,
         fontFamily: theme.fontExtraBold,
         marginVertical: 10,
     },
     saveButton: {
         justifyContent: 'center',
-        left: width*0.12
+        left: width*0.17
     },
     saveText: {
         position: 'absolute',

@@ -51,6 +51,25 @@ const WorkoutScreen = ({ navigation, route }) => {
     const [secondsElapsed, setSecondsElapsed] = useState(0);
     const [stopwatchInterval, setStopwatchInterval] = useState(null);
 
+    const [startTime, setStartTime] = useState(Date.now()); // Initial start time
+    const intervalRef = useRef(null);
+
+    useEffect(() => {
+        // Calculate elapsed time based on device time
+        const calculateElapsedTime = () => {
+            const now = Date.now();
+            setSecondsElapsed(Math.floor((now - startTime) / 1000));
+        };
+
+        // Start the interval to recalculate time every second
+        intervalRef.current = setInterval(calculateElapsedTime, 1000);
+
+        return () => {
+            // Cleanup the interval when the component unmounts
+            clearInterval(intervalRef.current);
+        };
+    }, [startTime]);
+
     // modal that pops up if a user is trying to end a workout early
     const [showEndWorkoutModal, setShowEndWorkoutModal] = useState(false);
 
@@ -61,6 +80,7 @@ const WorkoutScreen = ({ navigation, route }) => {
     const notificationTimeoutRef = useRef(null);
     const slideAnim = useRef(new Animated.Value(-100)).current;
 
+    /*
     useEffect(() => {
         // Start the stopwatch interval
         const interval = setInterval(() => {
@@ -72,10 +92,12 @@ const WorkoutScreen = ({ navigation, route }) => {
         // Clean up interval on component unmount
         return () => clearInterval(interval);
     }, []);
+    */
 
     useEffect(() => {
         setCurrentNote(activeSet ? activeSet.notes : "");
     }, [activeSet]);
+
 
     const handleEndWorkout = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);

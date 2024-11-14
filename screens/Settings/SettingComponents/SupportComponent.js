@@ -2,20 +2,28 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeProvider";
+import * as Haptics from 'expo-haptics';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const { height, width } = Dimensions.get('window');
 
 const SupportComponent = () => {
     const { theme } = useTheme();
     const styles = createStyles(theme);
+    const navigation = useNavigation();
+
+    const handlePrivacyPolicy = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        navigation.navigate("PrivacyPolicy");
+    }
 
     return (
         <View>
             <Text style={styles.header}>Support & About</Text>
             <View style={styles.container}>
-                <TouchableOpacity style={styles.row}>
+                <TouchableOpacity style={styles.row} onPress={handlePrivacyPolicy}>
                     <Ionicons name="information-circle-outline" size={getResponsiveFontSize(24)} style={styles.icon} />
-                    <Text style={styles.text}>Terms and Services</Text>
+                    <Text style={styles.text}>Privacy Policy</Text>
                 </TouchableOpacity>
             </View>
         </View>

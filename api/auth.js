@@ -1,14 +1,15 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "firebase/auth";
-import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { FIREBASE_AUTH, FIREBASE_STORAGE, FIRESTORE_DB } from "../FirebaseConfig";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createPublicUser, createPrivateUser, fetchPublicUserData } from './profile';
+import { createPublicUser, createPrivateUser, fetchPublicUserData, getUsername } from './profile';
 import { createPrivateSplits } from './splits';
 import { createPrivateFriends } from './friends';
 import { createPrivateWorkout } from './workout';
 import { clearAsyncStorage } from "./helperFuncs";
 import dayjs from "dayjs";
 import { getFirestore, collection, query, where, getDocs, addDoc } from 'firebase/firestore'; // Import Firestore utilities
-
+import { deleteDoc, doc } from 'firebase/firestore';
+import { deleteObject, ref } from 'firebase/storage';
 
 // Login user with email and password
 export const loginUser = async (email, password, setErrorMessage, showNotification) => {
@@ -254,6 +255,78 @@ export const logoutUser = async () => {
   // Delete user data from local storage
   await clearAsyncStorage();
   FIREBASE_AUTH.signOut();
+};
+
+export const deleteUser = async () => {
+  try {
+    // Get the current user
+    const user = FIREBASE_AUTH.currentUser;
+
+    if (!user) {
+      console.error('No user is logged in.');
+      return;
+    }
+
+    const username = await getUsername();
+    //console.log(username)
+
+    // Step 1: Delete profile picture from Firebase Storage (if exists)
+    
+    if (username) {
+      const profilePictureRef = ref(FIREBASE_STORAGE, `/profile_pictures/${username}.jpg`);
+      try {
+        await deleteObject(profilePictureRef);
+        //console.log('Profile picture deleted');
+      } catch (error) {
+        console.warn('Profile picture not found or already deleted:', error.message);
+      }
+    }
+    
+
+    // Step 2: Delete user data from Firestore
+    try {
+      const userDocRef = doc(FIRESTORE_DB, 'users', FIREBASE_AUTH.currentUser.uid); // Adjust the 'users' collection path if different
+      await deleteDoc(userDocRef);
+      //console.log('User data deleted from Firestore');
+    } catch (error) {
+      console.warn('Failed to delete Firestore data:', error.message);
+    }
+
+    // Step 3: Delete the user's username from the `usernames` collection
+    try {
+      const usernamesRef = collection(FIRESTORE_DB, 'usernames'); // Adjust this to your actual collection name
+      const usernameQuery = query(usernamesRef, where('username', '==', username)); // Assuming you store `uid` alongside the username
+      const querySnapshot = await getDocs(usernameQuery);
+
+      if (!querySnapshot.empty) {
+        for (const docSnap of querySnapshot.docs) {
+          await deleteDoc(docSnap.ref); // Delete each matching document
+        }
+        //console.log('Username deleted from usernames collection');
+      } else {
+        console.warn('No username found for this user in the usernames collection');
+      }
+    } catch (error) {
+      console.warn('Failed to delete username:', error.message);
+    }
+
+    // Step 3: Sign out the user
+    await FIREBASE_AUTH.signOut();
+    //console.log('User signed out');
+
+    // Step 4: Delete user account from Firebase Authentication
+    try {
+      await user.delete();
+      //console.log('User account deleted from Firebase Authentication');
+    } catch (error) {
+      console.error('Failed to delete user account:', error.message);
+    }
+
+    // Step 5: Clear local storage
+    await clearAsyncStorage();
+  } catch (error) {
+    console.error('Error deleting user:', error.message);
+  }
 };
 
 export const resetPassword = async (email) => {

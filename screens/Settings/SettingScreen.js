@@ -6,6 +6,7 @@ import AccountComponent from "./SettingComponents/AccountComponent";
 import SupportComponent from "./SettingComponents/SupportComponent";
 import LogoutComponent from "./SettingComponents/LogoutComponent";
 import { Ionicons } from "@expo/vector-icons";
+import DeleteAccountComponent from "./SettingComponents/DeleteAccountComponent";
 
 const { height, width } = Dimensions.get('window');
 
@@ -66,6 +67,9 @@ const SettingScreen = () => {
                 </View>
                 <View style={styles.component}>
                     <LogoutComponent />
+                </View>
+                <View style={styles.component}>
+                    <DeleteAccountComponent />
                 </View>
             </View>
             {notification.visible && (

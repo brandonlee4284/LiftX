@@ -12,11 +12,11 @@ import LoginScreen from './screens/Auth/LoginScreen';
 import RegisterScreen from './screens/Auth/RegisterScreen';
 import LeaderboardScreen from './screens/Leaderboard/LeaderboardScreen';
 import ProfileScreen from './screens/Profile/ProfileScreen';
-import RecordScreen from './screens/Record/RecordScreen';
 import WorkoutScreen from './screens/Workout/WorkoutScreen';
 import PreviewWorkoutScreen from './screens/Workout/PreviewWorkoutScreen';
 import SettingScreen from './screens/Settings/SettingScreen';
 import ProfileEditScreen from './screens/Settings/ProfileEditScreen';
+import PrivacyPolicyScreen from './screens/Settings/SettingComponents/PrivacyPolicyScreen';
 import PreviewProfileWorkoutScreen from './screens/Profile/PreviewProfileWorkoutScreen';
 import { ThemeProvider } from './screens/ThemeProvider';
 
@@ -56,14 +56,6 @@ function HomeStack() {
   );
 }
 
-function RecordStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Record" component={RecordScreen} options={{ headerShown: false }} />
-    </Stack.Navigator>
-  );
-}
-
 function LeaderboardStack() {
   return (
     <Stack.Navigator>
@@ -89,6 +81,7 @@ function SettingStack() {
       <Stack.Screen name="Settings" component={SettingScreen} />
       <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} options={{ headerShown: false }} />
       <Stack.Screen name="UpdateScores" component={UpdateScoreScreen} />
+      <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
     </Stack.Navigator>
   );
 }
