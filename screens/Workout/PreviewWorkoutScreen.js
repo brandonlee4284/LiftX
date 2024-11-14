@@ -150,7 +150,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     exerciseContainer: {
         marginTop: 40,
-        paddingHorizontal: 20,
+        paddingHorizontal: getResponsiveFontSize(20),
     },
     buttonContainer: {
         alignItems: 'center',

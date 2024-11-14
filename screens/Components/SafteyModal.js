@@ -49,20 +49,20 @@ const createStyles = (theme) => StyleSheet.create({
     modalContainer: {
         width: width * 0.8,
         backgroundColor: theme.backdropColor,
-        borderRadius: 20,
-        padding: 20,
+        borderRadius: getResponsiveFontSize(20),
+        padding: getResponsiveFontSize(20),
         alignItems: 'center',
     },
     modalText: {
         fontSize: getResponsiveFontSize(20),
         fontFamily: theme.fontSemiBold,
         color: theme.textColor,
-        marginBottom: 10,
+        marginBottom: getResponsiveFontSize(10),
     },
     modalSubText: {
         fontSize: getResponsiveFontSize(16),
         color: theme.grayTextColor,
-        marginBottom: 20,
+        marginBottom: getResponsiveFontSize(20),
         textAlign: 'center',
         fontFamily: theme.fontRegular,
     },
@@ -74,18 +74,18 @@ const createStyles = (theme) => StyleSheet.create({
     endButton: {
         width: width*0.25,
         backgroundColor: theme.grayTextColor,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 5,
-        marginRight: 10
+        paddingHorizontal: getResponsiveFontSize(20),
+        paddingVertical: getResponsiveFontSize(10),
+        borderRadius: getResponsiveFontSize(5),
+        marginRight: getResponsiveFontSize(10)
     },
     resumeButton: {
         width: width*0.25,
         backgroundColor: theme.primaryColor,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 5,
-        marginLeft: 10
+        paddingHorizontal: getResponsiveFontSize(20),
+        paddingVertical: getResponsiveFontSize(10),
+        borderRadius: getResponsiveFontSize(5),
+        marginLeft: getResponsiveFontSize(10)
     },
     buttonText: {
         color: theme.backgroundColor,
@@ -94,7 +94,7 @@ const createStyles = (theme) => StyleSheet.create({
         textAlign: 'center'
     },
     warningIcon: {
-        marginBottom: 10
+        marginBottom: getResponsiveFontSize(10)
     }
 });
 

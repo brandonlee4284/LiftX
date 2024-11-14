@@ -197,11 +197,11 @@ const createStyles = (theme) => StyleSheet.create({
         flex: 1,
         backgroundColor: theme.backgroundColor,
         paddingTop: height > 850 ? 50 : 40,
-        paddingHorizontal: 30,
+        paddingHorizontal: getResponsiveFontSize(30),
     },
     scrollContainer: {
         marginTop: 0,
-        paddingBottom: 80,
+        paddingBottom: getResponsiveFontSize(80),
     },
     header: {
         flexDirection: 'row',
@@ -212,7 +212,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontSize: getResponsiveFontSize(22),
         color: theme.textColor,
         fontFamily: theme.fontExtraBold,
-        marginVertical: 10,
+        marginVertical: getResponsiveFontSize(10),
     },
     saveButton: {
         justifyContent: 'center',
@@ -225,26 +225,26 @@ const createStyles = (theme) => StyleSheet.create({
     subText: {
         fontSize: getResponsiveFontSize(22),
         color: theme.textColor,
-        marginBottom: 20,
+        marginBottom: getResponsiveFontSize(20),
         fontFamily: theme.fontMedium,
     },
     body: {
-        marginTop: 30
+        marginTop: getResponsiveFontSize(30)
     },
     title: {
         fontSize: getResponsiveFontSize(22),
         color: theme.textColor,
-        marginBottom: 20,
+        marginBottom: getResponsiveFontSize(20),
         textAlign: 'left',
         fontFamily: theme.fontSemiBold,
     },
     muscleGroup: {
-        marginBottom: 50,
+        marginBottom: getResponsiveFontSize(50),
     },
     muscleText: {
         fontSize: getResponsiveFontSize(18),
         color: theme.textColor,
-        marginBottom: 10,
+        marginBottom: getResponsiveFontSize(10),
         textAlign: 'left',
         fontFamily: theme.fontMedium,
     },
@@ -279,7 +279,7 @@ const createStyles = (theme) => StyleSheet.create({
     editFont: {
         color: theme.textColor,
         textDecorationLine: 'underline',
-        padding: 3
+        padding: getResponsiveFontSize(3)
     },
     backIcon: {
         position: 'absolute',

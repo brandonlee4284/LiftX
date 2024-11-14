@@ -79,7 +79,7 @@ const createStyles = (theme) => StyleSheet.create({
         paddingVertical: 5,
         paddingHorizontal: 16,
         backgroundColor: theme.backdropColor,
-        borderRadius: 12,
+        borderRadius: getResponsiveFontSize(12),
         width: width * 0.88
     },
     row: {

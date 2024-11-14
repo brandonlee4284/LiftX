@@ -144,31 +144,31 @@ const createStyles = (theme) => StyleSheet.create({
     header: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(20),
-        paddingBottom: 20,
-        marginLeft: 10,
+        paddingBottom: getResponsiveFontSize(20),
+        marginLeft: getResponsiveFontSize(10),
         fontFamily: theme.fontBold,
     },
     container: {
-        paddingHorizontal: 16,
-        paddingVertical: 10,
+        paddingHorizontal: getResponsiveFontSize(16),
+        paddingVertical: getResponsiveFontSize(10),
         backgroundColor: theme.backdropColor,
-        borderRadius: 12,
+        borderRadius: getResponsiveFontSize(12),
         width: width* 0.88
     },
     row: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 12,
+        paddingVertical: getResponsiveFontSize(12),
     },
     subRow: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingVertical: 8,
-        paddingLeft: 32,
+        paddingVertical: getResponsiveFontSize(8),
+        paddingLeft: getResponsiveFontSize(32),
     },
     icon: {
-        marginRight: 16,
+        marginRight: getResponsiveFontSize(16),
         color: theme.grayTextColor
     },
     text: {
@@ -182,7 +182,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontFamily: theme.fontRegular,
     },
     switch: {
-        marginLeft: 70
+        marginLeft: getResponsiveFontSize(70)
     }
 });
 

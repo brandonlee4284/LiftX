@@ -29,7 +29,7 @@ const createStyles = (theme) => StyleSheet.create({
     card: {
         width: width*0.37,
         height: width*0.37,
-        borderRadius: 25,
+        borderRadius: getResponsiveFontSize(25),
         backgroundColor: theme.backdropColor,
         alignItems: 'center',
         margin: 10
@@ -39,12 +39,12 @@ const createStyles = (theme) => StyleSheet.create({
         fontFamily: theme.fontSemiBold,
         textAlign: 'center',
         color: theme.grayTextColor,
-        paddingTop: 20,
+        paddingTop: getResponsiveFontSize(20),
     },
     score: {
         fontSize: getResponsiveFontSize(36),
         fontFamily: theme.fontExtraBold,
-        paddingVertical: 10,
+        paddingVertical: getResponsiveFontSize(10),
         textAlign: 'center',
         color: theme.textColor
     },

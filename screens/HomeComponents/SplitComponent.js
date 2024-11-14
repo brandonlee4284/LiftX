@@ -90,10 +90,10 @@ const createStyles = (theme, isActive) => StyleSheet.create({
         width: width * 0.435,
         height: width * 0.28,
         backgroundColor: theme.backdropColor,
-        borderRadius: 25,
+        borderRadius: getResponsiveFontSize(25),
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 10,
+        marginRight: getResponsiveFontSize(10),
         borderWidth: isActive ? 1.5 : 0,
         borderColor: isActive ? theme.primaryColor : 'transparent',
     },
@@ -101,19 +101,19 @@ const createStyles = (theme, isActive) => StyleSheet.create({
         color: theme.textColor,
         fontSize: getResponsiveFontSize(20),
         fontFamily: theme.fontMedium,
-        paddingHorizontal: 20,
+        paddingHorizontal: getResponsiveFontSize(20),
         textAlign: 'center'
     },
     splitCardSubText: {
         color: theme.grayTextColor,
         fontSize: getResponsiveFontSize(16),
         fontFamily: theme.fontLight,
-        marginTop: 5
+        marginTop: getResponsiveFontSize(5)
     },
     removeIcon: {
         position: 'absolute',
-        top: 15, // Adjust as needed
-        right: 15, // Adjust as needed
+        top: getResponsiveFontSize(15), // Adjust as needed
+        right: getResponsiveFontSize(15), // Adjust as needed
     }
 });
 

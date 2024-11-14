@@ -37,24 +37,24 @@ const createStyles = (theme) => StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: theme.backdropColor,
-        borderRadius: 15,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        marginVertical: 5,
-        height: height*0.065
+        borderRadius: getResponsiveFontSize(15),
+        paddingVertical: getResponsiveFontSize(10),
+        paddingHorizontal: getResponsiveFontSize(15),
+        marginVertical: getResponsiveFontSize(5),
+        height: getResponsiveFontSize(height*0.065)
     },
     rank: {
         fontSize: getResponsiveFontSize(18),
         color: theme.textColor,
         fontFamily: theme.fontMedium,
         textAlign: 'left',
-        paddingHorizontal: 10
+        paddingHorizontal: getResponsiveFontSize(10)
     },
     profilePicture: {
         width: width*0.093,
         height: width*0.093,
         borderRadius: (width*0.093) / 2,
-        marginRight: 10,
+        marginRight: getResponsiveFontSize(10),
     },
     username: {
         fontSize: getResponsiveFontSize(18),
@@ -68,10 +68,10 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         fontFamily: theme.fontMedium,
         textAlign: 'right',
-        paddingHorizontal: 10
+        paddingHorizontal: getResponsiveFontSize(10)
     },
     defaultIcon: {
-        marginRight: 10,
+        marginRight: getResponsiveFontSize(10),
     },
 });
 

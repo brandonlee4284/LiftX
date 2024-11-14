@@ -36,7 +36,7 @@ const createStyles = (theme) => StyleSheet.create({
         width: width * 0.6,
         height: width * 0.6,
         backgroundColor: theme.backdropColor,
-        borderRadius: 38,
+        borderRadius: getResponsiveFontSize(38),
         justifyContent: 'center',
         alignItems: 'center',
         //shadowColor: 'rgba(225, 237, 244, 1)',

@@ -419,10 +419,10 @@ const createStyles = (theme) => StyleSheet.create({
     },
     exerciseContainer: {
         marginBottom: 60,
-        paddingHorizontal: 35,
+        paddingHorizontal: getResponsiveFontSize(35),
     },
     upNextContainer: {
-        paddingHorizontal: 55,
+        paddingHorizontal: getResponsiveFontSize(55),
     },
     upNextTextContainer: {
         alignItems: 'center',

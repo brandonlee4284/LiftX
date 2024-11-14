@@ -221,10 +221,10 @@ const createStyles = (theme) => StyleSheet.create({
     },
     body: {
         marginTop: 30,
-        paddingHorizontal: 23
+        paddingHorizontal: getResponsiveFontSize(23)
     },
     scrollViewContent: {
-        paddingBottom: 120, 
+        paddingBottom: getResponsiveFontSize(120), 
         marginTop: 23, 
     },
     userInfoContainer: {

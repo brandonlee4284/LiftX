@@ -102,7 +102,7 @@ const createStyles = (theme) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 23
+        paddingHorizontal: getResponsiveFontSize(23)
     },
     leftContainer: {
         flex: 1,
@@ -124,7 +124,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontWeight: '800',
     },
     iconButton: {
-        marginLeft: 15,
+        marginLeft: getResponsiveFontSize(15),
     },
     notificationDot: {
         minWidth: 0.042*width,

@@ -247,7 +247,7 @@ const createStyles = (theme) => StyleSheet.create({
         fontFamily: theme.fontBold,
     },
     scrollViewContent: {
-        paddingBottom: 120, 
+        paddingBottom: getResponsiveFontSize(120), 
         marginTop: 23, 
     },
     errorText: {
@@ -258,7 +258,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     body: {
         marginTop: 10,
-        paddingHorizontal: 23
+        paddingHorizontal: getResponsiveFontSize(23)
     },
     userInfoContainer: {
         marginTop: 40

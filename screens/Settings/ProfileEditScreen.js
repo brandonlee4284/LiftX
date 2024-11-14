@@ -185,7 +185,7 @@ const createStyles = (theme) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 20,
+        paddingHorizontal: getResponsiveFontSize(20),
     },
     backIcon: {},
     header: {
@@ -205,7 +205,7 @@ const createStyles = (theme) => StyleSheet.create({
     body: {
         alignItems: 'center',
         marginTop: 30,
-        paddingHorizontal: 10,
+        paddingHorizontal: getResponsiveFontSize(10),
         width: '100%',
     },
     profilePicture: {
@@ -214,7 +214,7 @@ const createStyles = (theme) => StyleSheet.create({
         borderRadius: width * 0.3 / 2,
         borderColor: theme.textColor,
         borderWidth: 3,
-        marginBottom: 20,
+        marginBottom: getResponsiveFontSize(20),
     },
     label: {
         color: theme.textColor,

@@ -313,7 +313,7 @@ const getResponsiveFontSize = (baseFontSize) => {
 const createStyles = (theme) => StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 20,
+        paddingHorizontal: getResponsiveFontSize(20),
         backgroundColor: theme.backgroundColor,
         paddingTop: height > 850 ? 60 : 50,
     },

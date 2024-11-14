@@ -236,7 +236,7 @@ const createStyles = (theme) => StyleSheet.create({
     },
     scrollContainer: {
         marginTop: 10,
-        paddingBottom: 80,
+        paddingBottom: getResponsiveFontSize(80),
     },
     headerContainer: {
         //marginTop: 50,
@@ -259,23 +259,23 @@ const createStyles = (theme) => StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 45,
+        paddingHorizontal: getResponsiveFontSize(45),
     },
     input: {
         flex: 1,
-        padding: 10,
+        padding: getResponsiveFontSize(10),
         borderWidth: 2,
         borderColor: theme.textColor,
-        borderRadius: 10,
+        borderRadius: getResponsiveFontSize(10),
         color: theme.textColor,
-        marginRight: 10,
+        marginRight: getResponsiveFontSize(10),
         fontFamily: theme.fontMedium
     },
     button: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
+        paddingVertical: getResponsiveFontSize(10),
+        paddingHorizontal: getResponsiveFontSize(20),
         backgroundColor: theme.primaryColor,
-        borderRadius: 10,
+        borderRadius: getResponsiveFontSize(10),
     },
     buttonText: {
         fontFamily: theme.fontMedium,
@@ -286,31 +286,31 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor
     },
     friendRequestsContainer: {
-        marginTop: 30,
-        paddingHorizontal: 45,
+        marginTop: getResponsiveFontSize(30),
+        paddingHorizontal: getResponsiveFontSize(45),
     },
     friendRequestsTitle: {
         color: theme.textColor,
         fontSize: getResponsiveFontSize(22),
-        marginBottom: 10,
+        marginBottom: getResponsiveFontSize(10),
         fontFamily: theme.fontBold
     },
     friendRequestRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingVertical: 10,
+        paddingVertical: getResponsiveFontSize(10),
     },
     profilePicture: {
         width: width*0.116,
         height: width*0.116,
         borderRadius: (width*0.116) / 2,
-        marginRight: 10,
+        marginRight: getResponsiveFontSize(10),
     },
     defaultIcon: {
         width: width*0.116,
         height: width*0.116,
-        marginRight: 10,
+        marginRight: getResponsiveFontSize(10),
     },
     addIcon: {
         marginRight: 5,
@@ -319,7 +319,7 @@ const createStyles = (theme) => StyleSheet.create({
         color: theme.textColor,
         fontSize: getResponsiveFontSize(16),
         fontFamily: theme.fontBold,
-        paddingBottom: 5
+        paddingBottom: getResponsiveFontSize(5)
     },
     textContainer: {
         flex: 1,
@@ -336,10 +336,10 @@ const createStyles = (theme) => StyleSheet.create({
     },
     actionButton: {
         flexDirection: 'row',
-        paddingHorizontal: 8,
-        paddingVertical: 5,
-        borderRadius: 20,
-        marginLeft: 10,
+        paddingHorizontal: getResponsiveFontSize(8),
+        paddingVertical: getResponsiveFontSize(5),
+        borderRadius: getResponsiveFontSize(20),
+        marginLeft: getResponsiveFontSize(10),
     },
     acceptButton: {
         backgroundColor: theme.primaryColor,

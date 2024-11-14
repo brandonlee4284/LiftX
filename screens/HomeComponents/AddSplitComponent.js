@@ -26,7 +26,7 @@ const createStyles = (theme) => StyleSheet.create({
         width: width * 0.435,
         height: width * 0.28,
         backgroundColor: 'rgba(135, 150, 159, 0.1)',
-        borderRadius: 25,
+        borderRadius: getResponsiveFontSize(25),
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 10,

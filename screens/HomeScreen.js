@@ -434,10 +434,10 @@ const createStyles = (theme) => StyleSheet.create({
     },
     body: {
         marginTop: 30,
-        paddingHorizontal: 23
+        paddingHorizontal: getResponsiveFontSize(23)
     },
     scrollViewContent: {
-        paddingBottom: 120, 
+        paddingBottom: getResponsiveFontSize(120), 
         marginTop: 23, 
     },
     title: {
@@ -469,7 +469,7 @@ const createStyles = (theme) => StyleSheet.create({
         borderRadius: 38,
         justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal: 85,
+        marginHorizontal: getResponsiveFontSize(85),
         marginVertical: 10,
     },
     addDayText: {

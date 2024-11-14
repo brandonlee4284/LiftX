@@ -43,27 +43,27 @@ const createStyles = (theme) => StyleSheet.create({
     modalContainer: {
         width: width * 0.8,
         backgroundColor: theme.backdropColor,
-        borderRadius: 20,
-        padding: 20,
+        borderRadius: getResponsiveFontSize(20),
+        padding: getResponsiveFontSize(20),
         alignItems: 'center',
     },
     modalText: {
         fontSize: getResponsiveFontSize(20),
         fontFamily: theme.fontBold,
         color: theme.textColor,
-        marginBottom: 10,
+        marginBottom: getResponsiveFontSize(10),
         textAlign: 'center'
     },
     modalSubText: {
         fontSize: getResponsiveFontSize(16),
         color: theme.grayTextColor,
-        marginBottom: 20,
+        marginBottom: getResponsiveFontSize(20),
         textAlign: 'center',
-        paddingHorizontal:20,
+        paddingHorizontal: getResponsiveFontSize(20),
         fontFamily: theme.fontLight,
     },
     infoIcon: {
-        marginBottom: 10
+        marginBottom: getResponsiveFontSize(10)
     }
 });
 
