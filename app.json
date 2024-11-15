@@ -4,14 +4,15 @@
     "slug": "LiftX",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#04080B"
     },
     "ios": {
+      "supportsTablet": true,
       "bundleIdentifier": "com.brandonlee4284.LiftX"
     },
     "android": {
@@ -37,7 +38,8 @@
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-video"
     ],
     "extra": {
       "eas": {

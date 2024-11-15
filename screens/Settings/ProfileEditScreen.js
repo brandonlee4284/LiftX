@@ -7,6 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
+
 const { width, height } = Dimensions.get('window');
 
 const ProfileEditScreen = ({ navigation }) => {
@@ -49,61 +50,32 @@ const ProfileEditScreen = ({ navigation }) => {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [1, 1],
-            quality: 1,
+            quality: 0.1,
         });
 
         if (!result.canceled) {
-            setProfilePicture(result.assets[0].uri);
+            const selectedAsset = result.assets && result.assets[0];
+            if (selectedAsset && selectedAsset.uri) {
+                setProfilePicture(selectedAsset.uri);
+            } else {
+                alert('Something went wrong with image selection. Please try again.');
+            }  
         }
     };
-
-    /*
-    const handleSaveProfile = async () => {
-        // Save profile logic here
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        await updateUserProfile(profilePicture, displayName, bio);
-        navigation.navigate('Settings',  { showNotification: { message: "Profile Saved!", color: theme.primaryColor } });
-    };
-
-    rules_version = '2';
-
-    // Craft rules based on data in your Firestore database
-    // allow write: if firestore.get(
-    //    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
-    service firebase.storage {
-    match /b/{bucket}/o {
-
-        // This rule allows anyone with your Storage bucket reference to view, edit,
-        // and delete all data in your Storage bucket. It is useful for getting
-        // started, but it is configured to expire after 30 days because it
-        // leaves your app open to attackers. At that time, all client
-        // requests to your Storage bucket will be denied.
-        //
-        // Make sure to write security rules for your app before that time, or else
-        // all client requests to your Storage bucket will be denied until you Update
-        // your rules
-        match /{allPaths=**} {
-        allow read, write: if request.time < timestamp.date(2024, 6, 20);
-        }
-    }
-    }
-    */
 
     const handleSaveProfile = async () => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         setLoading(true);
-
         try {
             let imageUrl = profilePicture;
             if (profilePicture && profilePicture.startsWith("file://")) {
                 const response = await fetch(profilePicture);
                 const blob = await response.blob();
-
                 const storage = getStorage();
+
                 if (publicUserData.username) {
                     const storageRef = ref(storage, `profile_pictures/${publicUserData.username}.jpg`);
                     await uploadBytes(storageRef, blob);
-
                     imageUrl = await getDownloadURL(storageRef);
                 } else {
                     console.error('Username is undefined');
@@ -119,6 +91,7 @@ const ProfileEditScreen = ({ navigation }) => {
             setLoading(false);
         }
     };
+    
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

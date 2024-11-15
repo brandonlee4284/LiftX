@@ -52,6 +52,7 @@
     "react-native-background-timer": "^2.4.1",
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-gesture-handler": "~2.16.1",
+    "react-native-image-resizer": "^1.4.5",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-loader-kit": "^2.0.8",
     "react-native-pager-view": "6.3.0",
@@ -68,7 +69,8 @@
     "react-native-web": "~0.19.10",
     "react-navigation-stack": "^2.10.4",
     "typescript": "~5.3.3",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "expo-image-manipulator": "~12.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
